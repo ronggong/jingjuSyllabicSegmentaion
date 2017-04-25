@@ -2,19 +2,19 @@ from os.path import join
 
 # audio and annotation root path
 
-# dataset_root_path     = 'to/your/root/path'
+dataset_root_path     = 'to/your/root/path'
 
-# dataset_textgrid_path = dataset_root_path
-# aCapella_root         = dataset_root_path
+dataset_textgrid_path = dataset_root_path
+aCapella_root         = dataset_root_path
 
 # text grid path which contains phoneme annotations
-dataset_textgrid_path = '/Users/gong/Documents/MTG document/Jingju arias/phonemeSeg/'
+# dataset_textgrid_path = '/Users/gong/Documents/MTG document/Jingju arias/phonemeSeg/'
 
 textgrid_path_dan           = join(dataset_textgrid_path,'textgrid','danAll')
 textgrid_path_laosheng      = join(dataset_textgrid_path,'textgrid','qmLonUpf/laosheng')
 
 # aCapella root
-aCapella_root   = '/Users/gong/Documents/MTG document/Jingju arias/aCapella/'
+# aCapella_root   = '/Users/gong/Documents/MTG document/Jingju arias/aCapella/'
 
 # dataset path
 queenMarydataset_path    = 'QueenMary/jingjuSingingMono'
