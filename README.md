@@ -1,31 +1,26 @@
 # Jingju Singing Syllable Segmentation
 The code in this repo aims to help reproduce the results in the work:
->Matching singing phrase audio to score by combining phonetic and duration information
+>Score-informed Syllable Segmentation For A Cappella Singing Voice With Convolutional Neural Networks
 
-The objective of this research task to find the corresponding score for its singing query audio. By pre-segmenting both the singing audios and the music scores into the phrase units, we restrict this research to the "matching" scope. The matched scores could facilitate several lower-level MIR tasks, such as the score-informed automatic syllable or phoneme segmentation for singing voice.
-
-The related code only situated in **phoneticSimilarity** folder. Other folders are used to test other matching methods.
+This paper introduces a new score-informed method for the segmentation of jingju a cappella singing voice into syllables. The proposed method estimates the most likely sequence of syllable boundaries given the estimated syllable onset detection function (ODF) and its score. Throughout the paper, we first examine the jingju syllables structure and propose a definition of the term “syllable onset”. Then, we identify which are the challenges that jingju a cappella singing poses. We propose using a score-informed Viterbi algorithm –instead of thresholding the onset function–, because the available musical knowledge we have can be used to inform the Viterbi algorithm in order to overcome the identified challenges. In addition, we investigate how to improve the syllable ODF estimation with convolutional neural networks (CNNs). We propose a novel CNN architecture that allows to efficiently capture different time- frequency scales for estimating syllable onsets. The proposed method outperforms the state-of-the-art in syllable segmentation for jingju a cappella singing. We further provide an analysis of the segmentation errors which points possible research directions.
 
 ## Steps to reproduce the experiment results
 1. Clone this repository
-2. Download Jingju a capella singing dataset from http://doi.org/10.5281/zenodo.344932
-3. Change `dataset_path` variable in `general/filePath.py` to locate the above dataset
-4. Compile cython viterbi decoding code: go into `CythonModule`, in terminal type `python setup.py build_ext --inplace`
-5. Install dependencies (see below)
-6. Choose `class_name` in `general/filePath.py` to `'danAll'` or `'laosheng'` to experiment on either dan or laosheng role-type
-7. Choose `am ` in `general/parameters.py` to `'gmm'` or `'cnn'` to select acoustic model
-8. Run `python runHMM.py` to produce the experiment results for HMM and post-processor duration modelling matching
-9. Run `python runHSMM.py` to produce the experiment results for HSMM duration modelling matching
-10. The details instructions are written in these two files above
+2. Download Jingju a capella singing dataset, scores and syllable boundary annotations from https://goo.gl/y0P7BL
+3. Change `dataset_root_path` variable in `src/filePath.py` to locate the above dataset
+4. Install dependencies (see below)
+5. Set `mth_ODF`, `layer2`, `fusion` and `filter_shape` variables in `src/parameters.py`
+8. Run `python onsetFunctionCalc.py` to produce the experiment results for above parameter setting
+9. Run `python eval_demo.py` to produce the evaluation result
 
-## Steps to train GMM, CNN acoustic models
-1. Do steps 1, 2, 3 in **Steps to reproduce the experiment results**
-2. To train GMM models, run `python acousticModelTraining.py`
-3. To train CNN acoustic models, please follow the instructions in https://github.com/ronggong/EUSIPCO2017
-4. After training CNN models, put them into cnnModels folders. Pre-trained models are already included.
+## Steps to train CNN acoustic models
+1. Do steps 1, 2, 3, 4 in **Steps to reproduce the experiment results**
+2. Run `python trainingSampleCollection.py` to calculate mel-bands features
+3. CNN models training code is located in `localDLScripts` folder. Use them according to the computing configurations (CPU, GPU).
+4. Pre-trained models are located in `cnnModels` folders
 
 ## Dependencies
-`numpy scipy matplotlib essentia vamp scikit-learn pinyin cython keras theano unicodecsv`
+`numpy scipy matplotlib essentia scikit-learn cython keras theano hyperopt`
 
 ## License
 Affero GNU General Public License version 3
