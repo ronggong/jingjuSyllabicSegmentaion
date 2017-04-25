@@ -1,7 +1,8 @@
 import georgiParser
 import textgridParser
-import evaluation
-import os
+import evaluation2
+import os,csv
+import numpy as np
 
 def g_eval(groundtruth_textgrid_filename, georgi_alignment_filename, tolerance):
 
@@ -34,8 +35,8 @@ def g_eval(groundtruth_textgrid_filename, georgi_alignment_filename, tolerance):
             groundtruthList.append(tempGroundtruthList[idx])
             detectedBoundaryList.append(boundaryList[idx])
 
-    numDetectedBoundaries, numGroundtruthBoundaries, numCorrect, numOnsetCorrect, numOffsetCorrect, numInsertion, numDeletion = \
-        evaluation.boundaryEval(groundtruthList,detectedBoundaryList,tolerance)
+    numDetectedBoundaries, numGroundtruthBoundaries, numCorrect, numOnsetCorrect, numOffsetCorrect, numInsertion, numDeletion, correct_list = \
+        evaluation2.boundaryEval(groundtruthList,detectedBoundaryList,tolerance)
 
     print "Detected: {0}, Ground truth: {1}, Correct: {2}, Onset correct: {3}, " \
                               "Offset correct: {4}, Insertion: {5}, Deletion: {6}\n".\
@@ -77,6 +78,8 @@ def result_output(folders,tolerance):
             format(sumDetectedBoundaries, sumGroundtruthBoundaries, sumCorrect/float(sumGroundtruthBoundaries),
                sumInsertion/float(sumGroundtruthBoundaries), sumDeletion/float(sumGroundtruthBoundaries))
 
+    return sumDetectedBoundaries,sumGroundtruthBoundaries,sumCorrect,sumInsertion,sumDeletion
+
 # georgi_alignment_file               = '/Users/gong/Documents/pycharmProjects/jingjuSyllabicSegmentaion/testFiles/georgi/rong_female_neg_1.syllables_total_dev_3.0'
 # groundtruth_textgrid_file           = '/Users/gong/Documents/MTG document/Jingju arias/aCapella/QueenMary/jingjuSingingMono/annotation/fem_01/neg_1.TextGrid'
 # georgi_alignment_file               = '/Users/gong/Documents/pycharmProjects/jingjuSyllabicSegmentaion/testFiles/georgi/rong_male_neg_1.syllables_total_dev_3.0'
@@ -92,6 +95,19 @@ georgi_folder_female                = '/Users/gong/Documents/MTG document/Jingju
 
 georgi_subfolders_female            = [x[0] for x in os.walk(georgi_folder_female)]
 
-result_output(georgi_subfolders_male,tolerance)
+# result_output(georgi_subfolders_male,tolerance)
 
 # result_output(georgi_subfolders_female,tolerance)
+
+eval_result_file_name       = '/Users/gong/Documents/MTG document/Jingju arias/aCapella/eval_result_georgi_different_tolerence.csv'
+duration_means              = np.arange(0.1,1.0,0.1)
+
+with open(eval_result_file_name, 'w') as testfile:
+    csv_writer = csv.writer(testfile)
+    for t in [0.05,0.1,0.15,0.2,0.25,0.3]:
+
+        detected, ground_truth, correct, insertion, deletion = result_output(georgi_subfolders_female+georgi_subfolders_male,t)
+        recall,precision,F1 = evaluation2.metrics(detected,ground_truth,correct)
+
+        csv_writer.writerow([t,detected, ground_truth, recall, precision, F1])
+

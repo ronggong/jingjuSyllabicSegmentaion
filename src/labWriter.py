@@ -1,6 +1,6 @@
 import textgridParser
 
-def boundaryLabWriter(boundaryList, outputFilename):
+def boundaryLabWriter(boundaryList, outputFilename, label=False):
     '''
     Write the boundary list into .lab
     :param boundaryList:
@@ -8,9 +8,12 @@ def boundaryLabWriter(boundaryList, outputFilename):
     :return:
     '''
 
-    with open(outputFilename, "w") as lab_file:
+    with open(outputFilename, "wb") as lab_file:
         for list in boundaryList:
-            lab_file.write("{0} {1}\n".format(list[0],list[1]))
+            if label:
+                lab_file.write("{0:.4f} {1:.4f} {2}\n".format(list[0],list[1],list[2]))
+            else:
+                lab_file.write("{0:.4f} {1:.4f}\n".format(list[0],list[1]))
 
 def phraseBoundaryWriter(textgrid_file, outputFilename):
     '''

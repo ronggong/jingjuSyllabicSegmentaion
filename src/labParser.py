@@ -14,6 +14,6 @@ def lab2WordList(lab_file):
         for l in lineList:
             startTime, endTime, label = l.split()
             if label != '##':
-                dataList.append([float(startTime), float(endTime)])
+                dataList.append([float(startTime), float(endTime), label])
 
     return dataList

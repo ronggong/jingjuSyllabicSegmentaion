@@ -90,4 +90,26 @@ def wordListsParseByLines(entireLine, entireWordList):
 
     return nestedWordLists, numLines, numWords
 
+def syllableTextgridExtraction(textgrid_path, recording, tier0, tier1):
+
+    '''
+    Extract syllable boundary and phoneme boundary from textgrid
+    :param textgrid_path:
+    :param recording:
+    :param tier0: parent tier
+    :param tier1: child tier which should be covered by parent tier
+    :return:
+    nestedPhonemeList, element[0] - syllable, element[1] - a list containing the phoneme of the syllable
+    '''
+
+    textgrid_file   = os.path.join(textgrid_path,recording+'.TextGrid')
+
+    syllableList    = textGrid2WordList(textgrid_file, whichTier=tier0)
+    phonemeList     = textGrid2WordList(textgrid_file, whichTier=tier1)
+
+    # parse syllables of groundtruth
+    nestedPhonemeLists, numSyllables, numPhonemes   = wordListsParseByLines(syllableList, phonemeList)
+
+    return nestedPhonemeLists, numSyllables, numPhonemes
+
 

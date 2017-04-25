@@ -1,0 +1,507 @@
+# -*- coding: utf-8 -*-
+import pickle
+from os import makedirs
+from os.path import isfile, exists, dirname, join
+
+import essentia.standard as ess
+import numpy as np
+from keras.models import load_model
+
+import pyximport
+pyximport.install(reload_support=True,
+                  setup_args={'include_dirs': np.get_include()})
+
+# from HSMM.LRHMM import _LRHMM
+# from HSMM.makeHSMMNet import singleTransMatBuild
+# from HSMM.ParallelLRHSMM import ParallelLRHSMM
+from src.filePath import *
+from src.labWriter import boundaryLabWriter
+from src.parameters import *
+from src.scoreManip import phonemeDurationForLine
+from src.scoreParser import generatePinyin
+from src.textgridParser import textGrid2WordList, wordListsParseByLines
+# from targetAudioProcessing import processFeature
+from trainingSampleCollection import featureReshape
+from trainingSampleCollection import getMFCCBands2D
+
+pyximport.install(reload_support=True,
+                  setup_args={'include_dirs': np.get_include()})
+
+from viterbiDecoding import viterbiSegmental2
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+
+
+
+def getOnsetFunction(observations, path_keras_cnn, method='jan'):
+    """
+    Load CNN model to calculate ODF
+    :param observations:
+    :return:
+    """
+
+    model = load_model(path_keras_cnn)
+
+    ##-- call pdnn to calculate the observation from the features
+    if method=='jordi':
+        observations = [observations, observations, observations, observations, observations, observations]
+    elif method=='jordi_horizontal_timbral':
+        observations = [observations, observations, observations, observations, observations, observations,
+                        observations, observations, observations, observations, observations, observations]
+
+    obs = model.predict_proba(observations, batch_size=128)
+    return obs
+
+
+def featureExtraction(audio_monoloader, scaler, framesize, dmfcc=False, nbf=False, feature_type='mfccBands2D'):
+    """
+    extract mfcc features
+    :param audio_monoloader:
+    :param scaler:
+    :param dmfcc:
+    :param nbf:
+    :param feature_type:
+    :return:
+    """
+    if feature_type == 'mfccBands2D':
+        mfcc = getMFCCBands2D(audio_monoloader, framesize, nbf=nbf, nlen=varin['nlen'])
+        mfcc = np.log(100000 * mfcc + 1)
+
+        mfcc = np.array(mfcc, dtype='float32')
+        mfcc_scaled = scaler.transform(mfcc)
+        mfcc_reshaped = featureReshape(mfcc_scaled)
+    else:
+        print(feature_type + ' is not exist.')
+        raise
+    return mfcc, mfcc_reshaped
+
+
+def trackOnsetPosByPath(path, idx_syllable_start_state):
+    idx_onset = []
+    for ii in range(len(path)-1):
+        if path[ii+1] != path[ii] and path[ii+1] in idx_syllable_start_state:
+            idx_onset.append(ii)
+    return idx_onset
+
+def late_fusion_calc(obs_0, obs_1, mth=0, coef=0.5):
+    """
+    Late fusion methods
+    :param obs_0:
+    :param obs_1:
+    :param mth: 0-addition 1-addition with linear norm 2-exponential weighting mulitplication with linear norm
+    3-multiplication 4- multiplication with linear norm
+    :param coef: weighting coef for multiplication
+    :return:
+    """
+    assert len(obs_0) == len(obs_1)
+
+    obs_out = []
+
+    if mth==1 or mth==2 or mth==4:
+        from sklearn.preprocessing import MinMaxScaler
+        min_max_scaler = MinMaxScaler()
+        obs_0 = min_max_scaler.fit_transform(obs_0)
+        obs_1 = min_max_scaler.fit_transform(obs_1)
+
+    if mth == 0 or mth == 1:
+        # addition
+        obs_out = np.add(obs_0, obs_1)/2
+    elif mth == 2:
+        # multiplication with exponential weighting
+        obs_out = np.multiply(np.power(obs_0, coef), np.power(obs_1, 1-coef))
+    elif mth == 3 or mth == 4:
+        # multiplication
+        obs_out = np.multiply(obs_0, obs_1)
+
+    return obs_out
+
+
+def onsetFunctionAllRecordings(recordings,
+                               textgrid_path,
+                               dict_recording_name_mapping,
+                               dataset_path,
+                               feature_type='mfcc',
+                               dmfcc=False,
+                               nbf=True,
+                               mth='jordi',
+                               late_fusion=True):
+    """
+    ODF and viter decoding
+    :param recordings:
+    :param textgrid_path:
+    :param dict_recording_name_mapping: mapping from "fem_01" to standard format, see filePath.py
+    :param dataset_path:
+    :param feature_type: 'mfcc', 'mfccBands1D' or 'mfccBands2D'
+    :param dmfcc: delta for 'mfcc'
+    :param nbf: context frames
+    :param mth: jordi, jordi_horizontal_timbral, jan, jan_chan3
+    :param late_fusion: Bool
+    :return:
+    """
+
+    scaler = pickle.load(open(full_path_mfccBands_2D_scaler_onset, 'rb'))
+    if mth == 'jan_chan3':
+        scaler_23 = pickle.load(open(full_path_mfccBands_2D_scaler_onset_23, 'rb'))
+        scaler_46 = pickle.load(open(full_path_mfccBands_2D_scaler_onset_46, 'rb'))
+        scaler_93 = pickle.load(open(full_path_mfccBands_2D_scaler_onset_93, 'rb'))
+
+    # kerasModel = _LRHMM.kerasModel(full_path_keras_cnn_am)
+
+    for i_recording, recording_name in enumerate(recordings):
+
+        groundtruth_textgrid_file   = join(textgrid_path, dict_recording_name_mapping[recording_name]+'.TextGrid')
+        score_file                  = join(aCapella_root, dataset_path, score_path,      recording_name+'.csv')
+        wav_file                    = join(aCapella_root, dataset_path, audio_path,      recording_name+'.wav')
+
+        if not isfile(score_file):
+            print 'Score not found: ' + score_file
+            continue
+
+        lineList        = textGrid2WordList(groundtruth_textgrid_file, whichTier='line')
+        utteranceList   = textGrid2WordList(groundtruth_textgrid_file, whichTier='dianSilence')
+
+        # parse lines of groundtruth
+        nestedUtteranceLists, numLines, numUtterances = wordListsParseByLines(lineList, utteranceList)
+
+        # parse score
+        syllables, pinyins, syllable_durations, bpm = generatePinyin(score_file)
+
+        # print(pinyins)
+        # print(syllable_durations)
+
+        # load audio
+        audio_monoloader               = ess.MonoLoader(downmix = 'left', filename = wav_file, sampleRate = fs)()
+        audio_eqloudloder              = ess.EqloudLoader(filename=wav_file, sampleRate = fs)()
+
+        if mth == 'jordi' or mth == 'jordi_horizontal_timbral' or mth == 'jan':
+            mfcc, mfcc_reshaped = featureExtraction(audio_monoloader,
+                                                          scaler,
+                                                          int(round(0.025 * fs)),
+                                                          dmfcc=dmfcc,
+                                                          nbf=nbf,
+                                                          feature_type='mfccBands2D')
+        elif mth == 'jan_chan3':
+            # for jan 3 channels input
+            mfcc_23, mfcc_reshaped_23 = featureExtraction(audio_monoloader,
+                                                    scaler_23,
+                                                    int(round(0.023 * fs)),
+                                                    dmfcc=dmfcc,
+                                                    nbf=nbf,
+                                                    feature_type='mfccBands2D')
+
+            mfcc_46, mfcc_reshaped_46 = featureExtraction(audio_monoloader,
+                                                    scaler_46,
+                                                    int(round(0.046 * fs)),
+                                                    dmfcc=dmfcc,
+                                                    nbf=nbf,
+                                                    feature_type='mfccBands2D')
+
+            mfcc_93, mfcc_reshaped_93 = featureExtraction(audio_monoloader,
+                                                    scaler_93,
+                                                    int(round(0.093 * fs)),
+                                                    dmfcc=dmfcc,
+                                                    nbf=nbf,
+                                                    feature_type='mfccBands2D')
+
+        for i_obs, lineList in enumerate(nestedUtteranceLists):
+            if int(bpm[i_obs]):
+                sample_start    = int(round(lineList[0][0] * fs))
+                sample_end      = int(round(lineList[0][1] * fs))
+                frame_start     = int(round(lineList[0][0] * fs / hopsize))
+                frame_end       = int(round(lineList[0][1] * fs / hopsize))
+                # print(feature.shape)
+
+                if mth == 'jordi' or mth == 'jordi_horizontal_timbral' or mth == 'jan':
+                    audio_eqloudloder_line = audio_eqloudloder[sample_start:sample_end]
+                    mfcc_line          = mfcc[frame_start:frame_end]
+                    mfcc_reshaped_line = mfcc_reshaped[frame_start:frame_end]
+                elif mth == 'jan_chan3':
+                    mfcc_line_23 = mfcc_23[frame_start:frame_end]
+                    mfcc_reshaped_line_23 = mfcc_reshaped_23[frame_start:frame_end]
+                    mfcc_reshaped_line_23 = mfcc_reshaped_line_23[...,np.newaxis]
+
+                    mfcc_line_46 = mfcc_46[frame_start:frame_end]
+                    mfcc_reshaped_line_46 = mfcc_reshaped_46[frame_start:frame_end]
+                    mfcc_reshaped_line_46 = mfcc_reshaped_line_46[...,np.newaxis]
+
+                    mfcc_line_93 = mfcc_93[frame_start:frame_end]
+                    mfcc_reshaped_line_93 = mfcc_reshaped_93[frame_start:frame_end]
+                    mfcc_reshaped_line_93 = mfcc_reshaped_line_93[...,np.newaxis]
+
+                    mfcc_reshaped_line = np.concatenate((mfcc_reshaped_line_23,mfcc_reshaped_line_46,mfcc_reshaped_line_93),axis=3)
+
+                obs     = getOnsetFunction(observations=mfcc_reshaped_line,
+                                           path_keras_cnn=full_path_keras_cnn_0,
+                                           method=mth)
+                obs_i   = obs[:,1]
+
+                hann = np.hanning(5)
+                hann /= np.sum(hann)
+
+                obs_i = np.convolve(hann, obs_i, mode='same')
+
+                if late_fusion:
+                    obs_2 = getOnsetFunction(observations=mfcc_reshaped_line,
+                                             path_keras_cnn=full_path_keras_cnn_1,
+                                             method=mth)
+                    obs_2_i = obs_2[:, 1]
+                    obs_2_i = np.convolve(hann, obs_2_i, mode='same')
+                    obs_i = late_fusion_calc(obs_i, obs_2_i, mth=2)
+
+                # save ODF to files for fast evaluation
+                # if not exists("testFiles/"+dirname(recording_name)):
+                #     makedirs("testFiles/"+dirname(recording_name))
+                #
+                # np.save("testFiles/"+recording_name+'_'+str(i_obs+1)+'_temporal_model1.npy', obs_i)
+                # np.save("testFiles/"+recording_name+'_'+str(i_obs+1)+'_timbral_model1.npy', obs_2_i)
+
+                # load ODF
+                # obs_i = np.load("testFiles/"+recording_name+'_'+str(i_obs+1)+'_timbral_model0.npy')
+                # obs_2_i = np.load("testFiles/"+recording_name+'_'+str(i_obs+1)+'_timbral_model1.npy')
+                # obs_i = late_fusion_calc(obs_i, obs_2_i, mth=2, coef=0.5)
+
+                # organize score
+                print('Calculating: '+recording_name+' phrase '+str(i_obs))
+
+                time_line      = lineList[0][1] - lineList[0][0]
+
+                lyrics_line    = [ll[2] for ll in lineList[1]]
+                groundtruth_syllable = [ll[0]-lineList[0][0] for ll in lineList[1]]
+
+                print('Syllable:')
+                print(lyrics_line)
+
+                print('Length of syllables, length of ground truth syllables:')
+                print(len(lyrics_line), len(groundtruth_syllable))
+
+                pinyin_score   = pinyins[i_obs]
+                pinyin_score   = [ps for ps in pinyin_score if len(ps)]
+                duration_score = syllable_durations[i_obs]
+                duration_score = np.array([float(ds) for ds in duration_score if len(ds)])
+                duration_score = duration_score * (time_line/np.sum(duration_score))
+
+                """
+                # HSMM decoding
+                mfcc_reshaped_index_keep, dict_index_keep\
+                    = processFeature(audio = audio_eqloudloder_line,
+                                  onset_function  = obs_i,
+                                  feature=mfcc_line,
+                                  feature_type='mfccBands2D')
+
+                # print(mfcc_reshaped_index_keep.shape, len(dict_index_keep), len(obs_i))
+
+                obs_i_index_keep = [obs_i[dict_index_keep[ii]] for ii in dict_index_keep]
+
+                # print(obs_i_index_keep)
+                phoneme_line, dur_line, idx_syllable_start_state\
+                    = phonemeDurationForLine(pinyin_score, duration_score)
+                trans_mat              = singleTransMatBuild(phoneme_line)
+
+                hsmm = ParallelLRHSMM(lyrics=lyrics_line,
+                               mat_trans_comb=trans_mat,
+                               state_pho_comb=phoneme_line,
+                               mean_dur_state=dur_line,
+                               proportionality_std=0.1)
+                path,_ = hsmm._viterbiHSMM(observations=mfcc_reshaped_index_keep,
+                                           onset=obs_i_index_keep,
+                                            am='cnn',
+                                            kerasModel=kerasModel)
+
+                frame_onset = trackOnsetPosByPath(path, idx_syllable_start_state)
+                i_boundary = [0] + frame_onset + [len(obs_i)-1]
+
+                """
+
+                """
+                # plot ODF and ground truth onset positions
+                # plt.figure()
+                # plt.subplot(2,1,1)
+                # plt.plot(obs_i)
+                # for gs in groundtruth_syllable:
+                #     plt.axvline(int(gs*fs/hopsize), color='k')
+                # plt.subplot(2,1,2)
+                # plt.plot(path)
+                # for fo in frame_onset:
+                #     plt.axvline(dict_index_keep[fo])
+                # plt.axvline(len(obs_i)-1)
+                # plt.show()
+                """
+
+                # segmental decoding
+                # print(phoneme_line)
+                # print(dur_line)
+                obs_i[0] = 1.0
+                obs_i[-1] = 1.0
+                # print(duration_score)
+
+                i_boundary = viterbiSegmental2(obs_i, duration_score, varin)
+
+                time_boundray_start = np.array(i_boundary[:-1])*hopsize_t
+                time_boundray_end   = np.array(i_boundary[1:])*hopsize_t
+
+                # write boundaries
+                filename_syll_lab = join(eval_results_path, dataset_path, recording_name+'_'+str(i_obs+1)+'.syll.lab')
+
+                eval_results_data_path = dirname(filename_syll_lab)
+
+                if not exists(eval_results_data_path):
+                    makedirs(eval_results_data_path)
+
+                # write boundary lab file
+                boundaryLabWriter(boundaryList=zip(time_boundray_start.tolist(),time_boundray_end.tolist(),lyrics_line),
+                                  outputFilename=filename_syll_lab,
+                                    label=True)
+
+                # print(i_boundary)
+                # print(len(obs_i))
+                # print(np.array(groundtruth_syllable)*fs/hopsize)
+
+                """
+                # plot onset context spectrogram window
+                plt.figure()
+                plt.pcolormesh(mfcc_reshaped_line[int(groundtruth_syllable[1]*fs/hopsize),:,:])
+                plt.axvline(11,color='r',linewidth=4)
+                plt.ylabel('Mel bands')
+                plt.xlabel('frames')
+                plt.axis('tight')
+                plt.show()
+
+                # plot detected and ground truth
+                name_figure     = recording_name+'_'+str(i_obs+1)
+                filename_fig    = join(eval_fig_path, dataset_path, name_figure+'.png')
+                dirname_fig     = dirname(filename_fig)
+                if not exists(dirname_fig):
+                    makedirs(dirname_fig)
+
+                plt.figure()
+                ax1=plt.subplot(2, 1, 1)
+                plt.plot(obs_i)
+                for gs in groundtruth_syllable:
+                    plt.axvline(int(gs * fs / hopsize), color='k')
+
+                ax1.set_ylabel('ground truth')
+                plt.title(name_figure)
+
+                ax2 = plt.subplot(2,1,2)
+                # plt.plot(path)
+                for ib in i_boundary:
+                    plt.axvline(ib)
+                ax2.set_ylabel('detected onset')
+                plt.savefig(filename_fig)
+                plt.show()
+                """
+
+                """
+                # save results for plot
+                # np.save('./plotData/obs_jordi_fusion_32.npy', obs_i)
+                # np.save('./plotData/boundary_jordi_fusion_32.npy', i_boundary)
+                # np.save('./plotData/ground_truth.npy', groundtruth_syllable)
+                # np.save('./plotData/mel_spec.npy', np.transpose(mfcc_line[:, 80 * 11:80 * 12]))
+                """
+
+
+                """
+                # plot Error analysis figures
+                plt.figure(figsize=(16, 6))
+                # plt.figure(figsize=(8, 4))
+                # class weight
+                ax1 = plt.subplot(4,1,1)
+                y = np.arange(0, 80)
+                x = np.arange(0, mfcc_line.shape[0])*(hopsize/float(fs))
+                cax = plt.pcolormesh(x, y, np.transpose(mfcc_line[:, 80 * 11:80 * 12]))
+                # cbar = fig.colorbar(cax)
+                ax1.set_ylabel('Mel bands', fontsize=12)
+                ax1.get_xaxis().set_visible(False)
+                ax1.axis('tight')
+
+                ax2 = plt.subplot(412, sharex=ax1)
+                plt.plot(np.arange(0,len(obs_i))*(hopsize/float(fs)), obs_i)
+                for ib in i_boundary:
+                    plt.axvline(ib * (hopsize / float(fs)), color='r')
+                # for gs in groundtruth_syllable:
+                #     plt.axvline(gs, color='r', linewidth=2)
+
+                ax2.set_ylabel('ODF', fontsize=12)
+                ax1.axis('tight')
+
+                plt.subplot(413, sharex=ax1)
+                for gs in groundtruth_syllable:
+                    plt.axvline(gs, color='r', linewidth=2)
+
+                plt.xlabel('Time (s)', fontsize=12)
+
+                plt.axis('tight')
+                ax2.set_ylim((0,1.2))
+                # ax2.set_xlim((-0.5,len(obs_i)*(hopsize/float(fs))+0.5))
+                plt.tight_layout()
+                plt.title(recording_name+' '+'phrase num: '+str(i_obs))
+
+                ax4 = plt.subplot(414, sharex=ax1)
+                print(duration_score)
+                time_start = 0
+                for ii_ds, ds in enumerate(duration_score):
+                    ax4.add_patch(
+                        patches.Rectangle(
+                            (time_start, ii_ds),  # (x,y)
+                            ds,  # width
+                            1,  # height
+                        ))
+                    time_start += ds
+                ax4.set_ylim((0,len(duration_score)))
+                # plt.xlabel('Time (s)')
+                # plt.tight_layout()
+
+                plt.show()
+                """
+
+if __name__ == '__main__':
+
+    # testing arias
+    recordings_qm_male  = ['male_01/neg_1', 'male_01/neg_2', 'male_01/pos_4', 'male_01/pos_5']
+    recordings_qm_fem   = ['fem_01/pos_3', 'fem_10/pos_3']
+    recordings_lon_fem  = ['Dan-03']
+    recordings_bcn_male  = ['005', '008']
+
+    # Queen Mary female
+    onsetFunctionAllRecordings(recordings=recordings_qm_fem,
+                               textgrid_path=textgrid_path_dan,
+                               dict_recording_name_mapping=dict_name_mapping_dan_qm,
+                               dataset_path=queenMarydataset_path,
+                               feature_type='mfccBands2D',
+                               dmfcc=False,
+                               nbf=True,
+                               mth=mth_ODF,
+                               late_fusion=fusion)
+
+    # London Female
+    onsetFunctionAllRecordings(recordings=recordings_lon_fem,
+                               textgrid_path=textgrid_path_dan,
+                               dict_recording_name_mapping=dict_name_mapping_dan_london,
+                               dataset_path=londonRecording_path,
+                               feature_type='mfccBands2D',
+                               dmfcc=False,
+                               nbf=True,
+                               mth=mth_ODF,
+                               late_fusion=fusion)
+
+    # Queen Mary Male
+    onsetFunctionAllRecordings(recordings=recordings_qm_male,
+                               textgrid_path=textgrid_path_laosheng,
+                               dict_recording_name_mapping=dict_name_mapping_laosheng_qm,
+                               dataset_path=queenMarydataset_path,
+                               feature_type='mfccBands2D',
+                               dmfcc=False,
+                               nbf=True,
+                               mth=mth_ODF,
+                               late_fusion=fusion)
+
+    # BCN Male
+    onsetFunctionAllRecordings(recordings=recordings_bcn_male,
+                               textgrid_path=textgrid_path_laosheng,
+                               dict_recording_name_mapping=dict_name_mapping_laosheng_bcn,
+                               dataset_path=bcnRecording_path,
+                               feature_type='mfccBands2D',
+                               dmfcc=False,
+                               nbf=True,
+                               mth=mth_ODF,
+                               late_fusion=fusion)

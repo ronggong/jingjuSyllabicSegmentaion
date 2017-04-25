@@ -67,14 +67,15 @@ def boundaryEval(groundtruthBoundaries, detectedBoundaries, tolerance):
 
     for gtb in groundtruthBoundaries:
         for idx, db in enumerate(detectedBoundaries):
-            onsetTh     = tolerance                                          # onset threshold
-            offsetTh    = max(tolerance,(gtb[1]-gtb[0])*0.2)                 # offset threshold
-            if abs(db[0]-gtb[0])<onsetTh and abs(db[1]-gtb[1])<offsetTh:
-                correctlist[idx] = 1                                    # found landmark for boundary idx
-            if abs(db[0]-gtb[0])<onsetTh:
-                onsetCorrectlist[idx] = 1
-            if abs(db[1]-gtb[1])<offsetTh:
-                offsetCorrectlist[idx] = 1
+            if db[2] == gtb[2]:
+                onsetTh     = tolerance                                          # onset threshold
+                offsetTh    = max(tolerance,(gtb[1]-gtb[0])*0.2)                 # offset threshold
+                if abs(db[0]-gtb[0])<onsetTh and abs(db[1]-gtb[1])<offsetTh:
+                    correctlist[idx] = 1                                    # found landmark for boundary idx
+                if abs(db[0]-gtb[0])<onsetTh:
+                    onsetCorrectlist[idx] = 1
+                if abs(db[1]-gtb[1])<offsetTh:
+                    offsetCorrectlist[idx] = 1
 
     numCorrect          = sum(correctlist)
     numOnsetCorrect     = sum(onsetCorrectlist)
