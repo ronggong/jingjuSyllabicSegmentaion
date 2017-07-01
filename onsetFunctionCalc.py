@@ -11,16 +11,12 @@ import pyximport
 pyximport.install(reload_support=True,
                   setup_args={'include_dirs': np.get_include()})
 
-# from HSMM.LRHMM import _LRHMM
-# from HSMM.makeHSMMNet import singleTransMatBuild
-# from HSMM.ParallelLRHSMM import ParallelLRHSMM
 from src.filePath import *
 from src.labWriter import boundaryLabWriter
 from src.parameters import *
 from src.scoreManip import phonemeDurationForLine
 from src.scoreParser import generatePinyin
 from src.textgridParser import textGrid2WordList, wordListsParseByLines
-# from targetAudioProcessing import processFeature
 from trainingSampleCollection import featureReshape
 from trainingSampleCollection import getMFCCBands2D
 
@@ -248,20 +244,10 @@ def onsetFunctionAllRecordings(recordings,
                     obs_2_i = np.convolve(hann, obs_2_i, mode='same')
                     obs_i = late_fusion_calc(obs_i, obs_2_i, mth=2)
 
-                # save ODF to files for fast evaluation
-                # if not exists("testFiles/"+dirname(recording_name)):
-                #     makedirs("testFiles/"+dirname(recording_name))
-                #
-                # np.save("testFiles/"+recording_name+'_'+str(i_obs+1)+'_temporal_model1.npy', obs_i)
-                # np.save("testFiles/"+recording_name+'_'+str(i_obs+1)+'_timbral_model1.npy', obs_2_i)
-
-                # load ODF
-                # obs_i = np.load("testFiles/"+recording_name+'_'+str(i_obs+1)+'_timbral_model0.npy')
-                # obs_2_i = np.load("testFiles/"+recording_name+'_'+str(i_obs+1)+'_timbral_model1.npy')
-                # obs_i = late_fusion_calc(obs_i, obs_2_i, mth=2, coef=0.5)
 
                 # organize score
                 print('Calculating: '+recording_name+' phrase '+str(i_obs))
+                print('ODF Methods: '+mth_ODF+' Late fusion: '+str(fusion))
 
                 time_line      = lineList[0][1] - lineList[0][0]
 
@@ -280,56 +266,7 @@ def onsetFunctionAllRecordings(recordings,
                 duration_score = np.array([float(ds) for ds in duration_score if len(ds)])
                 duration_score = duration_score * (time_line/np.sum(duration_score))
 
-                """
-                # HSMM decoding
-                mfcc_reshaped_index_keep, dict_index_keep\
-                    = processFeature(audio = audio_eqloudloder_line,
-                                  onset_function  = obs_i,
-                                  feature=mfcc_line,
-                                  feature_type='mfccBands2D')
-
-                # print(mfcc_reshaped_index_keep.shape, len(dict_index_keep), len(obs_i))
-
-                obs_i_index_keep = [obs_i[dict_index_keep[ii]] for ii in dict_index_keep]
-
-                # print(obs_i_index_keep)
-                phoneme_line, dur_line, idx_syllable_start_state\
-                    = phonemeDurationForLine(pinyin_score, duration_score)
-                trans_mat              = singleTransMatBuild(phoneme_line)
-
-                hsmm = ParallelLRHSMM(lyrics=lyrics_line,
-                               mat_trans_comb=trans_mat,
-                               state_pho_comb=phoneme_line,
-                               mean_dur_state=dur_line,
-                               proportionality_std=0.1)
-                path,_ = hsmm._viterbiHSMM(observations=mfcc_reshaped_index_keep,
-                                           onset=obs_i_index_keep,
-                                            am='cnn',
-                                            kerasModel=kerasModel)
-
-                frame_onset = trackOnsetPosByPath(path, idx_syllable_start_state)
-                i_boundary = [0] + frame_onset + [len(obs_i)-1]
-
-                """
-
-                """
-                # plot ODF and ground truth onset positions
-                # plt.figure()
-                # plt.subplot(2,1,1)
-                # plt.plot(obs_i)
-                # for gs in groundtruth_syllable:
-                #     plt.axvline(int(gs*fs/hopsize), color='k')
-                # plt.subplot(2,1,2)
-                # plt.plot(path)
-                # for fo in frame_onset:
-                #     plt.axvline(dict_index_keep[fo])
-                # plt.axvline(len(obs_i)-1)
-                # plt.show()
-                """
-
                 # segmental decoding
-                # print(phoneme_line)
-                # print(dur_line)
                 obs_i[0] = 1.0
                 obs_i[-1] = 1.0
                 # print(duration_score)
@@ -338,121 +275,67 @@ def onsetFunctionAllRecordings(recordings,
 
                 time_boundray_start = np.array(i_boundary[:-1])*hopsize_t
                 time_boundray_end   = np.array(i_boundary[1:])*hopsize_t
-
-                # write boundaries
-                filename_syll_lab = join(eval_results_path, dataset_path, recording_name+'_'+str(i_obs+1)+'.syll.lab')
-
-                eval_results_data_path = dirname(filename_syll_lab)
-
-                if not exists(eval_results_data_path):
-                    makedirs(eval_results_data_path)
-
-                # write boundary lab file
-                boundaryLabWriter(boundaryList=zip(time_boundray_start.tolist(),time_boundray_end.tolist(),lyrics_line),
-                                  outputFilename=filename_syll_lab,
-                                    label=True)
+                #
+                # # uncomment this section if we want to write boundaries to .syll.lab file
+                # filename_syll_lab = join(eval_results_path, dataset_path, recording_name+'_'+str(i_obs+1)+'.syll.lab')
+                #
+                # eval_results_data_path = dirname(filename_syll_lab)
+                #
+                # if not exists(eval_results_data_path):
+                #     makedirs(eval_results_data_path)
+                #
+                # # write boundary lab file
+                # boundaryLabWriter(boundaryList=zip(time_boundray_start.tolist(),time_boundray_end.tolist(),lyrics_line),
+                #                   outputFilename=filename_syll_lab,
+                #                     label=True)
 
                 # print(i_boundary)
                 # print(len(obs_i))
                 # print(np.array(groundtruth_syllable)*fs/hopsize)
 
-                """
-                # plot onset context spectrogram window
-                plt.figure()
-                plt.pcolormesh(mfcc_reshaped_line[int(groundtruth_syllable[1]*fs/hopsize),:,:])
-                plt.axvline(11,color='r',linewidth=4)
-                plt.ylabel('Mel bands')
-                plt.xlabel('frames')
-                plt.axis('tight')
-                plt.show()
 
-                # plot detected and ground truth
-                name_figure     = recording_name+'_'+str(i_obs+1)
-                filename_fig    = join(eval_fig_path, dataset_path, name_figure+'.png')
-                dirname_fig     = dirname(filename_fig)
-                if not exists(dirname_fig):
-                    makedirs(dirname_fig)
-
-                plt.figure()
-                ax1=plt.subplot(2, 1, 1)
-                plt.plot(obs_i)
-                for gs in groundtruth_syllable:
-                    plt.axvline(int(gs * fs / hopsize), color='k')
-
-                ax1.set_ylabel('ground truth')
-                plt.title(name_figure)
-
-                ax2 = plt.subplot(2,1,2)
-                # plt.plot(path)
-                for ib in i_boundary:
-                    plt.axvline(ib)
-                ax2.set_ylabel('detected onset')
-                plt.savefig(filename_fig)
-                plt.show()
-                """
-
-                """
-                # save results for plot
-                # np.save('./plotData/obs_jordi_fusion_32.npy', obs_i)
-                # np.save('./plotData/boundary_jordi_fusion_32.npy', i_boundary)
-                # np.save('./plotData/ground_truth.npy', groundtruth_syllable)
-                # np.save('./plotData/mel_spec.npy', np.transpose(mfcc_line[:, 80 * 11:80 * 12]))
-                """
-
-
-                """
                 # plot Error analysis figures
                 plt.figure(figsize=(16, 6))
                 # plt.figure(figsize=(8, 4))
                 # class weight
-                ax1 = plt.subplot(4,1,1)
+                ax1 = plt.subplot(3,1,1)
                 y = np.arange(0, 80)
                 x = np.arange(0, mfcc_line.shape[0])*(hopsize/float(fs))
                 cax = plt.pcolormesh(x, y, np.transpose(mfcc_line[:, 80 * 11:80 * 12]))
+                for gs in groundtruth_syllable:
+                    plt.axvline(gs, color='r', linewidth=2)
                 # cbar = fig.colorbar(cax)
                 ax1.set_ylabel('Mel bands', fontsize=12)
                 ax1.get_xaxis().set_visible(False)
                 ax1.axis('tight')
+                plt.title('Calculating: '+recording_name+' phrase '+str(i_obs))
 
-                ax2 = plt.subplot(412, sharex=ax1)
+                ax2 = plt.subplot(312, sharex=ax1)
                 plt.plot(np.arange(0,len(obs_i))*(hopsize/float(fs)), obs_i)
                 for ib in i_boundary:
-                    plt.axvline(ib * (hopsize / float(fs)), color='r')
-                # for gs in groundtruth_syllable:
-                #     plt.axvline(gs, color='r', linewidth=2)
+                    plt.axvline(ib * (hopsize / float(fs)), color='r', linewidth=2)
 
                 ax2.set_ylabel('ODF', fontsize=12)
-                ax1.axis('tight')
+                ax2.axis('tight')
 
-                plt.subplot(413, sharex=ax1)
-                for gs in groundtruth_syllable:
-                    plt.axvline(gs, color='r', linewidth=2)
 
-                plt.xlabel('Time (s)', fontsize=12)
-
-                plt.axis('tight')
-                ax2.set_ylim((0,1.2))
-                # ax2.set_xlim((-0.5,len(obs_i)*(hopsize/float(fs))+0.5))
-                plt.tight_layout()
-                plt.title(recording_name+' '+'phrase num: '+str(i_obs))
-
-                ax4 = plt.subplot(414, sharex=ax1)
+                ax3 = plt.subplot(313, sharex=ax1)
                 print(duration_score)
                 time_start = 0
                 for ii_ds, ds in enumerate(duration_score):
-                    ax4.add_patch(
+                    ax3.add_patch(
                         patches.Rectangle(
                             (time_start, ii_ds),  # (x,y)
                             ds,  # width
                             1,  # height
                         ))
                     time_start += ds
-                ax4.set_ylim((0,len(duration_score)))
+                ax3.set_ylim((0,len(duration_score)))
                 # plt.xlabel('Time (s)')
                 # plt.tight_layout()
 
                 plt.show()
-                """
+
 
 if __name__ == '__main__':
 
