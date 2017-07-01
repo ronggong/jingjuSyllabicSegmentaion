@@ -8,7 +8,7 @@ This paper introduces a new score-informed method for the segmentation of jingju
 1. Clone this repository
 2. Download Jingju a capella singing dataset, scores and syllable boundary annotations from https://goo.gl/y0P7BL
 3. Change `dataset_root_path` variable in `src/filePath.py` to locate the above dataset
-4. Install dependencies (see below)
+4. Python 2.7.9 and Essentia 2.1-beta3 was used in the paper; Install python dependencies from `requirements.txt`.
 5. Set `mth_ODF`, `layer2`, `fusion` and `filter_shape` variables in `src/parameters.py`
 8. Run `python onsetFunctionCalc.py` to produce the experiment results for above parameter setting
 9. Run `python eval_demo.py` to produce the evaluation result
