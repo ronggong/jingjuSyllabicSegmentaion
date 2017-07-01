@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="85def93d-57e9-4389-9aa9-839f8fe3787a" name="Default" comment="dataset_root_path changed">
+    <list default="true" id="85def93d-57e9-4389-9aa9-839f8fe3787a" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/requirements.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/onsetFunctionCalc.py" afterPath="$PROJECT_DIR$/onsetFunctionCalc.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/filePath.py" afterPath="$PROJECT_DIR$/src/filePath.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/parameters.py" afterPath="$PROJECT_DIR$/src/parameters.py" />
     </list>
     <list id="0dbee7ea-859a-4010-b1e7-6136cbafaad1" name="dataset_root_path changed" comment="" />
     <ignored path="jingjuSyllabicSegmentaion.iws" />
@@ -69,11 +67,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="filePath.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="filePath.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/filePath.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="255">
               <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="requirements.txt" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/requirements.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="75">
+              <caret line="5" column="12" lean-forward="true" selection-start-line="5" selection-start-column="12" selection-end-line="5" selection-end-column="12" />
               <folding />
             </state>
           </provider>
@@ -207,7 +215,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/demo.py" />
         <option value="$PROJECT_DIR$/src/utils/textgrid.py" />
         <option value="$PROJECT_DIR$/src/georgiParser.py" />
         <option value="$PROJECT_DIR$/src/labParser.py" />
@@ -258,6 +265,7 @@
         <option value="$PROJECT_DIR$/src/parameters.py" />
         <option value="$PROJECT_DIR$/onsetFunctionCalc.py" />
         <option value="$PROJECT_DIR$/src/filePath.py" />
+        <option value="$PROJECT_DIR$/requirements.txt" />
       </list>
     </option>
   </component>
@@ -705,7 +713,14 @@
       <option name="project" value="LOCAL" />
       <updated>1498907597411</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="clear onsetFunctionCalc.py">
+      <created>1498909503276</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1498909503276</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TodoView">
@@ -779,7 +794,8 @@
     <MESSAGE value="eusipco 2016 paper evaluation code" />
     <MESSAGE value="ismir review code commit" />
     <MESSAGE value="dataset_root_path changed" />
-    <option name="LAST_COMMIT_MESSAGE" value="dataset_root_path changed" />
+    <MESSAGE value="clear onsetFunctionCalc.py" />
+    <option name="LAST_COMMIT_MESSAGE" value="clear onsetFunctionCalc.py" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -795,13 +811,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply_coef_0.7_win/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="69" lean-forward="true" selection-start-line="1" selection-start-column="52" selection-end-line="1" selection-end-column="69" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply_coef_0.8_win/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="15">
@@ -1159,6 +1168,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
           <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirements.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="12" lean-forward="true" selection-start-line="5" selection-start-column="12" selection-end-line="5" selection-end-column="12" />
           <folding />
         </state>
       </provider>
