@@ -2,7 +2,7 @@ import numpy as np
 from scipy.stats import norm
 from src.parameters import hopsize_t
 cimport cython
-from numpy.math cimport INFINITY
+# from numpy.math cimport INFINITY
 
 value_eps = np.finfo(float).eps
 
@@ -70,13 +70,13 @@ def viterbiSegmental2(P, sd, param_s):
     # % % % % % % % % % % % % % % % % % %
     
     # % not a possible transition from > 0 time to 1
-    cdelta[0, 0]     = -INFINITY
+    cdelta[0, 0]     = -np.inf
     cpsi[:,0]        = 0
     for jj in range(1,N):
         d = ci_bound[jj] - ci_bound[0]
         # print(jj, i_bound[jj], d, C)
         if d >= C:
-            cdelta[jj, 0] = -INFINITY
+            cdelta[jj, 0] = -np.inf
         else:
             cdelta[jj, 0] = clogPs[d] + clogP[i_bound[jj]]
 
@@ -102,7 +102,7 @@ def viterbiSegmental2(P, sd, param_s):
                 d = ci_bound[jj] - ci_bound[ii]
                 # print(d, C)
                 if d >= C or d <= 0:
-                    cdelta_current[ii] = -INFINITY
+                    cdelta_current[ii] = -np.inf
                 else:
                     cdelta_current[ii] = cdelta[ii, t - 1] + logPs[d]
 
@@ -122,7 +122,7 @@ def viterbiSegmental2(P, sd, param_s):
     for ii in range(N):
         d = ci_bound[N-1] - ci_bound[ii]
         if d >= C or d <= 0:
-            cdelta_current[ii] = -INFINITY
+            cdelta_current[ii] = -np.inf
         else:
             cdelta_current[ii] = cdelta[ii, T-2] + clogPs[d]
     I_delta             = np.argmax(delta_current)

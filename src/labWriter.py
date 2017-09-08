@@ -1,4 +1,9 @@
+# -*- coding: utf-8 -*-
+
 import textgridParser
+import re
+from zhon.hanzi import punctuation as puncChinese
+from string import punctuation as puncWestern
 
 def boundaryLabWriter(boundaryList, outputFilename, label=False):
     '''
@@ -8,10 +13,15 @@ def boundaryLabWriter(boundaryList, outputFilename, label=False):
     :return:
     '''
 
-    with open(outputFilename, "wb") as lab_file:
+    with open(outputFilename, "w") as lab_file:
         for list in boundaryList:
             if label:
-                lab_file.write("{0:.4f} {1:.4f} {2}\n".format(list[0],list[1],list[2]))
+                # delete Chinese punctuation
+                syllable = re.sub(ur"[%s]+" %puncChinese, "", list[2])
+                syllable = re.sub(ur"[%s]+" %puncChinese, "", syllable)
+                syllable = syllable.replace(" ", "")
+
+                lab_file.write("{0:.4f} {1:.4f} {2}\n".format(list[0],list[1],syllable))
             else:
                 lab_file.write("{0:.4f} {1:.4f}\n".format(list[0],list[1]))
 

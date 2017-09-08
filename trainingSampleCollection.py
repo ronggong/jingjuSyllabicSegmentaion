@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 import essentia.standard as ess
 
 from src.parameters import *
-from phonemeMap import *
+from src.phonemeMap import *
 from src.textgridParser import textGrid2WordList, wordListsParseByLines, syllableTextgridExtraction
 from src.scoreParser import csvDurationScoreParser
 from src.trainTestSeparation import getRecordingNames
