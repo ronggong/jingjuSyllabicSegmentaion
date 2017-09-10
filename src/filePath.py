@@ -3,11 +3,20 @@ from os.path import join, dirname
 # audio and annotation root path
 root_path       = join(dirname(__file__),'..')
 
-dataset_root_path     = '/Users/gong/Documents/MTG document/Jingju arias/jingju_a_cappella_singing_dataset_extended_nacta2017'
+# nacta 2017 dataset part 2
+nacta2017_dataset_root_path     = '/Users/gong/Documents/MTG document/Jingju arias/jingju_a_cappella_singing_dataset_extended_nacta2017'
 
-wav_path = join(dataset_root_path, 'wav')
-textgrid_path = join(dataset_root_path, 'textgridDianSilence')
-score_path = join(dataset_root_path, 'scoreDianSilence')
+# nacta dataset part 1
+nacta_dataset_root_path     = '/Users/gong/Documents/MTG document/Jingju arias/jingju_a_cappella_singing_dataset'
+
+nacta2017_wav_path = join(nacta2017_dataset_root_path, 'wav')
+nacta2017_textgrid_path = join(nacta2017_dataset_root_path, 'textgridDianSilence')
+nacta2017_score_path = join(nacta2017_dataset_root_path, 'scoreDianSilence')
+
+nacta_wav_path = join(nacta_dataset_root_path, 'wav')
+nacta_textgrid_path = join(nacta_dataset_root_path, 'textgrid')
+nacta_score_path = '/Users/gong/Documents/github/MTG/JingjuSingingAnnotation/aCapella/Syllable duration annotation'
+
 eval_results_path = join(root_path, 'output')
 
 from parameters import mth_ODF, fusion, layer2, filter_shape

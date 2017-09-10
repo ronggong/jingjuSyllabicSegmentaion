@@ -26,6 +26,7 @@
 
 import os
 from itertools import combinations
+from operator import itemgetter
 from filePath import *
 import numpy as np
 import textgridParser
@@ -44,6 +45,7 @@ def getRecordings(wav_path):
 
 def testRecordings(boundaries,proportion_testset):
     '''
+    find the test recording numbers which meets the proportion
     :param boundaries: a list of boundary number of each recording
     :param proportion_testset:
     :return: a list of test recordings
@@ -64,109 +66,150 @@ def testRecordings(boundaries,proportion_testset):
     return subsets_sorted[0]
 
 
-def getBoundaryNumber(recordings, dataset_path):
-
+def getBoundaryNumber(textgrid_path, score_path):
+    """
+    output a list to show the syllable number for each aria,
+    the syllable number is extracted from the textgrid
+    the textgrid needs to have a score
+    :param textgrid_path:
+    :param score_path:
+    :return:
+    """
     listOnset = []
-    for i_recording, recording_name in enumerate(recordings):
-        groundtruth_textgrid_file   = os.path.join(aCapella_root, dataset_path, annotation_path, recording_name+'.TextGrid')
-        score_file                  = os.path.join(aCapella_root, dataset_path, score_path,      recording_name+'.csv')
+    list_file_path_name = []
+    for file_path_name in os.walk(textgrid_path):
+        list_file_path_name.append(file_path_name)
 
-        if not os.path.isfile(score_file):
-            print 'Score not found: ' + score_file
-            continue
+    list_artist_level_path = list_file_path_name[0][1]
 
-        lineList = textgridParser.textGrid2WordList(groundtruth_textgrid_file, whichTier='line')
-        utteranceList = textgridParser.textGrid2WordList(groundtruth_textgrid_file, whichTier='dianSilence')
+    for artist_path in list_artist_level_path:
 
-        # parse lines of groundtruth
-        nestedUtteranceLists, numLines, numUtterances = textgridParser.wordListsParseByLines(lineList, utteranceList)
+        textgrid_artist_path = join(textgrid_path, artist_path)
+        recording_names = [f for f in os.listdir(textgrid_artist_path) if os.path.isfile(join(textgrid_artist_path, f))]
 
-        # parse score
-        utterance_durations, bpm = scoreParser.csvDurationScoreParser(score_file)
+        for rn in recording_names:
+            rn = rn.split('.')[0]
+            groundtruth_textgrid_file = join(textgrid_path, artist_path, rn+'.TextGrid')
+            if artist_path=='danAll' or artist_path=='laosheng':
+                score_file = join(score_path, rn+'.csv')
+            else:
+                score_file = join(score_path, artist_path, rn + '.csv')
 
-        # create the ground truth lab files
-        numOnset = 0
-        for idx, list in enumerate(nestedUtteranceLists):
-            if int(bpm[idx]):
-                print 'Counting onset number ... ' + recording_name + ' phrase ' + str(idx + 1)
+            if not os.path.isfile(score_file):
+                continue
+            # print(groundtruth_textgrid_file)
 
-                ul = list[1]
-                numOnsetLine = len(ul)-1 # we don't count the first onset
-                numOnset += numOnsetLine
+            lineList = textgridParser.textGrid2WordList(groundtruth_textgrid_file, whichTier='line')
+            utteranceList = textgridParser.textGrid2WordList(groundtruth_textgrid_file, whichTier='dianSilence')
 
-        listOnset += [[recording_name, numOnset]]
+            # parse lines of groundtruth
+            nestedUtteranceLists, numLines, numUtterances = textgridParser.wordListsParseByLines(lineList,
+                                                                                                 utteranceList)
+
+            # parse score
+            utterance_durations, bpm = scoreParser.csvDurationScoreParser(score_file)
+
+            # create the ground truth lab files
+            numOnset = 0
+            for idx, list in enumerate(nestedUtteranceLists):
+                try:
+                    if float(bpm[idx]):
+                        print('Counting onset number ... ' + rn + ' phrase ' + str(idx + 1))
+
+                        ul = list[1]
+                        numOnsetLine = len(ul) - 1  # we don't count the first onset
+                        numOnset += numOnsetLine
+                except IndexError:
+                    print(idx, 'not exist for recording', rn)
+
+            listOnset += [[artist_path, rn, numOnset]]
+
     return listOnset
 
+
 def getTestTrainRecordings():
-    lineOnsetQmMale = getBoundaryNumber(queenMaryMale_Recordings, queenMarydataset_path)
-    lineOnsetQmFem = getBoundaryNumber(queenMaryFem_Recordings, queenMarydataset_path)
-    lineOnsetLon = getBoundaryNumber(london_Recordings, londonRecording_path)
-    lineOnsetBcn = getBoundaryNumber(bcn_Recordings, bcnRecording_path)
+    list_onset_nacta2017 = getBoundaryNumber(textgrid_path=nacta2017_textgrid_path, score_path=nacta2017_score_path)
+    list_onset_nacta = getBoundaryNumber(textgrid_path=nacta_textgrid_path, score_path=nacta_score_path)
 
-    numOnsetQmMale = [n[1] for n in lineOnsetQmMale]
-    numOnsetQmFem = [n[1] for n in lineOnsetQmFem]
-    numOnsetLon = [n[1] for n in lineOnsetLon]
-    numOnsetBcn = [n[1] for n in lineOnsetBcn]
+    listOnsetNacta2017Male = [n for n in list_onset_nacta2017 if '2017' in n[0] and 'ls' == n[1][:2]]
+    listOnsetNacta2017Fem = [n for n in list_onset_nacta2017 if '2017' in n[0] and 'da' == n[1][:2]]
+    numOnsetNacta2017Male = [n[2] for n in list_onset_nacta2017 if '2017' in n[0] and 'ls'==n[1][:2]]
+    numOnsetNacta2017Fem = [n[2] for n in list_onset_nacta2017 if '2017' in n[0] and 'da'==n[1][:2]]
 
-    # print testRecordings(numOnsetQmMale, 0.2) # (0,1,7,8)
-    # print testRecordings(numOnsetQmFem, 0.2) # (4,8)
-    # print testRecordings(numOnsetLon, 0.2) # (2)
-    # print testRecordings(numOnsetBcn, 0.2) # (4,5)
+    listOnsetNactaMale = [n for n in list_onset_nacta if '2017' not in n[0] and 'ls' == n[1][:2]]
+    listOnsetNactaFem = [n for n in list_onset_nacta if '2017' not in n[0] and 'da' == n[1][:2]]
+    numOnsetNactaMale = [n[2] for n in list_onset_nacta if '2017' not in n[0] and 'ls'==n[1][:2]]
+    numOnsetNactaFem = [n[2] for n in list_onset_nacta if '2017' not in n[0] and 'da'==n[1][:2]]
 
-    recordingsTestQmMale = [lineOnsetQmMale[ii][0] for ii in (0, 1, 7, 8)]
-    recordingsTrainQmMale = [lineOnsetQmMale[ii][0] for ii in range(len(lineOnsetQmMale)) if ii not in (0, 1, 7, 8)]
-    numTestQmMale = [lineOnsetQmMale[ii][1] for ii in (0, 1, 7, 8)]
+    print(len(numOnsetNacta2017Male), len(numOnsetNacta2017Fem), len(numOnsetNactaMale), len(numOnsetNactaFem))
 
-    recordingsTestQmFem = [lineOnsetQmFem[ii][0] for ii in (4, 8)]
-    recordingsTrainQmFem = [lineOnsetQmFem[ii][0] for ii in range(len(lineOnsetQmFem)) if ii not in (4, 8)]
-    numTestQmFem = [lineOnsetQmFem[ii][1] for ii in (4, 8)]
+    # segment the onset number list to accelerate the combination calculation
+    numOnsetNacta2017Male0 = numOnsetNacta2017Male[:10]
+    numOnsetNacta2017Male1 = numOnsetNacta2017Male[10:20]
+    numOnsetNacta2017Male2 = numOnsetNacta2017Male[20:30]
+    numOnsetNacta2017Male3 = numOnsetNacta2017Male[30:]
 
-    recordingsTestLon = [lineOnsetLon[ii][0] for ii in (2,)]
-    recordingsTrainLon = [lineOnsetLon[ii][0] for ii in range(len(lineOnsetLon)) if ii not in (2,)]
-    numTestLon = [lineOnsetLon[ii][1] for ii in (2,)]
+    numOnsetNacta2017Fem0 = numOnsetNacta2017Fem[:10]
+    numOnsetNacta2017Fem1 = numOnsetNacta2017Fem[10:]
 
-    recordingsTestBcn = [lineOnsetBcn[ii][0] for ii in (4,5)]
-    recordingsTrainBcn = [lineOnsetBcn[ii][0] for ii in range(len(lineOnsetBcn)) if ii not in (4, 5)]
-    numTestBcn = [lineOnsetBcn[ii][1] for ii in (4, 5)]
+    numOnsetNactaMale0 = numOnsetNactaMale[:10]
+    numOnsetNactaMale1 = numOnsetNactaMale[10:]
 
-    print(recordingsTestQmMale)
-    print(recordingsTrainQmMale)
+    numOnsetNactaFem0 = numOnsetNactaFem[:10]
+    numOnsetNactaFem1 = numOnsetNactaFem[10:]
 
-    print(recordingsTestQmFem)
-    print(recordingsTrainQmFem)
+    # obtain the indices of test recordings
+    print('test 0 nacta 2017 male number', testRecordings(numOnsetNacta2017Male0, 0.2)) # (1,7)
+    print('test 1 nacta 2017 male number', testRecordings(numOnsetNacta2017Male1, 0.2)) # (11,16)
+    print('test 2 nacta 2017 male number', testRecordings(numOnsetNacta2017Male2, 0.2)) # (23,28)
+    print('test 3 nacta 2017 male number', testRecordings(numOnsetNacta2017Male3, 0.2)) # (31,34,35,39)
+    print(sum(itemgetter(*[1,7,11,16,23,28,31,34,35,39])(numOnsetNacta2017Male))/float(sum(numOnsetNacta2017Male)))
 
-    print(recordingsTestBcn)
-    print(recordingsTrainBcn)
+    print('test 0 nacta 2017 female number', testRecordings(numOnsetNacta2017Fem0, 0.2)) # (0,1,2,7)
+    print('test 1 nacta 2017 female number', testRecordings(numOnsetNacta2017Fem1, 0.2)) # (13,14)
+    print(sum(itemgetter(*[0,1,2,7,13,14])(numOnsetNacta2017Fem))/float(sum(numOnsetNacta2017Fem)))
 
-    print(recordingsTestLon)
-    print(recordingsTrainLon)
+    print('test 0 nacta male number', testRecordings(numOnsetNactaMale0, 0.2)) # (0,8)
+    print('test 1 nacta male number', testRecordings(numOnsetNactaMale1, 0.2)) # (16)
+    print(sum(itemgetter(*[0,8,16])(numOnsetNactaMale))/float(sum(numOnsetNactaMale)))
 
-    numOnsetSum = sum(numOnsetQmMale) + sum(numOnsetQmFem) + sum(numOnsetLon) + sum(numOnsetBcn)
-    numOnsetSumTest = sum(numTestQmMale) + sum(numTestQmFem) + sum(numTestLon) + sum(numTestBcn)
+    print('test 0 nacta female number', testRecordings(numOnsetNactaFem0, 0.2)) # (1,9)
+    print('test 1 nacta female number', testRecordings(numOnsetNactaFem1, 0.2)) # (10)
+    print(sum(itemgetter(*[1,9,10])(numOnsetNactaFem))/float(sum(numOnsetNactaFem)))
 
-    print numOnsetSum
-    print numOnsetSumTest
+    recordingsTestNacta2017Male = [[listOnsetNacta2017Male[ii][0], listOnsetNacta2017Male[ii][1]] for ii in (1,7,11,16,23,28,31,34,35,39)]
+    recordingsTrainNacta2017Male = [[listOnsetNacta2017Male[ii][0], listOnsetNacta2017Male[ii][1]] for ii in range(len(listOnsetNacta2017Male)) if ii not in (1,7,11,16,23,28,31,34,35,39)]
+    # numTestQmMale = [lineOnsetQmMale[ii][1] for ii in (0, 1, 7, 8)]
 
-def getRecordingNames(stringTrainTest='TRAIN'):
-    if stringTrainTest == 'TRAIN':
-        return [['male_01/neg_3', 'male_01/neg_4', 'male_01/neg_5', 'male_01/pos_1',
-                 'male_01/pos_3', 'male_01/pos_6', 'male_02/neg_1', 'male_12/neg_1',
-                 'male_13/pos_1', 'male_13/pos_3'] +
-                ['fem_01/neg_1', 'fem_01/neg_3', 'fem_01/neg_5', 'fem_01/pos_1', 'fem_01/pos_5', 'fem_01/pos_7',
-                 'fem_10/pos_1', 'fem_11/pos_1'],
+    recordingsTestNacta2017Fem = [[listOnsetNacta2017Fem[ii][0], listOnsetNacta2017Fem[ii][1]] for ii in
+                                   (0,1,2,7,13,14)]
+    recordingsTrainNacta2017Fem = [[listOnsetNacta2017Fem[ii][0], listOnsetNacta2017Fem[ii][1]] for ii in
+                                    range(len(listOnsetNacta2017Fem)) if ii not in (0,1,2,7,13,14)]
+    # numTestQmFem = [lineOnsetQmFem[ii][1] for ii in (4, 8)]
 
-                ['001', '007', '003', '004'],
+    recordingsTestNactaMale = [[listOnsetNactaMale[ii][0], listOnsetNactaMale[ii][1]] for ii in
+                                  (0,8,16)]
+    recordingsTrainNactaMale = [[listOnsetNactaMale[ii][0], listOnsetNactaMale[ii][1]] for ii in
+                                    range(len(listOnsetNactaMale)) if ii not in (0,8,16)]
+    # numTestLon = [lineOnsetLon[ii][1] for ii in (2,)]
 
-                ['Dan-01', 'Dan-02', 'Dan-04', 'Laosheng-01', 'Laosheng-02']]
+    recordingsTestNactaFem = [[listOnsetNactaFem[ii][0], listOnsetNactaFem[ii][1]] for ii in
+                               (1,9,10)]
+    recordingsTrainNactaFem = [[listOnsetNactaFem[ii][0], listOnsetNactaFem[ii][1]] for ii in
+                                range(len(listOnsetNactaFem)) if ii not in (1,9,10)]
+    # numTestBcn = [lineOnsetBcn[ii][1] for ii in (4, 5)]
 
-    if stringTrainTest == 'TEST':
-        return [['male_01/neg_1', 'male_01/neg_2', 'male_01/pos_4', 'male_01/pos_5']+
-                ['fem_01/pos_3', 'fem_10/pos_3'],
+    return recordingsTestNacta2017Male+recordingsTestNacta2017Fem, recordingsTestNactaMale+recordingsTestNactaFem, \
+           recordingsTrainNacta2017Male+recordingsTrainNacta2017Fem, recordingsTrainNactaMale+recordingsTrainNactaFem
 
-                ['005', '008'],
-
-                ['Dan-03']]
 
 if __name__ == '__main__':
     # getTestTrainRecordings()
-    print getRecordingNames('TRAIN')
+    # print getRecordingNames('TRAIN')
+
+    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordings()
+
+    print(testNacta2017)
+    print(testNacta)
+    print(trainNacta2017)
+    print(trainNacta)
