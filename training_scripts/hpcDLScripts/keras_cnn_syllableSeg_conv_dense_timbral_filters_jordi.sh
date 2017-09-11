@@ -20,12 +20,22 @@ source activate /homedtic/rgong/keras_env
 
 #$ -N sseg_tim
 #$ -q default.q
-#$ -l h=node05
+#$ -l h=node07
 
 # Output/Error Text
 # ----------------
 #$ -o /homedtic/rgong/cnnSyllableSeg/out/cnn_timbral.$JOB_ID.out
 #$ -e /homedtic/rgong/cnnSyllableSeg/error/cnn_timbral.$JOB_ID.err
+
+printf "Removing local scratch directories if exist...\n"
+if [ -d /scratch/rgongcnnSyllableSeg_timbral ]; then
+        rm -Rf /scratch/rgongcnnSyllableSeg_timbral
+fi
+
+# Second, replicate the structure of the experiment's folder:
+# -----------------------------------------------------------
+mkdir /scratch/rgongcnnSyllableSeg_timbral
+mkdir /scratch/rgongcnnSyllableSeg_timbral/syllableSeg
 
 
 printf "Copying feature files into scratch directory...\n"
