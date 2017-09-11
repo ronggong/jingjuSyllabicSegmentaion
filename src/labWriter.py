@@ -3,7 +3,8 @@
 import textgridParser
 import re
 from zhon.hanzi import punctuation as puncChinese
-from string import punctuation as puncWestern
+# from string import punctuation as puncWestern
+import os
 
 def boundaryLabWriter(boundaryList, outputFilename, label=False):
     '''
@@ -12,6 +13,10 @@ def boundaryLabWriter(boundaryList, outputFilename, label=False):
     :param outputFilename:
     :return:
     '''
+
+    directory,_ = os.path.split(outputFilename)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
 
     with open(outputFilename, "w") as lab_file:
         for list in boundaryList:
@@ -35,7 +40,7 @@ def phraseBoundaryWriter(textgrid_file, outputFilename):
 
     # read phrase list and utterance list
     lineList                    = textgridParser.textGrid2WordList(textgrid_file, whichTier='line')
-    utteranceList               = textgridParser.textGrid2WordList(textgrid_file, whichTier='utterance')
+    utteranceList               = textgridParser.textGrid2WordList(textgrid_file, whichTier='dianSilence')
 
     # parse lines of groundtruth
     nestedUtteranceLists, numLines, numUtterances = textgridParser.wordListsParseByLines(lineList, utteranceList)

@@ -1,24 +1,20 @@
 import labWriter
 import os
 from src.filePath import *
+from trainingSampleCollection import getTestTrainRecordings
 
-for idx, recording_name in enumerate(queenMary_Recordings):
+testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordings()
 
-    textgrid_file       = os.path.join(aCapella_root, queenMarydataset_path, annotation_path,   recording_name+'.TextGrid')
-    boundary_lab_file   = os.path.join(aCapella_root, queenMarydataset_path, segPhrase_path,    recording_name+'.lab')
+for artist_path, recording_name in testNacta2017:
 
-    labWriter.phraseBoundaryWriter(textgrid_file, boundary_lab_file)
-
-for idx, recording_name in enumerate(london_Recordings):
-
-    textgrid_file       = os.path.join(aCapella_root, londonRecording_path, annotation_path,   recording_name+'.TextGrid')
-    boundary_lab_file   = os.path.join(aCapella_root, londonRecording_path, segPhrase_path,    recording_name+'.lab')
+    textgrid_file       = os.path.join(nacta2017_textgrid_path, artist_path, recording_name+'.TextGrid')
+    boundary_lab_file   = os.path.join(nacta2017_segPhrase_path, artist_path,  recording_name+'.lab')
 
     labWriter.phraseBoundaryWriter(textgrid_file, boundary_lab_file)
 
-for idx, recording_name in enumerate(bcn_Recordings):
+for artist_path, recording_name in testNacta:
 
-    textgrid_file       = os.path.join(aCapella_root, bcnRecording_path, annotation_path,   recording_name+'.TextGrid')
-    boundary_lab_file   = os.path.join(aCapella_root, bcnRecording_path, segPhrase_path,    recording_name+'.lab')
+    textgrid_file       = os.path.join(nacta_textgrid_path, artist_path, recording_name+'.TextGrid')
+    boundary_lab_file   = os.path.join(nacta_segPhrase_path, artist_path,  recording_name+'.lab')
 
     labWriter.phraseBoundaryWriter(textgrid_file, boundary_lab_file)

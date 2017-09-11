@@ -3,8 +3,20 @@
   <component name="ChangeListManager">
     <list default="true" id="85def93d-57e9-4389-9aa9-839f8fe3787a" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.py" afterPath="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.sh" afterPath="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/eval_demo.py" afterPath="$PROJECT_DIR$/eval_demo.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/onsetFunctionCalc.py" afterPath="$PROJECT_DIR$/onsetFunctionCalc.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/phraseBoundary.py" afterPath="$PROJECT_DIR$/phraseBoundary.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/evaluation2.py" afterPath="$PROJECT_DIR$/src/evaluation2.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/filePath.py" afterPath="$PROJECT_DIR$/src/filePath.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/labWriter.py" afterPath="$PROJECT_DIR$/src/labWriter.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/parameters.py" afterPath="$PROJECT_DIR$/src/parameters.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/trainTestSeparation.py" afterPath="$PROJECT_DIR$/src/trainTestSeparation.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/trainingSampleCollection.py" afterPath="$PROJECT_DIR$/trainingSampleCollection.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_jordi.py" afterPath="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_jordi.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_jordi.sh" afterPath="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_jordi.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_timbral_filters_jordi.py" afterPath="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_timbral_filters_jordi.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_timbral_filters_jordi.sh" afterPath="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_timbral_filters_jordi.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/training_scripts/models.py" afterPath="$PROJECT_DIR$/training_scripts/models.py" />
     </list>
     <list id="0dbee7ea-859a-4010-b1e7-6136cbafaad1" name="dataset_root_path changed" comment="" />
     <ignored path="jingjuSyllabicSegmentaion.iws" />
@@ -27,10 +39,11 @@
     <SUITE FILE_PATH="coverage/jingjuSyllabicSegmentaion$phonemeSampleCollection.coverage" NAME="phonemeSampleCollection Coverage Results" MODIFIED="1487516735390" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/jingjuSyllabicSegmentaion$keras_cnn_syllableSeg_timbral_filters_jordi.coverage" NAME="keras_cnn_syllableSeg_timbral_filters_jordi Coverage Results" MODIFIED="1492673354907" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/jingjuSyllabicSegmentaion$statistics.coverage" NAME="statistics Coverage Results" MODIFIED="1488462215112" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/jingjuSyllabicSegmentaion$onsetFunctionCalc.coverage" NAME="onsetFunctionCalc Coverage Results" MODIFIED="1498909229180" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/jingjuSyllabicSegmentaion$eval_demo.coverage" NAME="eval_demo Coverage Results" MODIFIED="1493092136761" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/jingjuSyllabicSegmentaion$onsetFunctionCalc.coverage" NAME="onsetFunctionCalc Coverage Results" MODIFIED="1505147693501" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/jingjuSyllabicSegmentaion$keras_cnn_syllableSeg_jan__1_.coverage" NAME="keras_cnn_syllableSeg_jan (1) Coverage Results" MODIFIED="1505130798217" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_scripts/localDLScripts" />
-    <SUITE FILE_PATH="coverage/jingjuSyllabicSegmentaion$trainingSampleCollection.coverage" NAME="trainingSampleCollection Coverage Results" MODIFIED="1505126350870" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/jingjuSyllabicSegmentaion$eval_demo.coverage" NAME="eval_demo Coverage Results" MODIFIED="1505150927321" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/jingjuSyllabicSegmentaion$trainingSampleCollection.coverage" NAME="trainingSampleCollection Coverage Results" MODIFIED="1505138412624" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/jingjuSyllabicSegmentaion$phraseBoundary.coverage" NAME="phraseBoundary Coverage Results" MODIFIED="1505138169446" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/jingjuSyllabicSegmentaion$parameters.coverage" NAME="parameters Coverage Results" MODIFIED="1493090738892" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/jingjuSyllabicSegmentaion$models.coverage" NAME="models Coverage Results" MODIFIED="1505130608561" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_scripts" />
     <SUITE FILE_PATH="coverage/jingjuSyllabicSegmentaion$trainTestSeparation.coverage" NAME="trainTestSeparation Coverage Results" MODIFIED="1487956766733" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
@@ -59,21 +72,33 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="filePath.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/filePath.py">
+      <file leaf-file-name="eval_demo.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/eval_demo.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="285">
-              <caret line="19" column="35" lean-forward="false" selection-start-line="19" selection-start-column="35" selection-end-line="19" selection-end-column="35" />
+            <state relative-caret-position="1079">
+              <caret line="462" column="0" lean-forward="false" selection-start-line="462" selection-start-column="2" selection-end-line="478" selection-end-column="100" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="requirements.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/requirements.txt">
+      <file leaf-file-name="keras_cnn_syllableSeg_conv_dense_jordi.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_jordi.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
-              <caret line="5" column="12" lean-forward="false" selection-start-line="5" selection-start-column="12" selection-end-line="5" selection-end-column="12" />
+            <state relative-caret-position="179">
+              <caret line="16" column="74" lean-forward="false" selection-start-line="16" selection-start-column="74" selection-end-line="16" selection-end-column="74" />
+              <folding>
+                <element signature="e#0#55#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="keras_cnn_syllableSeg_conv_dense_jordi.sh" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_jordi.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="540">
+              <caret line="45" column="52" lean-forward="false" selection-start-line="45" selection-start-column="52" selection-end-line="45" selection-end-column="52" />
               <folding />
             </state>
           </provider>
@@ -82,32 +107,39 @@
       <file leaf-file-name="keras_cnn_syllableSeg_jan.sh" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="34" column="110" lean-forward="true" selection-start-line="34" selection-start-column="65" selection-end-line="34" selection-end-column="110" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="keras_cnn_syllableSeg_conv_dense_horizontal_timbral_filters_jordi.sh" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_horizontal_timbral_filters_jordi.sh">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="583">
-              <caret line="45" column="27" lean-forward="false" selection-start-line="45" selection-start-column="27" selection-end-line="45" selection-end-column="27" />
+            <state relative-caret-position="148">
+              <caret line="38" column="21" lean-forward="true" selection-start-line="30" selection-start-column="0" selection-end-line="38" selection-end-column="21" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
       <file leaf-file-name="keras_cnn_syllableSeg_jan.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/training_scripts/localDLScripts/keras_cnn_syllableSeg_jan.py">
+        <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1125">
-              <caret line="76" column="28" lean-forward="false" selection-start-line="76" selection-start-column="28" selection-end-line="76" selection-end-column="28" />
-              <folding>
-                <marker date="1505129722000" expanded="true" signature="499:3202" ph="..." />
-                <marker date="1505129722000" expanded="true" signature="2355:2614" ph="..." />
-              </folding>
+            <state relative-caret-position="150">
+              <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="23" selection-end-column="38" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="keras_cnn_syllableSeg_conv_dense_timbral_filters_jordi.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_timbral_filters_jordi.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-271">
+              <caret line="18" column="73" lean-forward="false" selection-start-line="18" selection-start-column="73" selection-end-line="18" selection-end-column="73" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="keras_cnn_syllableSeg_conv_dense_timbral_filters_jordi.sh" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_timbral_filters_jordi.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-302">
+              <caret line="7" column="11" lean-forward="false" selection-start-line="7" selection-start-column="11" selection-end-line="7" selection-end-column="11" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -115,8 +147,8 @@
       <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/training_scripts/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1394">
-              <caret line="207" column="39" lean-forward="false" selection-start-line="207" selection-start-column="39" selection-end-line="207" selection-end-column="39" />
+            <state relative-caret-position="403">
+              <caret line="245" column="0" lean-forward="false" selection-start-line="245" selection-start-column="0" selection-end-line="245" selection-end-column="0" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
               </folding>
@@ -124,46 +156,22 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="data_preparation.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/training_scripts/data_preparation.py">
+      <file leaf-file-name="evaluation2.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/evaluation2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="51" column="39" lean-forward="false" selection-start-line="51" selection-start-column="39" selection-end-line="51" selection-end-column="39" />
+            <state relative-caret-position="524">
+              <caret line="73" column="71" lean-forward="false" selection-start-line="73" selection-start-column="71" selection-end-line="73" selection-end-column="71" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="feature_generator.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/training_scripts/feature_generator.py">
+      <file leaf-file-name="evaluation.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/evaluation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-273">
-              <caret line="51" column="27" lean-forward="true" selection-start-line="51" selection-start-column="27" selection-end-line="51" selection-end-column="27" />
-              <folding>
-                <element signature="e#0#18#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="keras_cnn_syllableSeg_jan.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="225">
-              <caret line="15" column="81" lean-forward="false" selection-start-line="15" selection-start-column="81" selection-end-line="15" selection-end-column="81" />
+            <state relative-caret-position="-947">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="trainingSampleCollection.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/trainingSampleCollection.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4521">
-              <caret line="593" column="30" lean-forward="true" selection-start-line="593" selection-start-column="30" selection-end-line="593" selection-end-column="30" />
-              <folding>
-                <element signature="e#47#56#0" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -205,6 +213,8 @@
       <find>class_weight</find>
       <find>mfcc_line</find>
       <find>rgongcnnSyllableSeg_node07</find>
+      <find>i_recording</find>
+      <find>rgongcnnSyllableSeg_jan</find>
     </findStrings>
     <replaceStrings>
       <replace>value_eps</replace>
@@ -212,6 +222,8 @@
       <replace>node07</replace>
       <replace>horizontal</replace>
       <replace>rgongcnnSyllableSeg_jan</replace>
+      <replace>rgongcnnSyllableSeg_timbral</replace>
+      <replace>rgongcnnSyllableSeg_temporal</replace>
     </replaceStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$/src</dir>
@@ -228,17 +240,9 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/figurePlot.py" />
-        <option value="$PROJECT_DIR$/phraseBoundary.py" />
-        <option value="$PROJECT_DIR$/src/textgridParser.py" />
-        <option value="$PROJECT_DIR$/phonemeSampleCollection.py" />
-        <option value="$PROJECT_DIR$/keras_cnn_laosheng.py" />
         <option value="$PROJECT_DIR$/onsetFunction.py" />
         <option value="$PROJECT_DIR$/keras_cnn_syllableSeg.py" />
         <option value="$PROJECT_DIR$/viterbiDecoding.py" />
-        <option value="$PROJECT_DIR$/src/labWriter.py" />
-        <option value="$PROJECT_DIR$/src/evaluation2.py" />
-        <option value="$PROJECT_DIR$/src/trainTestSeparation.py" />
         <option value="$PROJECT_DIR$/targetAudioProcessing.py" />
         <option value="$PROJECT_DIR$/phonemeDurationStat.py" />
         <option value="$PROJECT_DIR$/src/makeHSMMNet.py" />
@@ -266,19 +270,27 @@
         <option value="$PROJECT_DIR$/localDLScripts/keras_cnn_syllableSeg_temporal_filters_jordi.py" />
         <option value="$PROJECT_DIR$/localDLScripts/keras_cnn_syllableSeg_timbral_filters_jordi.py" />
         <option value="$PROJECT_DIR$/localDLScripts/keras_cnn_syllableSeg_jan.py" />
-        <option value="$PROJECT_DIR$/eval_demo.py" />
         <option value="$PROJECT_DIR$/eval/dummy.txt" />
-        <option value="$PROJECT_DIR$/src/parameters.py" />
-        <option value="$PROJECT_DIR$/onsetFunctionCalc.py" />
         <option value="$PROJECT_DIR$/requirements.txt" />
-        <option value="$PROJECT_DIR$/src/filePath.py" />
-        <option value="$PROJECT_DIR$/trainingSampleCollection.py" />
         <option value="$PROJECT_DIR$/training_scripts/localDLScripts/keras_cnn_syllableSeg_jan.py" />
         <option value="$PROJECT_DIR$/training_scripts/data_preparation.py" />
-        <option value="$PROJECT_DIR$/training_scripts/models.py" />
         <option value="$PROJECT_DIR$/training_scripts/feature_generator.py" />
         <option value="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.sh" />
         <option value="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.py" />
+        <option value="$PROJECT_DIR$/src/labWriter.py" />
+        <option value="$PROJECT_DIR$/phraseBoundary.py" />
+        <option value="$PROJECT_DIR$/trainingSampleCollection.py" />
+        <option value="$PROJECT_DIR$/src/parameters.py" />
+        <option value="$PROJECT_DIR$/onsetFunctionCalc.py" />
+        <option value="$PROJECT_DIR$/src/filePath.py" />
+        <option value="$PROJECT_DIR$/src/trainTestSeparation.py" />
+        <option value="$PROJECT_DIR$/src/evaluation2.py" />
+        <option value="$PROJECT_DIR$/eval_demo.py" />
+        <option value="$PROJECT_DIR$/training_scripts/models.py" />
+        <option value="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_jordi.sh" />
+        <option value="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_timbral_filters_jordi.sh" />
+        <option value="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_timbral_filters_jordi.py" />
+        <option value="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_jordi.py" />
       </list>
     </option>
   </component>
@@ -289,6 +301,7 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
+    <option name="x" value="1" />
     <option name="y" value="23" />
     <option name="width" value="1280" />
     <option name="height" value="773" />
@@ -396,6 +409,13 @@
     <property name="js-jscs-nodeInterpreter" value="/usr/local/bin/node" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/eval/results/jan_old+new" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/localDLScripts" />
+      <recent name="$PROJECT_DIR$/eval/results/jordi_cw_conv_dense_timbral_filter_win" />
+      <recent name="$PROJECT_DIR$/cnnModels" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/hpcFolder" />
       <recent name="$PROJECT_DIR$" />
@@ -403,15 +423,8 @@
       <recent name="$PROJECT_DIR$/src" />
       <recent name="$PROJECT_DIR$/trainingData" />
     </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/localDLScripts" />
-      <recent name="$PROJECT_DIR$/eval/results/jordi_cw_conv_dense_timbral_filter_win" />
-      <recent name="$PROJECT_DIR$/cnnModels" />
-      <recent name="$PROJECT_DIR$/trainingData" />
-    </key>
   </component>
-  <component name="RunManager" selected="Python.keras_cnn_syllableSeg_jan (1)">
+  <component name="RunManager" selected="Python.eval_demo">
     <configuration default="false" name="onsetFunctionCalc" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -426,24 +439,6 @@
       <module name="jingjuSyllabicSegmentaion" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/onsetFunctionCalc.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="keras_cnn_syllableSeg_jan" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/localDLScripts" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="jingjuSyllabicSegmentaion" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/localDLScripts/keras_cnn_syllableSeg_jan.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -484,20 +479,38 @@
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
     </configuration>
-    <configuration default="false" name="models" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration default="false" name="phraseBoundary" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/training_scripts" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="jingjuSyllabicSegmentaion" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/training_scripts/models.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/phraseBoundary.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="eval_demo" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="jingjuSyllabicSegmentaion" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/eval_demo.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -732,18 +745,18 @@
     </configuration>
     <list size="5">
       <item index="0" class="java.lang.String" itemvalue="Python.onsetFunctionCalc" />
-      <item index="1" class="java.lang.String" itemvalue="Python.keras_cnn_syllableSeg_jan" />
-      <item index="2" class="java.lang.String" itemvalue="Python.trainingSampleCollection" />
-      <item index="3" class="java.lang.String" itemvalue="Python.keras_cnn_syllableSeg_jan (1)" />
-      <item index="4" class="java.lang.String" itemvalue="Python.models" />
+      <item index="1" class="java.lang.String" itemvalue="Python.trainingSampleCollection" />
+      <item index="2" class="java.lang.String" itemvalue="Python.keras_cnn_syllableSeg_jan (1)" />
+      <item index="3" class="java.lang.String" itemvalue="Python.phraseBoundary" />
+      <item index="4" class="java.lang.String" itemvalue="Python.eval_demo" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.keras_cnn_syllableSeg_jan (1)" />
-        <item index="1" class="java.lang.String" itemvalue="Python.models" />
+        <item index="0" class="java.lang.String" itemvalue="Python.eval_demo" />
+        <item index="1" class="java.lang.String" itemvalue="Python.onsetFunctionCalc" />
         <item index="2" class="java.lang.String" itemvalue="Python.trainingSampleCollection" />
-        <item index="3" class="java.lang.String" itemvalue="Python.onsetFunctionCalc" />
-        <item index="4" class="java.lang.String" itemvalue="Python.keras_cnn_syllableSeg_jan" />
+        <item index="3" class="java.lang.String" itemvalue="Python.phraseBoundary" />
+        <item index="4" class="java.lang.String" itemvalue="Python.keras_cnn_syllableSeg_jan (1)" />
       </list>
     </recent_temporary>
   </component>
@@ -811,7 +824,14 @@
       <option name="project" value="LOCAL" />
       <updated>1505132893115</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="change scratch copying">
+      <created>1505133069435</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1505133069435</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TodoView">
@@ -824,7 +844,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1280" height="773" extended-state="6" />
+    <frame x="1" y="23" width="1280" height="773" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32763976" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -835,8 +855,9 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34508076" sideWeight="0.74151856" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Execute Anonymous" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32011747" sideWeight="0.8336026" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28998384" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34491116" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32892805" sideWeight="0.49722" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2494043" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22515528" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -848,7 +869,6 @@
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32892805" sideWeight="0.49722" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -891,7 +911,8 @@
     <MESSAGE value="clear onsetFunctionCalc.py" />
     <MESSAGE value="code copy features to scratch" />
     <MESSAGE value="change generator to use h5py" />
-    <option name="LAST_COMMIT_MESSAGE" value="change generator to use h5py" />
+    <MESSAGE value="change scratch copying" />
+    <option name="LAST_COMMIT_MESSAGE" value="change scratch copying" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -902,97 +923,11 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="18" />
+      <option name="time" value="19" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_win/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply_coef_0.6_win/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="69" lean-forward="false" selection-start-line="1" selection-start-column="52" selection-end-line="1" selection-end-column="69" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply_layer2_20_win/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply_win/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="67" lean-forward="false" selection-start-line="1" selection-start-column="51" selection-end-line="1" selection-end-column="67" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/trainingData/dummy.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="18" lean-forward="false" selection-start-line="0" selection-start-column="18" selection-end-line="0" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cnnModels/dummy.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="18" lean-forward="false" selection-start-line="0" selection-start-column="18" selection-end-line="0" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/localDLScripts/keras_cnn_syllableSeg_timbral_filters_jordi.py" />
-    <entry file="file://$PROJECT_DIR$/localDLScripts/keras_cnn_syllableSeg_jan.py" />
-    <entry file="file://$PROJECT_DIR$/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_horizontal_timbral_filters_jordi.sh" />
-    <entry file="file://$PROJECT_DIR$/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_horizontal_timbral_filters_jordi.py" />
-    <entry file="file://$PROJECT_DIR$/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_timbral_filters_jordi.sh" />
-    <entry file="file://$PROJECT_DIR$/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_jordi.sh" />
-    <entry file="file://$PROJECT_DIR$/hpcDLScripts/keras_cnn_syllableSeg_3_chans_jan.sh" />
-    <entry file="file://$PROJECT_DIR$/hpcDLScripts/keras_cnn_syllableSeg_jan.py" />
-    <entry file="file://$PROJECT_DIR$/localDLScripts/keras_cnn_syllableSeg_horizontal_timbral_filters_jordi.py" />
-    <entry file="file://$PROJECT_DIR$/eval_noAperiocity.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/figurePlotISMIR.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="176" column="20" lean-forward="false" selection-start-line="176" selection-start-column="20" selection-end-line="176" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/eval/dummy.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="13" lean-forward="false" selection-start-line="0" selection-start-column="13" selection-end-line="0" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/eval_demo.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7110">
-          <caret line="474" column="0" lean-forward="true" selection-start-line="474" selection-start-column="0" selection-end-line="474" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/eval_georgi.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -1004,20 +939,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="225">
           <caret line="37" column="21" lean-forward="false" selection-start-line="37" selection-start-column="21" selection-end-line="37" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/evaluation.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/evaluation2.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -1052,13 +973,6 @@
     <entry file="file://$PROJECT_DIR$/src/textgridParser.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/trainTestSeparation.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-297">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
@@ -1105,47 +1019,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/parameters.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="25" lean-forward="false" selection-start-line="3" selection-start-column="25" selection-end-line="3" selection-end-column="25" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/onsetFunctionCalc.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="21" column="0" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
-          <folding>
-            <element signature="e#24#37#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/requirements.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
           <caret line="5" column="12" lean-forward="false" selection-start-line="5" selection-start-column="12" selection-end-line="5" selection-end-column="12" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/filePath.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="19" column="35" lean-forward="false" selection-start-line="19" selection-start-column="35" selection-end-line="19" selection-end-column="35" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/trainingSampleCollection.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4521">
-          <caret line="593" column="30" lean-forward="true" selection-start-line="593" selection-start-column="30" selection-end-line="593" selection-end-column="30" />
-          <folding>
-            <element signature="e#47#56#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1160,10 +1038,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_horizontal_timbral_filters_jordi.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="583">
+          <caret line="45" column="27" lean-forward="false" selection-start-line="45" selection-start-column="27" selection-end-line="45" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/training_scripts/feature_generator.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-273">
-          <caret line="51" column="27" lean-forward="true" selection-start-line="51" selection-start-column="27" selection-end-line="51" selection-end-column="27" />
+          <caret line="51" column="27" lean-forward="false" selection-start-line="51" selection-start-column="27" selection-end-line="51" selection-end-column="27" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
@@ -1178,10 +1064,210 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/labWriter.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="163">
+          <caret line="42" column="71" lean-forward="false" selection-start-line="42" selection-start-column="71" selection-end-line="42" selection-end-column="71" />
+          <folding>
+            <element signature="e#25#46#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/parameters.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="358">
+          <caret line="37" column="21" lean-forward="false" selection-start-line="37" selection-start-column="21" selection-end-line="37" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/eval/jan_old+new/20170327LiaoJiaNi/lseh-Yi_lun_ming-Wen_zhao_guan-nacta_1.syll.lab">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/onsetFunctionCalc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="299">
+          <caret line="388" column="56" lean-forward="false" selection-start-line="388" selection-start-column="56" selection-end-line="388" selection-end-column="56" />
+          <folding>
+            <element signature="e#24#37#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/phraseBoundary.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="5" column="44" lean-forward="false" selection-start-line="5" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#16#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/filePath.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="30" column="52" lean-forward="false" selection-start-line="30" selection-start-column="52" selection-end-line="30" selection-end-column="52" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/eval/results/jan_old+new/20170327LiaoJiaNi/lseh-Yi_lun_ming-Wen_zhao_guan-nacta_10.syll.lab">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/eval/results/jan_old+new/20170327LiaoJiaNi/lseh-Yi_lun_ming-Wen_zhao_guan-nacta_9.syll.lab">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/eval/results/jan_old+new/20170327LiaoJiaNi/lseh-Yi_lun_ming-Wen_zhao_guan-nacta_8.syll.lab">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/eval/results/jan_old+new/20170327LiaoJiaNi/lseh-Yi_lun_ming-Wen_zhao_guan-nacta_7.syll.lab">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/eval/results/jan_old+new/20170327LiaoJiaNi/lseh-Yi_lun_ming-Wen_zhao_guan-nacta_6.syll.lab">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/eval/results/jan_old+new/20170327LiaoJiaNi/lseh-Yi_lun_ming-Wen_zhao_guan-nacta_5.syll.lab">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/eval/results/jan_old+new/20170327LiaoJiaNi/lseh-Yi_lun_ming-Wen_zhao_guan-nacta_4.syll.lab">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/eval/results/jan_old+new/20170327LiaoJiaNi/lseh-Yi_lun_ming-Wen_zhao_guan-nacta_3.syll.lab">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/eval/results/jan_old+new/20170327LiaoJiaNi/lseh-Yi_lun_ming-Wen_zhao_guan-nacta_2.syll.lab">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/eval/results/jan_old+new/20170327LiaoJiaNi/lseh-Yi_lun_ming-Wen_zhao_guan-nacta_1.syll.lab">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trainingSampleCollection.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3265">
+          <caret line="617" column="21" lean-forward="true" selection-start-line="617" selection-start-column="0" selection-end-line="618" selection-end-column="0" />
+          <folding>
+            <element signature="e#47#56#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/trainTestSeparation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-811">
+          <caret line="95" column="12" lean-forward="false" selection-start-line="95" selection-start-column="12" selection-end-line="95" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/eval/results/jan_old+new/eval_result_jan_class_weight.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/evaluation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-947">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/evaluation2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="524">
+          <caret line="73" column="71" lean-forward="false" selection-start-line="73" selection-start-column="71" selection-end-line="73" selection-end-column="71" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/eval/results/obin/eval_result_obin_test.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/eval_demo.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1079">
+          <caret line="462" column="0" lean-forward="false" selection-start-line="462" selection-start-column="2" selection-end-line="478" selection-end-column="100" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="23" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/training_scripts/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1394">
-          <caret line="207" column="39" lean-forward="false" selection-start-line="207" selection-start-column="39" selection-end-line="207" selection-end-column="39" />
+        <state relative-caret-position="403">
+          <caret line="245" column="0" lean-forward="false" selection-start-line="245" selection-start-column="0" selection-end-line="245" selection-end-column="0" />
           <folding>
             <element signature="e#0#21#0" expanded="true" />
           </folding>
@@ -1190,25 +1276,43 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="34" column="110" lean-forward="true" selection-start-line="34" selection-start-column="65" selection-end-line="34" selection-end-column="110" />
+        <state relative-caret-position="148">
+          <caret line="38" column="21" lean-forward="true" selection-start-line="30" selection-start-column="0" selection-end-line="38" selection-end-column="21" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_horizontal_timbral_filters_jordi.sh">
+    <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_jordi.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="583">
-          <caret line="45" column="27" lean-forward="false" selection-start-line="45" selection-start-column="27" selection-end-line="45" selection-end-column="27" />
+        <state relative-caret-position="540">
+          <caret line="45" column="52" lean-forward="false" selection-start-line="45" selection-start-column="52" selection-end-line="45" selection-end-column="52" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.py">
+    <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_timbral_filters_jordi.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="15" column="81" lean-forward="false" selection-start-line="15" selection-start-column="81" selection-end-line="15" selection-end-column="81" />
+        <state relative-caret-position="-302">
+          <caret line="7" column="11" lean-forward="false" selection-start-line="7" selection-start-column="11" selection-end-line="7" selection-end-column="11" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_timbral_filters_jordi.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-271">
+          <caret line="18" column="73" lean-forward="false" selection-start-line="18" selection-start-column="73" selection-end-line="18" selection-end-column="73" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_jordi.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="179">
+          <caret line="16" column="74" lean-forward="false" selection-start-line="16" selection-start-column="74" selection-end-line="16" selection-end-column="74" />
+          <folding>
+            <element signature="e#0#55#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

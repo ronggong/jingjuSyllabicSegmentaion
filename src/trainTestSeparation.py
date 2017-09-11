@@ -90,10 +90,10 @@ def getBoundaryNumber(textgrid_path, score_path):
         for rn in recording_names:
             rn = rn.split('.')[0]
             groundtruth_textgrid_file = join(textgrid_path, artist_path, rn+'.TextGrid')
-            if artist_path=='danAll' or artist_path=='laosheng':
-                score_file = join(score_path, rn+'.csv')
-            else:
-                score_file = join(score_path, artist_path, rn + '.csv')
+            # if artist_path=='danAll' or artist_path=='laosheng':
+            #     score_file = join(score_path, rn+'.csv')
+            # else:
+            score_file = join(score_path, artist_path, rn + '.csv')
 
             if not os.path.isfile(score_file):
                 continue

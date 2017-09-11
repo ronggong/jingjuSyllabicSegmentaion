@@ -614,4 +614,8 @@ if __name__ == '__main__':
     #                           gmmModel_path=gmmModel_path)
 
     # dump feature for DNN training, with getFeature output MFCC bands
-    dumpFeatureBatchOnset()
+    # dumpFeatureBatchOnset()
+    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordings()
+
+    for artist_path, filename in testNacta:
+        print(join(artist_path,filename))

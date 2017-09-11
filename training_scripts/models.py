@@ -243,7 +243,6 @@ def model_train(model_0, batch_size, patience, input_shape,
     model_0.fit_generator(generator=generator_train_val,
                           steps_per_epoch=steps_per_epoch_train_val,
                           epochs=epochs_final,
-                          callbacks=callbacks,
                           class_weight=class_weights,
                           verbose=1)
 

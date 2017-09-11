@@ -10,26 +10,27 @@ import scoreParser
 # import evaluation
 import evaluation2
 from filePath import *
+from trainingSampleCollection import getTestTrainRecordings
 
 
-def batch_eval(aCapella_root, dataset_path, annotation_path, segPhrase_path, segSyllable_path, score_path, recordings, tolerance):
+def batch_eval(root_path, annotation_path, segPhrase_path, segSyllable_path, score_path, groundtruth_path, eval_details_path, recordings, tolerance):
 
     sumDetectedBoundaries, sumGroundtruthPhrases, sumGroundtruthBoundaries, sumCorrect, sumOnsetCorrect, \
     sumOffsetCorrect, sumInsertion, sumDeletion = 0 ,0 ,0 ,0 ,0 ,0, 0, 0
 
-    for i_recording, recording_name in enumerate(recordings):
+    for artist_path, recording_name in recordings:
 
-        groundtruth_textgrid_file   = os.path.join(aCapella_root, dataset_path, annotation_path, recording_name+'.TextGrid')
-        phrase_boundary_lab_file    = os.path.join(aCapella_root, dataset_path, segPhrase_path,  recording_name+'.lab')
+        groundtruth_textgrid_file   = os.path.join(annotation_path, artist_path, recording_name+'.TextGrid')
+        phrase_boundary_lab_file    = os.path.join(segPhrase_path, artist_path,  recording_name+'.lab')
         # syll-o-matic output
-        # detected_lab_file_head      = os.path.join(aCapella_root, dataset_path, segSyllable_path,recording_name)
+        detected_lab_file_head      = os.path.join(root_path, segSyllable_path, artist_path, recording_name)
         # jan output
-        detected_lab_file_head      = os.path.join(segSyllable_path, dataset_path,recording_name)
+        # detected_lab_file_head      = os.path.join(segSyllable_path, artist_path,recording_name)
 
-        score_file                  = os.path.join(aCapella_root, dataset_path, score_path,      recording_name+'.csv')
+        score_file                  = os.path.join(score_path, artist_path,  recording_name+'.csv')
 
-        groundtruth_lab_file_head   = os.path.join(aCapella_root, dataset_path, groundtruth_lab_path, recording_name)
-        eval_result_details_file_head = os.path.join(aCapella_root, dataset_path, eval_details_path, recording_name)
+        groundtruth_lab_file_head   = os.path.join(groundtruth_path, artist_path)
+        eval_result_details_file_head = os.path.join(eval_details_path, artist_path)
 
         if not os.path.isfile(score_file):
             print 'Score not found: ' + score_file
@@ -53,25 +54,35 @@ def batch_eval(aCapella_root, dataset_path, annotation_path, segPhrase_path, seg
 
         # create the ground truth lab files
         for idx,list in enumerate(nestedUtteranceLists):
-            if int(bpm[idx]):
+            try:
+                print(bpm[idx])
+            except IndexError:
+                continue
+
+            if float(bpm[idx]):
                 print 'Creating ground truth lab ... ' + recording_name + ' phrase ' + str(idx+1)
 
                 ul = list[1]
                 firstStartTime          = ul[0][0]
                 groundtruthBoundaries   = [(np.array(ul_element[:2]) - firstStartTime).tolist() + [ul_element[2]] for ul_element in ul]
-                groundtruth_syllable_lab   = groundtruth_lab_file_head+'_'+str(idx+1)+'.syll.lab'
+                groundtruth_syllable_lab   = join(groundtruth_lab_file_head, recording_name+'_'+str(idx+1)+'.syll.lab')
 
                 with open(groundtruth_syllable_lab, "wb") as text_file:
                     for gtbs in groundtruthBoundaries:
                         text_file.write("{0} {1} {2}\n".format(gtbs[0],gtbs[1],gtbs[2]))
 
         # syllable boundaries groundtruth of each line
-        eval_details_csv    = eval_result_details_file_head+'.csv'
+        eval_details_csv    = join(eval_result_details_file_head, recording_name+'.csv')
         with open(eval_details_csv, 'wb') as csv_file:
             csv_writer = csv.writer(csv_file)
 
             for idx, list in enumerate(nestedUtteranceLists):
-                if int(bpm[idx]):
+                try:
+                    print(bpm[idx])
+                except IndexError:
+                    continue
+
+                if float(bpm[idx]):
                     print 'Evaluating... ' + recording_name + ' phrase ' + str(idx+1)
 
                     ul = list[1]
@@ -215,9 +226,12 @@ def evaluation_test_dataset(segSyllablePath, tolerance):
     sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumOffsetCorrect, \
     sumInsertion, sumDeletion = 0, 0, 0, 0, 0, 0, 0, 0
 
-    # queen mary
-    DB, GB, GP, C, OnC, OffC, I, D = batch_eval(aCapella_root, queenMarydataset_path, annotation_path, segPhrase_path,
-                                                segSyllable_path, score_path, queenMary_Recordings_test, tolerance)
+    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordings()
+
+    DB, GB, GP, C, OnC, OffC, I, D = batch_eval(nacta2017_dataset_root_path, nacta2017_textgrid_path,nacta2017_segPhrase_path,
+                                                segSyllable_path, nacta2017_score_path,
+                                                nacta2017_groundtruthlab_path, nacta2017_eval_details_path,
+                                                testNacta2017, tolerance)
 
     sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumOffsetCorrect, \
     sumInsertion, sumDeletion = stat_Add(sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases,
@@ -225,9 +239,10 @@ def evaluation_test_dataset(segSyllablePath, tolerance):
                                          sumOnsetCorrect, sumOffsetCorrect, sumInsertion, sumDeletion, DB, GB, GP, C,
                                          OnC, OffC, I, D)
 
-    # london
-    DB, GB, GP, C, OnC, OffC, I, D = batch_eval(aCapella_root, londonRecording_path, annotation_path, segPhrase_path,
-                                                segSyllable_path, score_path, london_Recordings_test, tolerance)
+    DB, GB, GP, C, OnC, OffC, I, D = batch_eval(nacta_dataset_root_path, nacta_textgrid_path, nacta_segPhrase_path,
+                                                segSyllable_path, nacta_score_path,
+                                                nacta_groundtruthlab_path, nacta_eval_details_path,
+                                                testNacta, tolerance)
 
     sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumOffsetCorrect, \
     sumInsertion, sumDeletion = stat_Add(sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases,
@@ -235,15 +250,6 @@ def evaluation_test_dataset(segSyllablePath, tolerance):
                                          sumOnsetCorrect, sumOffsetCorrect, sumInsertion, sumDeletion, DB, GB, GP, C,
                                          OnC, OffC, I, D)
 
-    # bcn
-    DB, GB, GP, C, OnC, OffC, I, D = batch_eval(aCapella_root, bcnRecording_path, annotation_path, segPhrase_path,
-                                                segSyllable_path, score_path, bcn_Recordings_test, tolerance)
-
-    sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumOffsetCorrect, \
-    sumInsertion, sumDeletion = stat_Add(sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases,
-                                         sumCorrect,
-                                         sumOnsetCorrect, sumOffsetCorrect, sumInsertion, sumDeletion, DB, GB, GP, C,
-                                         OnC, OffC, I, D)
 
     print "Detected: {0}, Ground truth: {1}, Ground truth phrases: {2} Correct rate: {3}, Insertion rate: {4}, Deletion rate: {5}\n". \
         format(sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases,
@@ -258,8 +264,8 @@ def evaluation_test_dataset(segSyllablePath, tolerance):
 ############################################
 
 if mth_ODF == 'jan':
-    eval_result_file_name       = './eval/results/jan_cw/eval_result_jan_class_weight.csv'
-    segSyllable_path            = './eval/results/jan_cw'
+    eval_result_file_name       = './eval/results/jan_old+new/eval_result_jan_class_weight.csv'
+    segSyllable_path            = './eval/results/jan_old+new'
 elif mth_ODF == 'jan_chan3':
     eval_result_file_name       = './eval/results/jan_cw_3_chans_win/eval_result_jan_class_weight.csv'
     segSyllable_path            = './eval/results/jan_cw_3_chans_win'
@@ -300,14 +306,14 @@ else:
 
 
 # tols                = [0.025,0.05,0.1,0.15,0.2,0.25,0.3]
-tols = [0.05]
-with open(eval_result_file_name, 'wb') as testfile:
-    csv_writer = csv.writer(testfile)
-    for t in tols:
-        detected, ground_truth, ground_truth_phrases, correct, insertion, deletion = \
-            evaluation_test_dataset(segSyllable_path,tolerance=t)
-        recall,precision,F1 = evaluation2.metrics(detected,ground_truth,correct)
-        csv_writer.writerow([t,detected, ground_truth, ground_truth_phrases, recall,precision,F1])
+# tols = [0.05]
+# with open(eval_result_file_name, 'wb') as testfile:
+#     csv_writer = csv.writer(testfile)
+#     for t in tols:
+#         detected, ground_truth, ground_truth_phrases, correct, insertion, deletion = \
+#             evaluation_test_dataset(segSyllable_path,tolerance=t)
+#         recall,precision,F1 = evaluation2.metrics(detected,ground_truth,correct)
+#         csv_writer.writerow([t,detected, ground_truth, ground_truth_phrases, recall,precision,F1])
 
 # not used
 
@@ -454,16 +460,16 @@ with open(eval_result_file_name, 'wb') as testfile:
 #      rong                    #
 ################################
 
-# vad
-# eval_result_file_name       = '/Users/gong/Documents/MTG document/Jingju arias/aCapella/eval_result_rong_vad_different_tolerence_test.csv'
-# segSyllable_path            = 'segSyllable/vadnoAperiocityWeighting/segSyllable_rong_proportion' + '_' + str(0.35) + '_' + str(0.2)
-
-# no vad
-# eval_result_file_name       = '/Users/gong/Documents/MTG document/Jingju arias/aCapella/eval_result_rong_novad_different_tolerence_test.csv'
-# segSyllable_path            = 'segSyllable/vadnoAperiocityWeighting/segSyllable_rong_proportion' + '_' + str(0.35) + '_' + str(1)
+# # vad
+# eval_result_file_name       = './eval/results/obin/eval_result_obin_test.csv'
+# segSyllable_path            = 'segSyllable_obin_proportion' + '_' + str(0.35) + '_' + str(0.2)
 #
-# tols                = [0.025, 0.05,0.1,0.15,0.2,0.25,0.3]
+# # no vad
+# # eval_result_file_name       = '/Users/gong/Documents/MTG document/Jingju arias/aCapella/eval_result_rong_novad_different_tolerence_test.csv'
+# # segSyllable_path            = 'segSyllable/vadnoAperiocityWeighting/segSyllable_rong_proportion' + '_' + str(0.35) + '_' + str(1)
 #
+# # tols                = [0.025, 0.05,0.1,0.15,0.2,0.25,0.3]
+# tols = [0.05]
 # with open(eval_result_file_name, 'wb') as testfile:
 #     csv_writer = csv.writer(testfile)
 #     for t in tols:

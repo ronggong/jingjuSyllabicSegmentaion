@@ -16,16 +16,15 @@ def train_model(filter_density_1, filter_density_2,
     train final model save to model path
     """
 
-    folder_train_validation_set = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/features_train_set_all_syllableSeg_mfccBands2D_old+new'
+    filename_train_validation_set = '/scratch/rgongcnnSyllableSeg_timbral/syllableSeg/feature_all.h5'
     filename_labels_train_validation_set = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/labels_train_set_all_syllableSeg_mfccBands2D_old+new.pickle.gz'
     filename_sample_weights = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/sample_weights_syllableSeg_mfccBands2D_old+new.pickle.gz'
 
     filenames_train, Y_train, sample_weights_train, \
     filenames_validation, Y_validation, sample_weights_validation, \
     filenames_features, Y_train_validation, sample_weights, class_weights = \
-        load_data(folder_train_validation_set,
-                  filename_labels_train_validation_set,
-                  filename_sample_weights)
+        load_data(filename_labels_train_validation_set,
+              filename_sample_weights)
 
 
     model_0 = jordi_model(filter_density_1, filter_density_2,
@@ -39,6 +38,7 @@ def train_model(filter_density_1, filter_density_2,
     print(model_0.count_params())
 
     model_train(model_0, batch_size, patience, input_shape,
+                filename_train_validation_set,
                 filenames_train, Y_train, sample_weights_train,
                 filenames_validation, Y_validation, sample_weights_validation,
                 filenames_features, Y_train_validation, sample_weights, class_weights,

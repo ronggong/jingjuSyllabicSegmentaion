@@ -12,22 +12,31 @@ nacta_dataset_root_path     = '/Users/gong/Documents/MTG document/Jingju arias/j
 nacta2017_wav_path = join(nacta2017_dataset_root_path, 'wav')
 nacta2017_textgrid_path = join(nacta2017_dataset_root_path, 'textgridDianSilence')
 nacta2017_score_path = join(nacta2017_dataset_root_path, 'scoreDianSilence')
+nacta2017_segPhrase_path = join(nacta2017_dataset_root_path, 'segPhrase')
+nacta2017_groundtruthlab_path = join(nacta2017_dataset_root_path, 'groundtruth_lab')
+nacta2017_eval_details_path = join(nacta2017_dataset_root_path, 'eval_details')
+
 
 nacta_wav_path = join(nacta_dataset_root_path, 'wav')
 nacta_textgrid_path = join(nacta_dataset_root_path, 'textgrid')
-nacta_score_path = '/Users/gong/Documents/github/MTG/JingjuSingingAnnotation/aCapella/Syllable duration annotation'
+nacta_score_path = join(nacta_dataset_root_path, 'scoreDianSilence')
+# nacta_score_path = '/Users/gong/Documents/github/MTG/JingjuSingingAnnotation/aCapella/Syllable duration annotation'
+nacta_segPhrase_path = join(nacta_dataset_root_path, 'segPhrase')
+nacta_groundtruthlab_path = join(nacta_dataset_root_path, 'groundtruth_lab')
+nacta_eval_details_path = join(nacta_dataset_root_path, 'eval_details')
 
 # where we have the dumped features
 feature_data_path = '/Users/gong/Documents/MTG document/dataset/syllableSeg/'
 
-eval_results_path = join(root_path, 'output')
+eval_results_path = join(root_path, 'eval', 'results', 'jan_old+new')
 
 from parameters import mth_ODF, fusion, layer2, filter_shape
 
 cnnModels_path  = join(root_path, 'cnnModels')
 
 if mth_ODF == 'jan':
-    filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_optim.h5'
+    # filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_optim.h5'
+    filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_old+new.h5'
     cnnModel_name         = 'jan_cw'
 elif mth_ODF == 'jan_chan3':
     filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jan_class_weight_3_chans_mfccBands_2D_all_optim.h5'
