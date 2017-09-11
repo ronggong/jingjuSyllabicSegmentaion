@@ -1,8 +1,10 @@
 
 # from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from training_scripts.data_preparation import load_data
-from training_scripts.models import jordi_model, model_train
+from data_preparation import load_data
+from models import jordi_model, model_train
 
 nlen = 21
 input_dim = (80, nlen)

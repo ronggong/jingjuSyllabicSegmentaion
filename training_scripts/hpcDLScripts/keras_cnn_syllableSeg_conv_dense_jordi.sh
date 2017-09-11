@@ -37,7 +37,7 @@ end=`date +%s`
 printf "Finish copying feature files into scratch directory...\n"
 printf $((end-start))
 
-python /homedtic/rgong/cnnSyllableSeg/keras_cnn_syllableSeg_conv_dense_jordi.py
+python /homedtic/rgong/cnnSyllableSeg/jingjuSyllabicSegmentaion/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_jordi.py
 
 # Clean the crap:
 # ---------------
