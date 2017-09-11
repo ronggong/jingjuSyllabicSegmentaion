@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # change python version
-module load cuda/7.5
+module load cuda/8.0
 #module load theano/0.8.2
 
 # two variables you need to set
-device=gpu1  # the device to be used. set it to "cpu" if you don't have GPUs
+device=gpu0  # the device to be used. set it to "cpu" if you don't have GPUs
 
 # export environment variables
 #
@@ -20,14 +20,14 @@ source activate /homedtic/rgong/keras_env
 
 #$ -N sseg_jan
 #$ -q default.q
-#$ -l h=node05
+#$ -l h=node07
 
 # Output/Error Text
 # ----------------
 #$ -o /homedtic/rgong/cnnSyllableSeg/out/cnn_jan.$JOB_ID.out
 #$ -e /homedtic/rgong/cnnSyllableSeg/error/cnn_jan.$JOB_ID.err
 
-python /homedtic/rgong/cnnSyllableSeg/keras_cnn_syllableSeg_jan.py
+python /homedtic/rgong/cnnSyllableSeg/jingjuSyllabicSegmentaion/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.py
 
 
 printf "Job done. Ending at `date`\n"

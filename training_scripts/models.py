@@ -10,7 +10,7 @@ from keras.models import Sequential, Model
 from keras.optimizers import Adam
 from keras.regularizers import l2
 
-from training_scripts.feature_generator import generator
+from feature_generator import generator
 
 
 def jan(filter_density, dropout, input_shape):
@@ -209,7 +209,7 @@ def model_train(model_0, batch_size, patience, input_shape,
                               input_shape=input_shape,
                               labels=Y_validation,
                               sample_weights=sample_weights_validation,
-                              multi_inputs=True)
+                              multi_inputs=False)
 
     history = model_0.fit_generator(generator=generator_train,
                                     steps_per_epoch=steps_per_epoch_train,
@@ -218,7 +218,7 @@ def model_train(model_0, batch_size, patience, input_shape,
                                     validation_steps=steps_per_epoch_val,
                                     class_weight=class_weights,
                                     callbacks=callbacks,
-                                    verbose=1)
+                                    verbose=2)
 
     model_0.load_weights('./initial_weights.h5')
 
@@ -241,7 +241,7 @@ def model_train(model_0, batch_size, patience, input_shape,
                           epochs=epochs_final,
                           callbacks=callbacks,
                           class_weight=class_weights,
-                          verbose=1)
+                          verbose=2)
 
     model_0.save(file_path_model)
     remove('./initial_weights.h5')
