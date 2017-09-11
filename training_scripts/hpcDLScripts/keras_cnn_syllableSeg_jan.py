@@ -13,7 +13,7 @@ def train_model(filter_density, dropout, input_shape, file_path_model, filename_
     train final model save to model path
     """
 
-    filename_train_validation_set = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/feature_all.h5'
+    filename_train_validation_set = '/scratch/rgongcnnSyllableSeg_jan/syllableSeg/feature_all.h5'
     filename_labels_train_validation_set = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/labels_train_set_all_syllableSeg_mfccBands2D_old+new.pickle.gz'
     filename_sample_weights = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/sample_weights_syllableSeg_mfccBands2D_old+new.pickle.gz'
 

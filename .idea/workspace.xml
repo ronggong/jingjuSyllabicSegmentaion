@@ -3,13 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="85def93d-57e9-4389-9aa9-839f8fe3787a" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/filePath.py" afterPath="$PROJECT_DIR$/src/filePath.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/trainingSampleCollection.py" afterPath="$PROJECT_DIR$/trainingSampleCollection.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/training_scripts/data_preparation.py" afterPath="$PROJECT_DIR$/training_scripts/data_preparation.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/training_scripts/feature_generator.py" afterPath="$PROJECT_DIR$/training_scripts/feature_generator.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.py" afterPath="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/training_scripts/localDLScripts/keras_cnn_syllableSeg_jan.py" afterPath="$PROJECT_DIR$/training_scripts/localDLScripts/keras_cnn_syllableSeg_jan.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/training_scripts/models.py" afterPath="$PROJECT_DIR$/training_scripts/models.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.sh" afterPath="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.sh" />
     </list>
     <list id="0dbee7ea-859a-4010-b1e7-6136cbafaad1" name="dataset_root_path changed" comment="" />
     <ignored path="jingjuSyllabicSegmentaion.iws" />
@@ -87,8 +82,8 @@
       <file leaf-file-name="keras_cnn_syllableSeg_jan.sh" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="429">
-              <caret line="37" column="0" lean-forward="true" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
+            <state relative-caret-position="60">
+              <caret line="34" column="110" lean-forward="true" selection-start-line="34" selection-start-column="65" selection-end-line="34" selection-end-column="110" />
               <folding />
             </state>
           </provider>
@@ -97,7 +92,7 @@
       <file leaf-file-name="keras_cnn_syllableSeg_conv_dense_horizontal_timbral_filters_jordi.sh" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_horizontal_timbral_filters_jordi.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="324">
+            <state relative-caret-position="583">
               <caret line="45" column="27" lean-forward="false" selection-start-line="45" selection-start-column="27" selection-end-line="45" selection-end-column="27" />
               <folding />
             </state>
@@ -117,7 +112,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/training_scripts/models.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1394">
@@ -151,11 +146,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="keras_cnn_syllableSeg_jan.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="keras_cnn_syllableSeg_jan.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="284">
-              <caret line="33" column="46" lean-forward="false" selection-start-line="33" selection-start-column="46" selection-end-line="33" selection-end-column="46" />
+            <state relative-caret-position="225">
+              <caret line="15" column="81" lean-forward="false" selection-start-line="15" selection-start-column="81" selection-end-line="15" selection-end-column="81" />
               <folding />
             </state>
           </provider>
@@ -276,13 +271,13 @@
         <option value="$PROJECT_DIR$/src/parameters.py" />
         <option value="$PROJECT_DIR$/onsetFunctionCalc.py" />
         <option value="$PROJECT_DIR$/requirements.txt" />
-        <option value="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.sh" />
         <option value="$PROJECT_DIR$/src/filePath.py" />
         <option value="$PROJECT_DIR$/trainingSampleCollection.py" />
         <option value="$PROJECT_DIR$/training_scripts/localDLScripts/keras_cnn_syllableSeg_jan.py" />
         <option value="$PROJECT_DIR$/training_scripts/data_preparation.py" />
         <option value="$PROJECT_DIR$/training_scripts/models.py" />
         <option value="$PROJECT_DIR$/training_scripts/feature_generator.py" />
+        <option value="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.sh" />
         <option value="$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.py" />
       </list>
     </option>
@@ -809,7 +804,14 @@
       <option name="project" value="LOCAL" />
       <updated>1505122902989</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="change generator to use h5py">
+      <created>1505132893115</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1505132893115</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TodoView">
@@ -888,7 +890,8 @@
     <MESSAGE value="dataset_root_path changed" />
     <MESSAGE value="clear onsetFunctionCalc.py" />
     <MESSAGE value="code copy features to scratch" />
-    <option name="LAST_COMMIT_MESSAGE" value="code copy features to scratch" />
+    <MESSAGE value="change generator to use h5py" />
+    <option name="LAST_COMMIT_MESSAGE" value="change generator to use h5py" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1120,22 +1123,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_horizontal_timbral_filters_jordi.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="324">
-          <caret line="45" column="27" lean-forward="false" selection-start-line="45" selection-start-column="27" selection-end-line="45" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="429">
-          <caret line="37" column="0" lean-forward="true" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/requirements.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="75">
@@ -1173,14 +1160,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="284">
-          <caret line="33" column="46" lean-forward="false" selection-start-line="33" selection-start-column="46" selection-end-line="33" selection-end-column="46" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/training_scripts/feature_generator.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-273">
@@ -1206,6 +1185,30 @@
           <folding>
             <element signature="e#0#21#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="34" column="110" lean-forward="true" selection-start-line="34" selection-start-column="65" selection-end-line="34" selection-end-column="110" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_conv_dense_horizontal_timbral_filters_jordi.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="583">
+          <caret line="45" column="27" lean-forward="false" selection-start-line="45" selection-start-column="27" selection-end-line="45" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/training_scripts/hpcDLScripts/keras_cnn_syllableSeg_jan.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="81" lean-forward="false" selection-start-line="15" selection-start-column="81" selection-end-line="15" selection-end-column="81" />
+          <folding />
         </state>
       </provider>
     </entry>

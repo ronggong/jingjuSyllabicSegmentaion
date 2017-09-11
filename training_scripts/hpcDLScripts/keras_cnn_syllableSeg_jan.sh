@@ -26,14 +26,13 @@ fi
 # -----------------------------------------------------------
 mkdir /scratch/rgongcnnSyllableSeg_jan
 mkdir /scratch/rgongcnnSyllableSeg_jan/syllableSeg
-mkdir /scratch/rgongcnnSyllableSeg_jan/syllableSeg/features_train_set_all_syllableSeg_mfccBands2D_old+new
 
 
 printf "Copying feature files into scratch directory...\n"
 # Third, copy the experiment's data:
 # ----------------------------------
 start=`date +%s`
-cp -rp /homedtic/rgong/cnnSyllableSeg/syllableSeg/features_train_set_all_syllableSeg_mfccBands2D_old+new/* /scratch/rgongcnnSyllableSeg_jan/syllableSeg/features_train_set_all_syllableSeg_mfccBands2D_old+new
+cp -rp /homedtic/rgong/cnnSyllableSeg/syllableSeg/feature_all.h5 /scratch/rgongcnnSyllableSeg_jan/syllableSeg/
 end=`date +%s`
 
 printf "Finish copying feature files into scratch directory...\n"
