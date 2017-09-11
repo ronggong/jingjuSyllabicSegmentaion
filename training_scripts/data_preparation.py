@@ -21,11 +21,20 @@ def load_data(folder_train_validation_set,
 
     # print(Y_train_validation)
 
-    filenames_features = [os.path.join(folder_train_validation_set, f)
-                          for f in os.listdir(folder_train_validation_set)
-                          if os.path.isfile(os.path.join(folder_train_validation_set, f)) and f!='.DS_Store']
+    # filenames_features = [os.path.join(folder_train_validation_set, f)
+    #                       for f in os.listdir(folder_train_validation_set)
+    #                       if os.path.isfile(os.path.join(folder_train_validation_set, f)) and f!='.DS_Store']
 
-    print(filenames_features[:10])
+    filenames_features = np.array([os.path.join(folder_train_validation_set, str(ii)+'.pickle.gz')
+                          for ii in range(len(sample_weights))])
+
+    # remove features not exist
+    index_2_remove = [77983, 77928] # these two indices are not presented in training set
+    Y_train_validation = np.delete(Y_train_validation, index_2_remove)
+    sample_weights = np.delete(sample_weights, index_2_remove)
+    filenames_features = np.delete(filenames_features, index_2_remove)
+
+    print(filenames_features[:20])
 
     class_weights = compute_class_weight('balanced',[0,1],Y_train_validation)
 
