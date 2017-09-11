@@ -13,15 +13,14 @@ def train_model(filter_density, dropout, input_shape, file_path_model, filename_
     train final model save to model path
     """
 
-    folder_train_validation_set = '/scratch/rgongcnnSyllableSeg_jan/syllableSeg/features_train_set_all_syllableSeg_mfccBands2D_old+new'
+    filename_train_validation_set = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/feature_all.h5'
     filename_labels_train_validation_set = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/labels_train_set_all_syllableSeg_mfccBands2D_old+new.pickle.gz'
     filename_sample_weights = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/sample_weights_syllableSeg_mfccBands2D_old+new.pickle.gz'
 
     filenames_train, Y_train, sample_weights_train, \
     filenames_validation, Y_validation, sample_weights_validation, \
     filenames_features, Y_train_validation, sample_weights, class_weights = \
-        load_data(folder_train_validation_set,
-              filename_labels_train_validation_set,
+        load_data(filename_labels_train_validation_set,
               filename_sample_weights)
 
     model_0 = jan(filter_density=filter_density, dropout=dropout, input_shape=input_shape)
@@ -32,6 +31,7 @@ def train_model(filter_density, dropout, input_shape, file_path_model, filename_
     print(model_0.count_params())
 
     model_train(model_0, batch_size, patience, input_shape,
+                filename_train_validation_set,
                 filenames_train, Y_train, sample_weights_train,
                 filenames_validation, Y_validation, sample_weights_validation,
                 filenames_features, Y_train_validation, sample_weights, class_weights,

@@ -8,6 +8,7 @@ import numpy as np
 from sklearn import mixture,preprocessing
 from sklearn.model_selection import train_test_split
 import essentia.standard as ess
+import h5py
 
 from src.parameters import *
 from src.phonemeMap import *
@@ -569,6 +570,10 @@ def dumpFeatureBatchOnset():
     mfcc_n = np.concatenate((mfcc_n_nacta2017, mfcc_n_nacta))
     sample_weights_p = np.concatenate((sample_weights_p_nacta2017, sample_weights_p_nacta))
     sample_weights_n = np.concatenate((sample_weights_n_nacta2017, sample_weights_n_nacta))
+    # mfcc_p = mfcc_p_nacta
+    # mfcc_n = mfcc_n_nacta
+    # sample_weights_p = sample_weights_p_nacta
+    # sample_weights_n = sample_weights_n_nacta
 
     print('finished feature concatenation.')
 
@@ -584,11 +589,14 @@ def dumpFeatureBatchOnset():
 
     print(feature_all.shape)
 
-    for ii in range(feature_all.shape[0]):
-        print('dumping feature', ii)
-        cPickle.dump(feature_all[ii,:,:],
-                     gzip.open('trainingData/features_train_set_all_syllableSeg_mfccBands2D_old+new/'+str(ii)+'.pickle.gz', 'wb'),
-                     cPickle.HIGHEST_PROTOCOL)
+    # for ii in range(feature_all.shape[0]):
+    #     print('dumping feature', ii)
+    #     cPickle.dump(feature_all[ii,:,:],
+    #                  gzip.open('trainingData/features_train_set_all_syllableSeg_mfccBands2D_old+new/'+str(ii)+'.pickle.gz', 'wb'),
+    #                  cPickle.HIGHEST_PROTOCOL)
+    h5f = h5py.File(join(feature_data_path,'feature_all.h5'), 'w')
+    h5f.create_dataset('feature_all', data=feature_all)
+    h5f.close()
 
     cPickle.dump(label_all,
                  gzip.open('trainingData/labels_train_set_all_syllableSeg_mfccBands2D_old+new.pickle.gz', 'wb'), cPickle.HIGHEST_PROTOCOL)

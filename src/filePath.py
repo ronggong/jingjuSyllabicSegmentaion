@@ -17,6 +17,9 @@ nacta_wav_path = join(nacta_dataset_root_path, 'wav')
 nacta_textgrid_path = join(nacta_dataset_root_path, 'textgrid')
 nacta_score_path = '/Users/gong/Documents/github/MTG/JingjuSingingAnnotation/aCapella/Syllable duration annotation'
 
+# where we have the dumped features
+feature_data_path = '/Users/gong/Documents/MTG document/dataset/syllableSeg/'
+
 eval_results_path = join(root_path, 'output')
 
 from parameters import mth_ODF, fusion, layer2, filter_shape

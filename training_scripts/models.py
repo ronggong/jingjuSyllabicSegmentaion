@@ -182,9 +182,10 @@ def jordi_model(filter_density_1, filter_density_2,
     return model
 
 def model_train(model_0, batch_size, patience, input_shape,
-                filenames_train, Y_train, sample_weights_train,
-                filenames_validation, Y_validation, sample_weights_validation,
-                filenames_features, Y_train_validation, sample_weights, class_weights,
+                path_feature_data,
+                indices_train, Y_train, sample_weights_train,
+                indices_validation, Y_validation, sample_weights_validation,
+                indices_all, Y_train_validation, sample_weights, class_weights,
                 file_path_model, filename_log):
 
     model_0.save_weights('./initial_weights.h5')
@@ -193,17 +194,19 @@ def model_train(model_0, batch_size, patience, input_shape,
                  CSVLogger(filename=filename_log, separator=';')]
     print("start training...")
 
-    steps_per_epoch_train = int(np.ceil(len(filenames_train) / batch_size))
-    steps_per_epoch_val = int(np.ceil(len(filenames_validation) / batch_size))
+    steps_per_epoch_train = int(np.ceil(len(indices_train) / batch_size))
+    steps_per_epoch_val = int(np.ceil(len(indices_validation) / batch_size))
 
-    generator_train = generator(filenames=filenames_train,
+    generator_train = generator(path_feature_data=path_feature_data,
+                                indices=indices_train,
                                 number_of_batches=steps_per_epoch_train,
                                 file_size=batch_size,
                                 input_shape=input_shape,
                                 labels=Y_train,
                                 sample_weights=sample_weights_train,
                                 multi_inputs=False)
-    generator_val = generator(filenames=filenames_validation,
+    generator_val = generator(path_feature_data=path_feature_data,
+                              indices=indices_validation,
                               number_of_batches=steps_per_epoch_val,
                               file_size=batch_size,
                               input_shape=input_shape,
@@ -218,7 +221,7 @@ def model_train(model_0, batch_size, patience, input_shape,
                                     validation_steps=steps_per_epoch_val,
                                     class_weight=class_weights,
                                     callbacks=callbacks,
-                                    verbose=2)
+                                    verbose=1)
 
     model_0.load_weights('./initial_weights.h5')
 
@@ -226,9 +229,10 @@ def model_train(model_0, batch_size, patience, input_shape,
     epochs_final = len(history.history['val_loss']) - patience
     # epochs_final = 100
 
-    steps_per_epoch_train_val = int(np.ceil(len(filenames_features) / batch_size))
+    steps_per_epoch_train_val = int(np.ceil(len(indices_all) / batch_size))
 
-    generator_train_val = generator(filenames=filenames_features,
+    generator_train_val = generator(path_feature_data=path_feature_data,
+                                    indices=indices_all,
                                     number_of_batches=steps_per_epoch_train_val,
                                     file_size=batch_size,
                                     input_shape=input_shape,
@@ -241,7 +245,7 @@ def model_train(model_0, batch_size, patience, input_shape,
                           epochs=epochs_final,
                           callbacks=callbacks,
                           class_weight=class_weights,
-                          verbose=2)
+                          verbose=1)
 
     model_0.save(file_path_model)
     remove('./initial_weights.h5')
