@@ -13,7 +13,7 @@ from filePath import *
 from trainingSampleCollection import getTestTrainRecordings
 
 
-def batch_eval(root_path, annotation_path, segPhrase_path, segSyllable_path, score_path, groundtruth_path, eval_details_path, recordings, tolerance):
+def batch_eval(root_path, annotation_path, segPhrase_path, segSyllable_path, score_path, groundtruth_path, eval_details_path, recordings, tolerance, method='obin'):
 
     sumDetectedBoundaries, sumGroundtruthPhrases, sumGroundtruthBoundaries, sumCorrect, sumOnsetCorrect, \
     sumOffsetCorrect, sumInsertion, sumDeletion = 0 ,0 ,0 ,0 ,0 ,0, 0, 0
@@ -22,10 +22,12 @@ def batch_eval(root_path, annotation_path, segPhrase_path, segSyllable_path, sco
 
         groundtruth_textgrid_file   = os.path.join(annotation_path, artist_path, recording_name+'.TextGrid')
         phrase_boundary_lab_file    = os.path.join(segPhrase_path, artist_path,  recording_name+'.lab')
-        # syll-o-matic output
-        detected_lab_file_head      = os.path.join(root_path, segSyllable_path, artist_path, recording_name)
-        # jan output
-        # detected_lab_file_head      = os.path.join(segSyllable_path, artist_path,recording_name)
+        if method == 'obin':
+            # syll-o-matic output
+            detected_lab_file_head      = os.path.join(root_path, segSyllable_path, artist_path, recording_name)
+        else:
+            # jan output
+            detected_lab_file_head      = os.path.join(segSyllable_path, artist_path,recording_name)
 
         score_file                  = os.path.join(score_path, artist_path,  recording_name+'.csv')
 
@@ -221,7 +223,7 @@ def evaluation_whole_dataset(segSyllable_path,tolerance):
 
     return sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumInsertion, sumDeletion
 
-def evaluation_test_dataset(segSyllablePath, tolerance):
+def evaluation_test_dataset(segSyllablePath, tolerance, method):
 
     sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumOffsetCorrect, \
     sumInsertion, sumDeletion = 0, 0, 0, 0, 0, 0, 0, 0
@@ -231,7 +233,7 @@ def evaluation_test_dataset(segSyllablePath, tolerance):
     DB, GB, GP, C, OnC, OffC, I, D = batch_eval(nacta2017_dataset_root_path, nacta2017_textgrid_path,nacta2017_segPhrase_path,
                                                 segSyllable_path, nacta2017_score_path,
                                                 nacta2017_groundtruthlab_path, nacta2017_eval_details_path,
-                                                testNacta2017, tolerance)
+                                                testNacta2017, tolerance, method)
 
     sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumOffsetCorrect, \
     sumInsertion, sumDeletion = stat_Add(sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases,
@@ -242,14 +244,13 @@ def evaluation_test_dataset(segSyllablePath, tolerance):
     DB, GB, GP, C, OnC, OffC, I, D = batch_eval(nacta_dataset_root_path, nacta_textgrid_path, nacta_segPhrase_path,
                                                 segSyllable_path, nacta_score_path,
                                                 nacta_groundtruthlab_path, nacta_eval_details_path,
-                                                testNacta, tolerance)
+                                                testNacta, tolerance, method)
 
     sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumOffsetCorrect, \
     sumInsertion, sumDeletion = stat_Add(sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases,
                                          sumCorrect,
                                          sumOnsetCorrect, sumOffsetCorrect, sumInsertion, sumDeletion, DB, GB, GP, C,
                                          OnC, OffC, I, D)
-
 
     print "Detected: {0}, Ground truth: {1}, Ground truth phrases: {2} Correct rate: {3}, Insertion rate: {4}, Deletion rate: {5}\n". \
         format(sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases,
@@ -283,8 +284,8 @@ else:
             eval_result_file_name       = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply_layer2_20_win/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
             segSyllable_path            = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply_layer2_20_win'
         else:
-            eval_result_file_name       = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply_win/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
-            segSyllable_path            = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply_win'
+            eval_result_file_name       = './eval/results/jordi_3_fuison_old+new/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
+            segSyllable_path            = './eval/results/jordi_3_fuison_old+new'
     else:
         if filter_shape == 'temporal':
             if layer2 == 20:
@@ -292,8 +293,8 @@ else:
                 segSyllable_path            = './eval/results/jordi_cw_conv_dense_layer2_20_win'
             else:
                 # layer2 32 nodes
-                eval_result_file_name       = './eval/results/jordi_cw_conv_dense_win/eval_result_jordi_class_weight_conv_dense_win.csv'
-                segSyllable_path            = './eval/results/jordi_cw_conv_dense_win'
+                eval_result_file_name       = './eval/results/jordi_temporal_old+new/eval_result_jordi_class_weight_conv_dense_win.csv'
+                segSyllable_path            = './eval/results/jordi_temporal_old+new'
         else:
             # timbral filter shape
             if layer2 == 20:
@@ -301,19 +302,20 @@ else:
                 segSyllable_path            = './eval/results/jordi_cw_conv_dense_timbral_filter_layer2_20_win'
             else:
                 # layer2 32 nodes
-                eval_result_file_name       = './eval/results/jordi_cw_conv_dense_timbral_filter_win/eval_result_jordi_class_weight_conv_dense_timbral_filter_win.csv'
-                segSyllable_path            = './eval/results/jordi_cw_conv_dense_timbral_filter_win'
+                eval_result_file_name       = './eval/results/jordi_timbral_old+new/eval_result_jordi_class_weight_conv_dense_timbral_filter_win.csv'
+                segSyllable_path            = './eval/results/jordi_timbral_old+new'
 
-
+print(eval_result_file_name)
+print(segSyllable_path)
 # tols                = [0.025,0.05,0.1,0.15,0.2,0.25,0.3]
-# tols = [0.05]
-# with open(eval_result_file_name, 'wb') as testfile:
-#     csv_writer = csv.writer(testfile)
-#     for t in tols:
-#         detected, ground_truth, ground_truth_phrases, correct, insertion, deletion = \
-#             evaluation_test_dataset(segSyllable_path,tolerance=t)
-#         recall,precision,F1 = evaluation2.metrics(detected,ground_truth,correct)
-#         csv_writer.writerow([t,detected, ground_truth, ground_truth_phrases, recall,precision,F1])
+tols = [0.05]
+with open(eval_result_file_name, 'wb') as testfile:
+    csv_writer = csv.writer(testfile)
+    for t in tols:
+        detected, ground_truth, ground_truth_phrases, correct, insertion, deletion = \
+            evaluation_test_dataset(segSyllable_path,tolerance=t, method='jordi')
+        recall,precision,F1 = evaluation2.metrics(detected,ground_truth,correct)
+        csv_writer.writerow([t,detected, ground_truth, ground_truth_phrases, recall,precision,F1])
 
 # not used
 
@@ -474,7 +476,7 @@ else:
 #     csv_writer = csv.writer(testfile)
 #     for t in tols:
 #         detected, ground_truth, ground_truth_phrases, correct, insertion, deletion = \
-#             evaluation_test_dataset(segSyllable_path,tolerance=t)
+#             evaluation_test_dataset(segSyllable_path,tolerance=t,method='obin')
 #         recall,precision,F1 = evaluation2.metrics(detected,ground_truth,correct)
 #         csv_writer.writerow([t,detected, ground_truth, ground_truth_phrases, recall,precision,F1])
 

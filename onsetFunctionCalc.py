@@ -36,15 +36,18 @@ def getOnsetFunction(observations, path_keras_cnn, method='jan'):
     """
 
     model = load_model(path_keras_cnn)
+    print(path_keras_cnn)
 
     ##-- call pdnn to calculate the observation from the features
-    if method=='jordi':
-        observations = [observations, observations, observations, observations, observations, observations]
-    elif method=='jordi_horizontal_timbral':
-        observations = [observations, observations, observations, observations, observations, observations,
-                        observations, observations, observations, observations, observations, observations]
-
-    obs = model.predict_proba(observations, batch_size=128)
+    # if method=='jordi':
+    #     observations = [observations, observations, observations, observations, observations, observations]
+    # elif method=='jordi_horizontal_timbral':
+    #     observations = [observations, observations, observations, observations, observations, observations,
+    #                     observations, observations, observations, observations, observations, observations]
+    if method == 'jordi':
+        obs = model.predict(observations, batch_size=128)
+    else:
+        obs = model.predict_proba(observations, batch_size=128)
     return obs
 
 
@@ -110,6 +113,42 @@ def late_fusion_calc(obs_0, obs_1, mth=0, coef=0.5):
     elif mth == 3 or mth == 4:
         # multiplication
         obs_out = np.multiply(obs_0, obs_1)
+
+    return obs_out
+
+def late_fusion_calc_3(obs_0, obs_1, obs_2, mth=2, coef=0.33333333):
+    """
+    Late fusion methods
+    :param obs_0:
+    :param obs_1:
+    :param mth: 0-addition 1-addition with linear norm 2-exponential weighting mulitplication with linear norm
+    3-multiplication 4- multiplication with linear norm
+    :param coef: weighting coef for multiplication
+    :return:
+    """
+    assert len(obs_0) == len(obs_1)
+
+    obs_out = []
+
+    if mth==2:
+        from sklearn.preprocessing import MinMaxScaler
+        min_max_scaler = MinMaxScaler()
+        obs_0 = obs_0.reshape((len(obs_0),1))
+        obs_1 = obs_1.reshape((len(obs_1),1))
+        obs_2 = obs_2.reshape((len(obs_2),1))
+
+        # print(obs_0.shape, obs_1.shape)
+        obs_0 = min_max_scaler.fit_transform(obs_0)
+        obs_1 = min_max_scaler.fit_transform(obs_1)
+        obs_2 = min_max_scaler.fit_transform(obs_2)
+
+
+    if mth == 2:
+        # multiplication with exponential weighting
+        obs_out = np.multiply(np.power(obs_0, coef), np.power(obs_1, coef))
+        obs_out = np.multiply(obs_out, np.power(obs_2, 1-coef))
+    else:
+        raise ValueError
 
     return obs_out
 
@@ -217,12 +256,13 @@ def onsetFunctionAllRecordings(wav_path,
             if len(line[2]) == 0:
                 continue
 
-            # if int(bpm[i_obs]) == 0:
-            #     continue
-
+            # if i_line is not
             try:
                 print(syllables[i_line])
             except:
+                continue
+
+            if float(bpm[i_line]) == 0:
                 continue
 
             sample_start    = int(round(line[0] * fs))
@@ -269,14 +309,24 @@ def onsetFunctionAllRecordings(wav_path,
             # plt.show()
 
             if late_fusion:
+                # fuse second observation
                 obs_2 = getOnsetFunction(observations=mfcc_reshaped_line,
                                          path_keras_cnn=full_path_keras_cnn_1,
                                          method=mth)
-                obs_2_i = obs_2[:, 1]
+                obs_2_i = obs_2[:, 0]
                 obs_2_i = np.convolve(hann, obs_2_i, mode='same')
-                obs_i = late_fusion_calc(obs_i, obs_2_i, mth=2)
+
+                # fuse the third observation
+                obs_3 = getOnsetFunction(observations=mfcc_reshaped_line,
+                                         path_keras_cnn=full_path_keras_cnn_2,
+                                         method=mth)
+                obs_3_i = obs_3[:, 0]
+                obs_3_i = np.convolve(hann, obs_3_i, mode='same')
+                obs_i = late_fusion_calc_3(obs_i, obs_2_i, obs_3_i, mth=2)
 
             obs_i = np.squeeze(obs_i)
+
+            print(obs_i.shape)
             # organize score
             print('Calculating: '+rn+' phrase '+str(i_obs))
             print('ODF Methods: '+mth_ODF+' Late fusion: '+str(fusion))

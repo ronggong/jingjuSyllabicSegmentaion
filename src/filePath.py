@@ -28,8 +28,6 @@ nacta_eval_details_path = join(nacta_dataset_root_path, 'eval_details')
 # where we have the dumped features
 feature_data_path = '/Users/gong/Documents/MTG document/dataset/syllableSeg/'
 
-eval_results_path = join(root_path, 'eval', 'results', 'jan_old+new')
-
 from parameters import mth_ODF, fusion, layer2, filter_shape
 
 cnnModels_path  = join(root_path, 'cnnModels')
@@ -37,7 +35,7 @@ cnnModels_path  = join(root_path, 'cnnModels')
 if mth_ODF == 'jan':
     # filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_optim.h5'
     filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_old+new.h5'
-    cnnModel_name         = 'jan_cw'
+    cnnModel_name         = 'jan_old+new'
 elif mth_ODF == 'jan_chan3':
     filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jan_class_weight_3_chans_mfccBands_2D_all_optim.h5'
     # filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jan_class_weight_3_chans_layer1_70_mfccBands_2D_all_optim.h5'
@@ -58,9 +56,10 @@ else:
             filename_keras_cnn_1 = 'keras.cnn_syllableSeg_jordi_class_weight_with_conv_dense_timbral_filter_layer2_20_mfccBands_2D_all_optim.h5'
             cnnModel_name        = 'jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply_layer2_20'
         else:
-            filename_keras_cnn_0 = 'keras.cnn_syllableSeg_jordi_class_weight_with_conv_dense_mfccBands_2D_all_optim.h5'
-            filename_keras_cnn_1 = 'keras.cnn_syllableSeg_jordi_class_weight_with_conv_dense_timbral_filter_mfccBands_node04_2D_all_optim.h5'
-            cnnModel_name        = 'jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply'
+            filename_keras_cnn_0 = 'keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_old+new.h5'
+            filename_keras_cnn_1 = 'keras.cnn_syllableSeg_jordi_temporal_class_weight_with_conv_dense_mfccBands_2D_old+new.h5'
+            filename_keras_cnn_2 = 'keras.cnn_syllableSeg_jordi_timbral_class_weight_with_conv_dense_filter_mfccBands_2D_old+new.h5'
+            cnnModel_name        = 'jordi_3_fuison_old+new'
     else:
         if filter_shape == 'temporal':
             # filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jordi_class_weight_mfccBands_2D_all_optim.h5'
@@ -70,10 +69,11 @@ else:
                 cnnModel_name           = 'jordi_cw_conv_dense_layer2_20'
             else:
                 # layer2 32 nodes
-                filename_keras_cnn_0    = 'keras.cnn_syllableSeg_jordi_class_weight_with_conv_dense_mfccBands_2D_all_optim.h5'
+                filename_keras_cnn_0    = 'keras.cnn_syllableSeg_jordi_temporal_class_weight_with_conv_dense_mfccBands_2D_old+new.h5'
                 # filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jordi_class_weight_with_conv_dense_149k_mfccBands_2D_all_optim.h5'
                 # filename_keras_cnn_1  = 'keras.cnn_syllableSeg_jordi_class_weight_with_conv_dense_second_model_32_mfccBands_2D_all_optim.h5'
-                cnnModel_name           = 'jordi_cw_conv_dense'
+                cnnModel_name           = 'jordi_temporal_old+new'
+
         else:
             # timbral filter shape
             if layer2 == 20:
@@ -81,12 +81,12 @@ else:
                 cnnModel_name           = 'jordi_cw_conv_dense_timbral_filter_layer2_20'
             else:
                 # layer2 32 nodes
-                filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jordi_class_weight_with_conv_dense_timbral_filter_mfccBands_node04_2D_all_optim.h5'
+                filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jordi_timbral_class_weight_with_conv_dense_filter_mfccBands_2D_old+new.h5'
                 # filename_keras_cnn_0 = 'keras.cnn_syllableSeg_jordi_class_weight_with_conv_dense_timbral_filter_152k_mfccBands_2D_all_optim.h5'
                 # filename_keras_cnn_1 = 'keras.cnn_syllableSeg_jordi_class_weight_with_conv_dense_timbral_filter_second_model_32_mfccBands_2D_all_optim.h5'
-                cnnModel_name          = 'jordi_cw_conv_dense_horizontal_timbral_filter'
+                cnnModel_name          = 'jordi_timbral_old+new'
 
-filename_scaler_onset    = 'scaler_syllable_mfccBands2D.pkl'
+filename_scaler_onset    = 'scaler_syllable_mfccBands2D_old+new.pkl'
 filename_scaler_onset_23 = 'scaler_syllable_mfccBands2D_23.pkl'
 filename_scaler_onset_46 = 'scaler_syllable_mfccBands2D_46.pkl'
 filename_scaler_onset_93 = 'scaler_syllable_mfccBands2D_93.pkl'
@@ -96,6 +96,8 @@ full_path_keras_cnn_0                   = join(cnnModels_path, filename_keras_cn
 
 if fusion and mth_ODF == 'jordi':
     full_path_keras_cnn_1                   = join(cnnModels_path, filename_keras_cnn_1)
+    full_path_keras_cnn_2                   = join(cnnModels_path, filename_keras_cnn_2)
+
 
 full_path_mfccBands_2D_scaler_onset     = join(cnnModels_path, filename_scaler_onset)
 
@@ -103,6 +105,7 @@ full_path_mfccBands_2D_scaler_onset_23     = join(cnnModels_path, filename_scale
 full_path_mfccBands_2D_scaler_onset_46     = join(cnnModels_path, filename_scaler_onset_46)
 full_path_mfccBands_2D_scaler_onset_93     = join(cnnModels_path, filename_scaler_onset_93)
 
+eval_results_path = join(root_path, 'eval', 'results', cnnModel_name)
 
 # Evaluation path
 # cnnModel_name           = 'jan_cw'

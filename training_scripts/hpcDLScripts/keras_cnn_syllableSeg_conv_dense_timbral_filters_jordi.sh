@@ -20,7 +20,7 @@ source activate /homedtic/rgong/keras_env
 
 #$ -N sseg_tim
 #$ -q default.q
-#$ -l h=node05
+#$ -l h=node07
 
 # Output/Error Text
 # ----------------
