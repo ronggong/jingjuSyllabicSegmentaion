@@ -5,7 +5,7 @@ module load cuda/8.0
 #module load theano/0.8.2
 
 # two variables you need to set
-device=gpu0  # the device to be used. set it to "cpu" if you don't have GPUs
+device=gpu1  # the device to be used. set it to "cpu" if you don't have GPUs
 
 # export environment variables
 #
@@ -41,7 +41,7 @@ printf $((end-start))
 
 #$ -N sseg_jan
 #$ -q default.q
-#$ -l h=node07
+#$ -l h=node10
 
 # Output/Error Text
 # ----------------

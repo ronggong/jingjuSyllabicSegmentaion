@@ -49,6 +49,57 @@ def jan(filter_density, dropout, input_shape):
 
     return model_1
 
+def jan_deep(filter_density, dropout, input_shape):
+
+    reshape_dim = (1, input_shape[0], input_shape[1])
+
+    model_1 = Sequential()
+    model_1.add(Conv2D(int(16 * filter_density), (3, 7), padding="valid",
+                    input_shape=reshape_dim, data_format="channels_first",
+                     kernel_initializer="he_uniform", kernel_regularizer=l2(1e-5)))
+    model_1.add(ELU())
+    # model_1.add(MaxPooling2D(pool_size=(2, 2), padding='valid',data_format="channels_first"))
+
+    model_1.add(Conv2D(int(16 * filter_density), (3, 3), padding="valid", data_format="channels_first",
+                       kernel_initializer="he_uniform", kernel_regularizer=l2(1e-5)))
+    model_1.add(ELU())
+    model_1.add(MaxPooling2D(pool_size=(3, 2), padding='valid',data_format="channels_first"))
+
+    model_1.add(Conv2D(int(32 * filter_density), (3, 3), padding="valid", data_format="channels_first",
+                       kernel_initializer="he_uniform", kernel_regularizer=l2(1e-5)))
+    model_1.add(ELU())
+    # model_1.add(MaxPooling2D(pool_size=(3, 1), padding='valid', data_format="channels_first"))
+
+    model_1.add(Conv2D(int(32 * filter_density), (3, 3), padding="valid", data_format="channels_first",
+                       kernel_initializer="he_uniform", kernel_regularizer=l2(1e-5)))
+    model_1.add(ELU())
+    model_1.add(MaxPooling2D(pool_size=(3, 2), padding='valid', data_format="channels_first"))
+
+    model_1.add(Flatten())
+
+    model_1.add(Dropout(dropout))
+
+    model_1.add(Dense(units=256, kernel_initializer="he_uniform", kernel_regularizer=l2(1e-5)))
+    model_1.add(ELU())
+    model_1.add(Dropout(dropout))
+
+    model_1.add(Dense(units=32, kernel_initializer="he_uniform", kernel_regularizer=l2(1e-5)))
+    model_1.add(ELU())
+    model_1.add(Dropout(dropout))
+
+    model_1.add(Dense(1, activation='sigmoid'))
+    # model_1.add(Activation("softmax"))
+
+    optimizer = Adam()
+
+    model_1.compile(loss='binary_crossentropy',
+                  optimizer= optimizer,
+                  metrics=['accuracy'])
+
+    print(model_1.summary())
+
+    return model_1
+
 
 def createModel(input, num_filter, height_filter, width_filter, filter_density, pool_n_row,
                 pool_n_col, dropout):
@@ -222,7 +273,7 @@ def model_train(model_0, batch_size, patience, input_shape,
                                     validation_steps=steps_per_epoch_val,
                                     class_weight=class_weights,
                                     callbacks=callbacks,
-                                    verbose=1)
+                                    verbose=2)
 
     model_0.load_weights(basename(file_path_model))
 
@@ -245,7 +296,7 @@ def model_train(model_0, batch_size, patience, input_shape,
                           steps_per_epoch=steps_per_epoch_train_val,
                           epochs=epochs_final,
                           class_weight=class_weights,
-                          verbose=1)
+                          verbose=2)
 
     model_0.save(file_path_model)
     remove(basename(file_path_model))
