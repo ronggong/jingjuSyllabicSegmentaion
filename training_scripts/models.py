@@ -1,4 +1,5 @@
 from os import remove
+from os.path import basename
 
 import numpy as np
 from keras import backend as K
@@ -187,7 +188,8 @@ def model_train(model_0, batch_size, patience, input_shape,
                 indices_all, Y_train_validation, sample_weights, class_weights,
                 file_path_model, filename_log):
 
-    model_0.save_weights('./initial_weights.h5')
+
+    model_0.save_weights(basename(file_path_model))
 
     callbacks = [EarlyStopping(monitor='val_loss', patience=patience, verbose=0),
                  CSVLogger(filename=filename_log, separator=';')]
@@ -222,7 +224,7 @@ def model_train(model_0, batch_size, patience, input_shape,
                                     callbacks=callbacks,
                                     verbose=1)
 
-    model_0.load_weights('./initial_weights.h5')
+    model_0.load_weights(basename(file_path_model))
 
     # train again use all train and validation set
     epochs_final = len(history.history['val_loss']) - patience
@@ -246,4 +248,4 @@ def model_train(model_0, batch_size, patience, input_shape,
                           verbose=1)
 
     model_0.save(file_path_model)
-    remove('./initial_weights.h5')
+    remove(basename(file_path_model))

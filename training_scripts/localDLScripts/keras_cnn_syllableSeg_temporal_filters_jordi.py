@@ -1,5 +1,6 @@
 from training_scripts.data_preparation import load_data
 from training_scripts.models import jordi_model, model_train
+import os
 
 nlen = 21
 input_dim = (80, nlen)
@@ -28,8 +29,8 @@ def train_model(filter_density1, filter_density2,
     """
 
     filename_train_validation_set = '/Users/gong/Documents/MTG document/dataset/syllableSeg/feature_all.h5'
-    filename_labels_train_validation_set = '../trainingData/labels_train_set_all_syllableSeg_mfccBands2D_old+new.pickle.gz'
-    filename_sample_weights = '../trainingData/sample_weights_syllableSeg_mfccBands2D_old+new.pickle.gz'
+    filename_labels_train_validation_set = '../../trainingData/labels_train_set_all_syllableSeg_mfccBands2D_old+new.pickle.gz'
+    filename_sample_weights = '../../trainingData/sample_weights_syllableSeg_mfccBands2D_old+new.pickle.gz'
 
     filenames_train, Y_train, sample_weights_train, \
     filenames_validation, Y_validation, sample_weights_validation, \
@@ -96,8 +97,10 @@ if __name__ == '__main__':
     # print best
 
     # train the model
-    file_path_model = '../cnnModels/keras.cnn_syllableSeg_jordi_temporal_class_weight_with_conv_dense_mfccBands_2D_old+new.h5'
-    file_path_log = '../cnnModels/log/keras.cnn_syllableSeg_jordi_temporal_class_weight_with_conv_dense_mfccBands_2D_old+new.csv'
+    file_path_model = '../../cnnModels/keras.cnn_syllableSeg_jordi_temporal_class_weight_with_conv_dense_mfccBands_2D_old+new.h5'
+    file_path_log = '../../cnnModels/log/keras.cnn_syllableSeg_jordi_temporal_class_weight_with_conv_dense_mfccBands_2D_old+new.csv'
+
+
     train_model(filter_density1=1, filter_density2=1,
                 pool_n_row=3, pool_n_col=5, dropout=0.30, input_shape=input_dim,
                 file_path_model=file_path_model, filename_log=file_path_log)
