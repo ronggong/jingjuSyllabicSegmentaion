@@ -2,8 +2,11 @@
 # from keras.utils.np_utils import to_categorical
 # from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
 
+import os
+from src.filePath import *
 from training_scripts.data_preparation import load_data
-from training_scripts.models import jan_deep, model_train
+from training_scripts.models import jan, model_train
+
 
 # space = {
 #             'filter_density': hp.choice('filter_density', [1, 2, 3, 4]),
@@ -20,9 +23,9 @@ def train_model(filter_density, dropout, input_shape, file_path_model, filename_
     train final model save to model path
     """
 
-    filename_train_validation_set = '/Users/gong/Documents/MTG document/dataset/syllableSeg/feature_all.h5'
-    filename_labels_train_validation_set = '../../trainingData/labels_train_set_all_syllableSeg_mfccBands2D_old+new.pickle.gz'
-    filename_sample_weights = '../../trainingData/sample_weights_syllableSeg_mfccBands2D_old+new.pickle.gz'
+    filename_train_validation_set = os.path.join(riyaz_dataset_root_path, 'feature_all_riyaz.h5')
+    filename_labels_train_validation_set = '../../trainingData/labels_train_set_all_syllableSeg_mfccBands2D_riyaz.pickle.gz'
+    filename_sample_weights = '../../trainingData/sample_weights_syllableSeg_mfccBands2D_riyaz.pickle.gz'
 
     filenames_train, Y_train, sample_weights_train, \
     filenames_validation, Y_validation, sample_weights_validation, \
@@ -30,7 +33,7 @@ def train_model(filter_density, dropout, input_shape, file_path_model, filename_
         load_data(filename_labels_train_validation_set,
               filename_sample_weights)
 
-    model_0 = jan_deep(filter_density=filter_density, dropout=dropout, input_shape=input_shape)
+    model_0 = jan(filter_density=filter_density, dropout=dropout, input_shape=input_shape)
 
     batch_size = 128
     patience = 10
@@ -74,6 +77,6 @@ if __name__ == '__main__':
     # print best
 
     # train the final model
-    file_path_model = '../../cnnModels/keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_old+new.h5'
-    file_path_log = '../../cnnModels/log/keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_old+new.csv'
+    file_path_model = '../../cnnModels/keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_riyaz.h5'
+    file_path_log = '../../cnnModels/log/keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_riyaz.csv'
     train_model(filter_density=1, dropout=0.5, input_shape=input_dim, file_path_model=file_path_model, filename_log=file_path_log)

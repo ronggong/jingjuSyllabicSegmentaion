@@ -52,7 +52,7 @@ def train_model(filter_density_1, filter_density_2,
     train final model save to model path
     """
 
-    filename_train_validation_set = '/Users/gong/Documents/MTG document/dataset/syllableSeg/feature_all.h5'
+    filename_train_validation_set = '/Users/gong/Documents/MTG document/dataset/syllableSeg/feature_all_riyaz.h5'
     filename_labels_train_validation_set = '../trainingData/labels_train_set_all_syllableSeg_mfccBands2D_old+new.pickle.gz'
     filename_sample_weights = '../trainingData/sample_weights_syllableSeg_mfccBands2D_old+new.pickle.gz'
 

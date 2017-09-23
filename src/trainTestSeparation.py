@@ -31,6 +31,7 @@ from filePath import *
 import numpy as np
 import textgridParser
 import scoreParser
+from labParser import lab2WordList
 
 
 def getRecordings(wav_path):
@@ -126,6 +127,62 @@ def getBoundaryNumber(textgrid_path, score_path):
 
     return listOnset
 
+def getBoundaryNumberLab(groundtruthLab_path, score_path):
+    """
+    output a list to show the syllable number for each aria,
+    the syllable number is extracted from the groundtruth lab
+    the textgrid needs to have a score
+    :param groundtruthLab_path:
+    :param score_path:
+    :return:
+    """
+
+    listOnset = []
+
+    recording_names = [f for f in os.listdir(groundtruthLab_path) if os.path.isfile(join(groundtruthLab_path, f))]
+    for rn in recording_names:
+        rn = rn.split('.')[0]
+        groundtruth_lab_file = join(groundtruthLab_path, rn + '.lab')
+        score_file = join(score_path, rn + '.csv')
+        if not os.path.isfile(score_file):
+            continue
+
+        list_syllable = lab2WordList(groundtruth_lab_file, label=False)
+
+        numOnset = 0
+        for idx, list in enumerate(list_syllable):
+            try:
+                print('Counting onset number ... ' + rn + ' phrase ' + str(idx + 1))
+
+                numOnsetLine = len(list) - 1
+                numOnset += numOnsetLine
+            except IndexError:
+                print(idx, 'not exist for recording', rn)
+        listOnset += [['dummy_artist_path', rn, numOnset]]
+    return listOnset
+
+def getTestTrainrecordingsRiyaz():
+    list_onset_riyaz = getBoundaryNumberLab(groundtruthLab_path=riyaz_groundtruthlab_path, score_path=riyaz_score_path)
+    numOnset = [n[2] for n in list_onset_riyaz]
+    recording_names = [n[1] for n in list_onset_riyaz]
+    numOnset0 = numOnset[:15]
+    numOnset1 = numOnset[15:30]
+    numOnset2 = numOnset[30:45]
+    numOnset3 = numOnset[45:]
+    print('riyaz 0 test number', testRecordings(numOnset0, 0.2))  # (0, 7, 8, 11, 12, 13, 14)
+    print('riyaz 1 test number', testRecordings(numOnset1, 0.2))  # (0, 3, 6, 9, 10, 13)
+    print('riyaz 2 test number', testRecordings(numOnset2, 0.2))  # (1, 6, 7, 10)
+    print('riyaz 3 test number', testRecordings(numOnset3, 0.2))  # (0, 4, 9)
+
+    print(sum(itemgetter(*[0, 7, 8, 11, 12, 13, 14, 15, 18, 21, 24, 25, 28, 31, 36, 37, 40, 45, 49, 54])(numOnset))/float(sum(numOnset)))
+
+    recordingsTestRiyaz = [['', list_onset_riyaz[ii][1]] for ii in
+                                  [0, 7, 8, 11, 12, 13, 14, 15, 18, 21, 24, 25, 28, 31, 36, 37, 40, 45, 49, 54]]
+    recordingsTrainRiyaz = [['', list_onset_riyaz[ii][1]] for ii in
+                                   range(len(list_onset_riyaz)) if ii not in [0, 7, 8, 11, 12, 13, 14, 15, 18, 21, 24, 25, 28, 31, 36, 37, 40, 45, 49, 54]]
+
+    return recordingsTestRiyaz, recordingsTrainRiyaz
+
 
 def getTestTrainRecordings():
     list_onset_nacta2017 = getBoundaryNumber(textgrid_path=nacta2017_textgrid_path, score_path=nacta2017_score_path)
@@ -207,9 +264,13 @@ if __name__ == '__main__':
     # getTestTrainRecordings()
     # print getRecordingNames('TRAIN')
 
-    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordings()
+    # testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordings()
+    #
+    # print(testNacta2017)
+    # print(testNacta)
+    # print(trainNacta2017)
+    # print(trainNacta)
 
-    print(testNacta2017)
-    print(testNacta)
-    print(trainNacta2017)
-    print(trainNacta)
+    testRiyaz, trainRiyaz = getTestTrainrecordingsRiyaz()
+    print(testRiyaz)
+    print(trainRiyaz)

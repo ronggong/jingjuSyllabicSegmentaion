@@ -1,5 +1,6 @@
 import csv
 import pinyin
+import os
 
 def csvDurationScoreParser(scoreFilename):
 
@@ -44,11 +45,32 @@ def generatePinyin(scoreFilename):
 
     return syllables,pinyins,syllable_durations,bpm
 
-def writerowCsv(syllables,pinyins,syllable_durations,bpm,writer):
+def writerowCsv(syllables,syllable_durations,bpm,writer,pinyins=None):
     for ii in range(len(syllables)):
         writer.writerow(['']+syllables[ii])
-        writer.writerow(['']+pinyins[ii])
+        if pinyins:
+            writer.writerow(['']+pinyins[ii])
         writer.writerow([bpm[ii]]+syllable_durations[ii])
+
+def writeCsv(scoreFilename, syllables, syllable_durations, bpm):
+    """
+    write csv scores
+    :param scoreFilename:
+    :param syllables:
+    :param syllable_durations:
+    :param bpm:
+    :return:
+    """
+    if len(syllables):
+
+        directory, _ = os.path.split(scoreFilename)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        export=open(scoreFilename, "wb")
+        writer=csv.writer(export, delimiter=',')
+        writerowCsv(syllables,syllable_durations,bpm,writer,None)
+        export.close()
 
 def writeCsvPinyin(scoreFilename, scoreFilenamePinyin):
     '''
@@ -61,5 +83,5 @@ def writeCsvPinyin(scoreFilename, scoreFilenamePinyin):
     if len(syllables):
         export=open(scoreFilenamePinyin, "wb")
         writer=csv.writer(export, delimiter=',')
-        writerowCsv(syllables,pinyins,syllable_durations,bpm,writer)
+        writerowCsv(syllables,syllable_durations,bpm,writer,pinyins)
         export.close()

@@ -1,4 +1,4 @@
-from os.path import join, dirname
+from os.path import join, dirname, abspath
 
 # audio and annotation root path
 root_path       = join(dirname(__file__),'..')
@@ -25,8 +25,16 @@ nacta_segPhrase_path = join(nacta_dataset_root_path, 'segPhrase')
 nacta_groundtruthlab_path = join(nacta_dataset_root_path, 'groundtruth_lab')
 nacta_eval_details_path = join(nacta_dataset_root_path, 'eval_details')
 
+# riyaz dataset
+riyaz_dataset_root_path = '/home/gong/PycharmProjects/jingjuSyllabicSegmentaion/riyazDatasetProcessing'
+
+riyaz_mp3_path = join(riyaz_dataset_root_path, 'mp3')
+riyaz_groundtruthlab_path = join(riyaz_dataset_root_path, 'groundtruth')
+riyaz_score_path = join(riyaz_dataset_root_path, 'score')
+
 # where we have the dumped features
-feature_data_path = '/Users/gong/Documents/MTG document/dataset/syllableSeg/'
+# feature_data_path = '/Users/gong/Documents/MTG document/dataset/syllableSeg/'
+feature_data_path = riyaz_dataset_root_path
 
 from parameters import mth_ODF, fusion, layer2, filter_shape
 

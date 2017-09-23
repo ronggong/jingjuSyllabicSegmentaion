@@ -14,10 +14,11 @@ from src.parameters import *
 from src.phonemeMap import *
 from src.textgridParser import textGrid2WordList, wordListsParseByLines, syllableTextgridExtraction
 from src.scoreParser import csvDurationScoreParser
-from src.trainTestSeparation import getTestTrainRecordings
+from src.trainTestSeparation import getTestTrainRecordings, getTestTrainrecordingsRiyaz
 from src.Fdeltas import Fdeltas
 from src.Fprev_sub import Fprev_sub
 from src.filePath import *
+from src.labParser import lab2WordList
 
 
 def getFeature(audio, d=True, nbf=False):
@@ -396,7 +397,7 @@ def removeOutOfRange(frames, frame_start, frame_end):
     return frames[np.all([frames <= frame_end, frames >= frame_start], axis=0)]
 
 
-def dumpFeatureOnset(wav_path, textgrid_path, score_path, recordings, feature_type='mfcc', dmfcc=True, nbf=False):
+def dumpFeatureOnset(wav_path, textgrid_path, score_path, recordings, feature_type='mfcc', dmfcc=True, nbf=False, lab=False):
     '''
     dump the MFCC for each phoneme
     :param recordings:
@@ -410,8 +411,12 @@ def dumpFeatureOnset(wav_path, textgrid_path, score_path, recordings, feature_ty
     sample_weights_n_all = []
 
     for artist_name, recording_name in recordings:
-        groundtruth_textgrid_file   = os.path.join(textgrid_path, artist_name, recording_name+'.TextGrid')
-        wav_file                    = os.path.join(wav_path, artist_name, recording_name+'.wav')
+        if not lab:
+            groundtruth_textgrid_file   = os.path.join(textgrid_path, artist_name, recording_name+'.TextGrid')
+            wav_file = os.path.join(wav_path, artist_name, recording_name + '.wav')
+        else:
+            groundtruth_textgrid_file   = os.path.join(textgrid_path, artist_name, recording_name+'.lab')
+            wav_file = os.path.join(wav_path, artist_name, recording_name + '.mp3')
 
         if '2017' in artist_name:
             score_file = os.path.join(score_path, artist_name, recording_name+'.csv')
@@ -422,17 +427,24 @@ def dumpFeatureOnset(wav_path, textgrid_path, score_path, recordings, feature_ty
         #     print 'Score not found: ' + score_file
         #     continue
 
-        lineList = textGrid2WordList(groundtruth_textgrid_file, whichTier='line')
-        utteranceList = textGrid2WordList(groundtruth_textgrid_file, whichTier='dianSilence')
+        if not lab:
+            lineList = textGrid2WordList(groundtruth_textgrid_file, whichTier='line')
+            utteranceList = textGrid2WordList(groundtruth_textgrid_file, whichTier='dianSilence')
 
-        # parse lines of groundtruth
-        nestedUtteranceLists, numLines, numUtterances = wordListsParseByLines(lineList, utteranceList)
+            # parse lines of groundtruth
+            nestedUtteranceLists, numLines, numUtterances = wordListsParseByLines(lineList, utteranceList)
+        else:
+            nestedUtteranceLists = [lab2WordList(groundtruth_textgrid_file, label=False)]
 
         # parse score
         utterance_durations, bpm = csvDurationScoreParser(score_file)
 
         # load audio
-        audio               = ess.MonoLoader(downmix = 'left', filename = wav_file, sampleRate = fs)()
+        if not lab:
+            audio               = ess.MonoLoader(downmix = 'left', filename = wav_file, sampleRate = fs)()
+        else:
+            audio, fs, nc, md5, br, codec = ess.AudioLoader(filename = wav_file)()
+            audio = audio[:,0] # take the left channel
 
         if feature_type == 'mfcc':
             # MFCC feature
@@ -458,13 +470,20 @@ def dumpFeatureOnset(wav_path, textgrid_path, score_path, recordings, feature_ty
             if float(bpm[idx]):
                 print 'Processing feature collecting ... ' + recording_name + ' phrase ' + str(idx + 1)
 
-                times_onset = [u[0] for u in list[1]]
+                if not lab:
+                    times_onset = [u[0] for u in list[1]]
+                else:
+                    times_onset = [u[0] for u in list]
+
                 # syllable onset frames
                 frames_onset = np.array(np.around(np.array(times_onset)*fs/hopsize),dtype=int)
 
                 # line start and end frames
                 frame_start = frames_onset[0]
-                frame_end   = int(list[0][1]*fs/hopsize)
+                if not lab:
+                    frame_end   = int(list[0][1]*fs/hopsize)
+                else:
+                    frame_end   = int(list[-1][1]*fs/hopsize)
 
                 frames_onset_p75 = np.hstack((frames_onset-1, frames_onset+1))
                 frames_onset_p50 = np.hstack((frames_onset - 2, frames_onset + 2))
@@ -604,6 +623,49 @@ def dumpFeatureBatchOnset():
     cPickle.dump(sample_weights,
                  gzip.open('trainingData/sample_weights_syllableSeg_mfccBands2D_old+new.pickle.gz', 'wb'), cPickle.HIGHEST_PROTOCOL)
 
+def dumpFeatureBatchOnsetRiyaz():
+    """
+    dump feature for Riyaz dataset
+    :return:
+    """
+    testRiyaz, trainRiyaz = getTestTrainrecordingsRiyaz()
+
+    mfcc_p, \
+    mfcc_n, \
+    sample_weights_p, \
+    sample_weights_n \
+        = dumpFeatureOnset(wav_path=riyaz_mp3_path,
+                           textgrid_path=riyaz_groundtruthlab_path,
+                           score_path=riyaz_score_path,
+                           recordings=trainRiyaz,
+                           feature_type='mfccBands2D',
+                           dmfcc=False,
+                           nbf=True,
+                           lab=True)
+
+    sample_weights = np.concatenate((sample_weights_p, sample_weights_n))
+
+    feature_all, label_all, scaler = featureLabelOnset(mfcc_p, mfcc_n)
+
+    print(mfcc_p.shape, mfcc_n.shape, sample_weights_p.shape, sample_weights_n.shape)
+
+    pickle.dump(scaler, open('cnnModels/scaler_syllable_mfccBands2D_riyaz.pkl', 'wb'))
+
+    feature_all = featureReshape(feature_all, nlen=varin['nlen'])
+
+    print(feature_all.shape)
+
+    h5f = h5py.File(join(feature_data_path, 'feature_all_riyaz.h5'), 'w')
+    h5f.create_dataset('feature_all', data=feature_all)
+    h5f.close()
+
+    cPickle.dump(label_all,
+                 gzip.open('trainingData/labels_train_set_all_syllableSeg_mfccBands2D_riyaz.pickle.gz', 'wb'),
+                 cPickle.HIGHEST_PROTOCOL)
+
+    cPickle.dump(sample_weights,
+                 gzip.open('trainingData/sample_weights_syllableSeg_mfccBands2D_riyaz.pickle.gz', 'wb'),
+                 cPickle.HIGHEST_PROTOCOL)
 
 if __name__ == '__main__':
 
@@ -614,8 +676,8 @@ if __name__ == '__main__':
     #                           gmmModel_path=gmmModel_path)
 
     # dump feature for DNN training, with getFeature output MFCC bands
-    # dumpFeatureBatchOnset()
-    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordings()
-
-    for artist_path, filename in testNacta:
-        print(join(artist_path,filename))
+    dumpFeatureBatchOnsetRiyaz()
+    # testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordings()
+    #
+    # for artist_path, filename in testNacta:
+    #     print(join(artist_path,filename))
