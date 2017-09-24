@@ -46,10 +46,9 @@ def startEndTime(filename_json):
     data = json.load(open(filename_json))
     intonation = data['IntonationRating']
     for i in intonation:
-        start_end_time = [i['start_time'], i['end_time']]
+        start_end_time = [i['start_time'], i['end_time'], i['ref_start_time'], i['ref_end_time']]
         if start_end_time not in list_start_end_time:
             list_start_end_time.append(start_end_time)
-
     # sort the list according to the first element
     list_start_end_time = sorted(list_start_end_time, key=itemgetter(0))
     return list_start_end_time
@@ -60,9 +59,10 @@ def keepOnsetTime(list_start_end_time):
     :param list_start_end_time:
     :return:
     """
-    for ii in range(len(list_start_end_time)-1):
-        list_start_end_time[ii][1] = list_start_end_time[ii+1][0]
-    return list_start_end_time
+    list_start_end_time_onset = [[i[0], i[1]] for i in list_start_end_time]
+    for ii in range(len(list_start_end_time_onset)-1):
+        list_start_end_time_onset[ii][1] = list_start_end_time_onset[ii+1][0]
+    return list_start_end_time_onset
 
 def dumpGroundtruth(filename_json):
     """
@@ -93,16 +93,35 @@ def reformScoreElements(list_ref):
     :param list_ref:
     :return:
     """
+    onsetOffset = []
     syllables = []
     syllable_durations = []
     bpm = []
     for r in list_ref:
+        onsetOffset.append([float(r[0]), float(r[1])])
         syllables.append(r[3])
         syllable_durations.append(float(r[1])-float(r[0]))
         bpm.append(60)
     syllables = [syllables]
     syllable_durations = [syllable_durations]
-    return syllables, syllable_durations, bpm
+    return onsetOffset, syllables, syllable_durations, bpm
+
+def syllableGt(list_gt_ref, onset_offset_ref, syllables):
+    """
+    find onset_offset_ref index, then find the corresponding syllable
+    :param list_gt_ref: [[onset, offset, onset_ref, offset_ref], ...]
+    :param onset_offset_ref: [[onset_ref, offset_ref], ...]
+    :param syllables: same order as onset_offset_ref
+    :return:
+    """
+    syllables_gt = []
+    list_gt_only_ref = [[i[2], i[3]] for i in list_gt_ref]
+
+    for r in list_gt_only_ref:
+        idx = onset_offset_ref.index(r)
+        s = syllables[0][idx]
+        syllables_gt.append(s)
+    return syllables_gt
 
 def dumpRef(filename_json, filename_ref):
     """
@@ -121,10 +140,12 @@ if __name__ == '__main__':
     for fn in list_filename:
         filename_mp3, filename_json, filename_ref = mp3JsonRefFinder(filepath_riyaz_dataset, fn)
         print(filename_mp3, filename_json, filename_ref)
-        list_gt = startEndTime(filename_json)
-        list_gt = keepOnsetTime(list_gt)
+        list_gt_ref = startEndTime(filename_json)
+        list_gt = keepOnsetTime(list_gt_ref)
         list_s = readRef(filename_ref)
-        syllables, syllable_durations, bpm = reformScoreElements(list_s)
+        onsetOffset, syllables, syllable_durations, bpm = reformScoreElements(list_s)
+        syllables_gt = syllableGt(list_gt_ref, onsetOffset, syllables)
+        list_gt = [z[0] + [z[1]] for z in zip(list_gt, syllables_gt)]
         shutil.copy2(filename_mp3, os.path.join('./mp3'))
-        boundaryLabWriter(list_gt, os.path.join('./groundtruth', fn+'.lab'), label=False)
+        boundaryLabWriter(list_gt, os.path.join('./groundtruth', fn+'.lab'), label=True)
         writeCsv(os.path.join('./score', fn+'.csv'), syllables, syllable_durations, bpm)

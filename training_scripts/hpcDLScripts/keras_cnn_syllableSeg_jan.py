@@ -2,7 +2,7 @@ import sys, os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from data_preparation import load_data
-from models import jan_deep, model_train
+from models import jan, model_train
 
 
 nlen = 21
@@ -23,7 +23,7 @@ def train_model(filter_density, dropout, input_shape, file_path_model, filename_
         load_data(filename_labels_train_validation_set,
               filename_sample_weights)
 
-    model_0 = jan_deep(filter_density=filter_density, dropout=dropout, input_shape=input_shape)
+    model_0 = jan(filter_density=filter_density, dropout=dropout, input_shape=input_shape)
 
     batch_size = 128
     patience = 10
