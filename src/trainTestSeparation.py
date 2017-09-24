@@ -162,24 +162,37 @@ def getBoundaryNumberLab(groundtruthLab_path, score_path):
     return listOnset
 
 def getTestTrainrecordingsRiyaz():
-    list_onset_riyaz = getBoundaryNumberLab(groundtruthLab_path=riyaz_groundtruthlab_path, score_path=riyaz_score_path)
-    numOnset = [n[2] for n in list_onset_riyaz]
-    recording_names = [n[1] for n in list_onset_riyaz]
-    numOnset0 = numOnset[:15]
-    numOnset1 = numOnset[15:30]
-    numOnset2 = numOnset[30:45]
-    numOnset3 = numOnset[45:]
-    print('riyaz 0 test number', testRecordings(numOnset0, 0.2))  # (0, 7, 8, 11, 12, 13, 14)
-    print('riyaz 1 test number', testRecordings(numOnset1, 0.2))  # (0, 3, 6, 9, 10, 13)
-    print('riyaz 2 test number', testRecordings(numOnset2, 0.2))  # (1, 6, 7, 10)
-    print('riyaz 3 test number', testRecordings(numOnset3, 0.2))  # (0, 4, 9)
+    # list_onset_riyaz = getBoundaryNumberLab(groundtruthLab_path=riyaz_groundtruthlab_path, score_path=riyaz_score_path)
+    # numOnset = [n[2] for n in list_onset_riyaz]
+    # recording_names = [n[1] for n in list_onset_riyaz]
+    # numOnset0 = numOnset[:15]
+    # numOnset1 = numOnset[15:30]
+    # numOnset2 = numOnset[30:45]
+    # numOnset3 = numOnset[45:]
+    # print('riyaz 0 test number', testRecordings(numOnset0, 0.2))  # (0, 7, 8, 11, 12, 13, 14)
+    # print('riyaz 1 test number', testRecordings(numOnset1, 0.2))  # (0, 3, 6, 9, 10, 13)
+    # print('riyaz 2 test number', testRecordings(numOnset2, 0.2))  # (1, 6, 7, 10)
+    # print('riyaz 3 test number', testRecordings(numOnset3, 0.2))  # (0, 4, 9)
+    #
+    # print(sum(itemgetter(*[0, 7, 8, 11, 12, 13, 14, 15, 18, 21, 24, 25, 28, 31, 36, 37, 40, 45, 49, 54])(numOnset))/float(sum(numOnset)))
+    #
+    # recordingsTestRiyaz = [['', list_onset_riyaz[ii][1]] for ii in
+    #                               [0, 7, 8, 11, 12, 13, 14, 15, 18, 21, 24, 25, 28, 31, 36, 37, 40, 45, 49, 54]]
+    # recordingsTrainRiyaz = [['', list_onset_riyaz[ii][1]] for ii in
+    #                                range(len(list_onset_riyaz)) if ii not in [0, 7, 8, 11, 12, 13, 14, 15, 18, 21, 24, 25, 28, 31, 36, 37, 40, 45, 49, 54]]
 
-    print(sum(itemgetter(*[0, 7, 8, 11, 12, 13, 14, 15, 18, 21, 24, 25, 28, 31, 36, 37, 40, 45, 49, 54])(numOnset))/float(sum(numOnset)))
-
-    recordingsTestRiyaz = [['', list_onset_riyaz[ii][1]] for ii in
-                                  [0, 7, 8, 11, 12, 13, 14, 15, 18, 21, 24, 25, 28, 31, 36, 37, 40, 45, 49, 54]]
-    recordingsTrainRiyaz = [['', list_onset_riyaz[ii][1]] for ii in
-                                   range(len(list_onset_riyaz)) if ii not in [0, 7, 8, 11, 12, 13, 14, 15, 18, 21, 24, 25, 28, 31, 36, 37, 40, 45, 49, 54]]
+    recordingsTestRiyaz = [['', 'SSazJAOgvJ'], ['', 'WUfMbICU2t'], ['', 'Rmh6nTRNRV'], ['', 'xNgxgNL16M'], ['', 'cng5OqLTFD'],
+     ['', 'lo0uEZ1XnZ'], ['', 'fzKAFbSQpa'], ['', 'mMMVlKPVg3'], ['', 'AENiVWRkhl'], ['', 'rwoAN7KATB'],
+     ['', 'PNrMzI3mL4'], ['', 'uHPUyd16GD'], ['', '0C4LcxSbt1'], ['', '0DcjUiF456'], ['', '0QZth6LDtw'],
+     ['', 'J7K6T9YZsF'], ['', 'Gl5okMvDzr'], ['', 'KjsJQc0lOW'], ['', '0dXVbCCxcA'], ['', 'HKswgkFp6C']]
+    recordingsTrainRiyaz = [['', '0A3SPhtRMH'], ['', '6aazlC7DGc'], ['', '0qKAEL5BtR'], ['', '1x0pmfE8Rq'], ['', 'rFFopZAGb0'],
+     ['', 'm75IOPxPIP'], ['', 'GXYiJc3qbE'], ['', '0GmiArFSAW'], ['', 'QB7rlJtYsE'], ['', '0PdkLJ9QAy'],
+     ['', 'skGpjqnmso'], ['', 'V2SW0k0WsK'], ['', '0dFpOMlA9p'], ['', '01jroGVdYr'], ['', 'a0oYZhwo04'],
+     ['', 'w4A85oN25D'], ['', 'MhRkNjUAvf'], ['', 'WvryUiwpwP'], ['', '00PdvbkGvD'], ['', 'CJsHSlSBbZ'],
+     ['', '0FP3Qks8xh'], ['', 'kaM2vR1SLz'], ['', 'Q4l0OGla6j'], ['', 'c5Ro2tqfiA'], ['', 'X408AFbLUM'],
+     ['', '0eHOPcBTn4'], ['', 'hxiKs7h9IT'], ['', 'ZJYl5507ky'], ['', 'FLgffF2z89'], ['', '8P2aWWEeZd'],
+     ['', 'PFHQiuzgEC'], ['', '6DvkHWOdKQ'], ['', '0t4OAPATPi'], ['', 'aNjpLW1PdF'], ['', 'ttcuWsnYHF'],
+     ['', 'Nnh9YzFn19'], ['', 'S5jhIGJ15A'], ['', '1VgNgElHhO'], ['', 'KmN1QDEPKH']]
 
     return recordingsTestRiyaz, recordingsTrainRiyaz
 
@@ -198,7 +211,7 @@ def getTestTrainRecordings():
     numOnsetNactaMale = [n[2] for n in list_onset_nacta if '2017' not in n[0] and 'ls'==n[1][:2]]
     numOnsetNactaFem = [n[2] for n in list_onset_nacta if '2017' not in n[0] and 'da'==n[1][:2]]
 
-    print(len(numOnsetNacta2017Male), len(numOnsetNacta2017Fem), len(numOnsetNactaMale), len(numOnsetNactaFem))
+    print(sum(numOnsetNacta2017Male), sum(numOnsetNacta2017Fem), sum(numOnsetNactaMale), sum(numOnsetNactaFem))
 
     # segment the onset number list to accelerate the combination calculation
     numOnsetNacta2017Male0 = numOnsetNacta2017Male[:10]
@@ -273,4 +286,4 @@ if __name__ == '__main__':
 
     testRiyaz, trainRiyaz = getTestTrainrecordingsRiyaz()
     print(testRiyaz)
-    print(trainRiyaz)
+    # print(trainRiyaz)

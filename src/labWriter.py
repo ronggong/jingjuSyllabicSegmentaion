@@ -5,6 +5,7 @@ import re
 from zhon.hanzi import punctuation as puncChinese
 # from string import punctuation as puncWestern
 import os
+from labParser import lab2WordList
 
 def boundaryLabWriter(boundaryList, outputFilename, label=False):
     '''
@@ -50,5 +51,20 @@ def phraseBoundaryWriter(textgrid_file, outputFilename):
 
     for list in nestedUtteranceLists:
         nonEmptyLineList.append(list[0])
+
+    boundaryLabWriter(nonEmptyLineList, outputFilename)
+
+def phraseBoundaryWriterLab(groundtruth_lab, outputFilename):
+    '''
+    Write phrase boundary from groundtruth lab into outputFilename, example: .syll.lab
+    :param textgrid_file:
+    :param outputFilename:
+    :return:
+    '''
+
+    list_groundtruth = lab2WordList(groundtruth_lab, label=False)
+
+    # phrase start, end time
+    nonEmptyLineList = [[list_groundtruth[0][0], list_groundtruth[-1][1]]]
 
     boundaryLabWriter(nonEmptyLineList, outputFilename)

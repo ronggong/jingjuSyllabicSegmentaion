@@ -121,7 +121,7 @@ def getMFCCBands1D(audio, nbf=False):
 
     return feature
 
-def getMFCCBands2D(audio, framesize, nbf=False, nlen=10):
+def getMFCCBands2D(audio, framesize_t, hopsize_t, fs, nbf=False, nlen=10):
 
     '''
     mel bands feature [p[0],p[1]]
@@ -134,6 +134,11 @@ def getMFCCBands2D(audio, framesize, nbf=False, nlen=10):
     '''
 
     winAnalysis = 'hann'
+
+    highFrequencyBound = fs / 2 if fs / 2 < 11000 else 11000
+
+    framesize = int(round(framesize_t * fs))
+    hopsize = int(round(hopsize_t * fs))
 
     MFCC80 = ess.MFCC(sampleRate=fs,
                       highFrequencyBound=highFrequencyBound,
@@ -302,7 +307,7 @@ def dumpFeaturePhoneme(full_path_recordings,
             mfcc = getMFCCBands1D(audio, nbf=nbf)
             mfcc = np.log(100000*mfcc+1)
         elif feature_type == 'mfccBands2D':
-            mfcc = getMFCCBands2D(audio, framesize, nbf=nbf, nlen=varin['nlen'])
+            mfcc = getMFCCBands2D(audio, framesize_t, hopsize_t, fs, nbf=nbf, nlen=varin['nlen'])
             mfcc = np.log(100000*mfcc+1)
         else:
             print(feature_type+' is not exist.')
@@ -453,7 +458,7 @@ def dumpFeatureOnset(wav_path, textgrid_path, score_path, recordings, feature_ty
             mfcc = getMFCCBands1D(audio, nbf=nbf)
             mfcc = np.log(100000*mfcc+1)
         elif feature_type == 'mfccBands2D':
-            mfcc = getMFCCBands2D(audio, framesize, nbf=nbf, nlen=varin['nlen'])
+            mfcc = getMFCCBands2D(audio, framesize_t, hopsize_t, fs, nbf=nbf, nlen=varin['nlen'])
             mfcc = np.log(100000*mfcc+1)
         else:
             print(feature_type+' is not exist.')
@@ -476,14 +481,14 @@ def dumpFeatureOnset(wav_path, textgrid_path, score_path, recordings, feature_ty
                     times_onset = [u[0] for u in list]
 
                 # syllable onset frames
-                frames_onset = np.array(np.around(np.array(times_onset)*fs/hopsize),dtype=int)
+                frames_onset = np.array(np.around(np.array(times_onset)/hopsize_t),dtype=int)
 
                 # line start and end frames
                 frame_start = frames_onset[0]
                 if not lab:
-                    frame_end   = int(list[0][1]*fs/hopsize)
+                    frame_end   = int(list[0][1]/hopsize_t)
                 else:
-                    frame_end   = int(list[-1][1]*fs/hopsize)
+                    frame_end   = int(list[-1][1]/hopsize_t)
 
                 frames_onset_p75 = np.hstack((frames_onset-1, frames_onset+1))
                 frames_onset_p50 = np.hstack((frames_onset - 2, frames_onset + 2))
@@ -676,8 +681,8 @@ if __name__ == '__main__':
     #                           gmmModel_path=gmmModel_path)
 
     # dump feature for DNN training, with getFeature output MFCC bands
-    dumpFeatureBatchOnsetRiyaz()
-    # testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordings()
+    # dumpFeatureBatchOnsetRiyaz()
+    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordings()
     #
     # for artist_path, filename in testNacta:
     #     print(join(artist_path,filename))

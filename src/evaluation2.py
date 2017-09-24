@@ -89,6 +89,9 @@ def boundaryEval(groundtruthBoundaries, detectedBoundaries, tolerance):
 def metrics(numDetected, numGroundtruth, numCorrect):
     recall = (numCorrect/float(numGroundtruth))*100
     precision = (numCorrect/float(numDetected))*100
-    F1 = 2*(precision*recall)/(precision+recall)
+    if precision==0 and recall == 0:
+        F1 = 0
+    else:
+        F1 = 2*(precision*recall)/(precision+recall)
 
     return recall,precision,F1

@@ -1,13 +1,13 @@
 # parameters of ODF onset detection function
 
 # ODF method: 'jordi': Pons' CNN, 'jan': Schluter' CNN, 'jan_chan3'
-mth_ODF         = 'jordi'
+mth_ODF         = 'jan'
 
 # layer2 node number: 20 or 32
 layer2          = 32
 
 # late fusion: Bool
-fusion          = True
+fusion          = False
 
 # filter shape: 'temporal' or 'timbral' filter shape in Pons' CNN
 filter_shape    = 'timbral'
@@ -36,3 +36,5 @@ varin['delta_mode'] = 'proportion'
 varin['delta']      = 0.35
 
 varin['plot'] = False
+
+varin['decoding'] = 'peakPicking'

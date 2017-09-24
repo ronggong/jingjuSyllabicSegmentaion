@@ -13,15 +13,16 @@ pyximport.install(reload_support=True,
 
 from src.filePath import *
 from src.labWriter import boundaryLabWriter
+from src.labParser import lab2WordList
 from src.parameters import *
 from src.scoreManip import phonemeDurationForLine
-from src.scoreParser import generatePinyin
+from src.scoreParser import generatePinyin, csvDurationScoreParser
 from src.textgridParser import textGrid2WordList, wordListsParseByLines
 from trainingSampleCollection import featureReshape
 from trainingSampleCollection import getMFCCBands2D
-from trainingSampleCollection import getTestTrainRecordings
+from trainingSampleCollection import getTestTrainRecordings, getTestTrainrecordingsRiyaz
 
-
+from peakPicking import peakPicking
 import viterbiDecoding
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -45,13 +46,13 @@ def getOnsetFunction(observations, path_keras_cnn, method='jan'):
     #     observations = [observations, observations, observations, observations, observations, observations,
     #                     observations, observations, observations, observations, observations, observations]
     if method == 'jordi':
-        obs = model.predict(observations, batch_size=128)
+        obs = model.predict(observations, batch_size=128, verbose=1)
     else:
         obs = model.predict_proba(observations, batch_size=128)
     return obs
 
 
-def featureExtraction(audio_monoloader, scaler, framesize, dmfcc=False, nbf=False, feature_type='mfccBands2D'):
+def featureExtraction(audio_monoloader, scaler, framesize_t, hopsize_t, fs, dmfcc=False, nbf=False, feature_type='mfccBands2D'):
     """
     extract mfcc features
     :param audio_monoloader:
@@ -62,7 +63,7 @@ def featureExtraction(audio_monoloader, scaler, framesize, dmfcc=False, nbf=Fals
     :return:
     """
     if feature_type == 'mfccBands2D':
-        mfcc = getMFCCBands2D(audio_monoloader, framesize, nbf=nbf, nlen=varin['nlen'])
+        mfcc = getMFCCBands2D(audio_monoloader, framesize_t, hopsize_t, fs, nbf=nbf, nlen=varin['nlen'])
         mfcc = np.log(100000 * mfcc + 1)
 
         mfcc = np.array(mfcc, dtype='float32')
@@ -161,7 +162,8 @@ def onsetFunctionAllRecordings(wav_path,
                                dmfcc=False,
                                nbf=True,
                                mth='jordi',
-                               late_fusion=True):
+                               late_fusion=True,
+                               lab=False):
     """
     ODF and viter decoding
     :param recordings:
@@ -199,31 +201,44 @@ def onsetFunctionAllRecordings(wav_path,
     for artist_path, rn in test_recordings:
         # rn = rn.split('.')[0]
 
-        groundtruth_textgrid_file   = join(textgrid_path, artist_path, rn+'.TextGrid')
+        if not lab:
+            groundtruth_textgrid_file   = join(textgrid_path, artist_path, rn+'.TextGrid')
+            wav_file = join(wav_path, artist_path, rn + '.wav')
+        else:
+            groundtruth_textgrid_file   = join(textgrid_path, artist_path, rn+'.lab')
+            wav_file = join(wav_path, artist_path, rn + '.mp3')
+
         score_file                  = join(score_path, artist_path, rn+'.csv')
-        wav_file                    = join(wav_path, artist_path, rn+'.wav')
 
         if not isfile(score_file):
             print 'Score not found: ' + score_file
             continue
 
-        lineList        = textGrid2WordList(groundtruth_textgrid_file, whichTier='line')
+        if not lab:
+            lineList        = textGrid2WordList(groundtruth_textgrid_file, whichTier='line')
 
-
-        # parse score
-        syllables, pinyins, syllable_durations, bpm = generatePinyin(score_file)
+            # parse score
+            syllables, pinyins, syllable_durations, bpm = generatePinyin(score_file)
+        else:
+            lineList        = [lab2WordList(groundtruth_textgrid_file, label=False)]
+            syllable_durations, bpm = csvDurationScoreParser(score_file)
 
         # print(pinyins)
         # print(syllable_durations)
 
         # load audio
-        audio_monoloader               = ess.MonoLoader(downmix = 'left', filename = wav_file, sampleRate = fs)()
-        audio_eqloudloder              = ess.EqloudLoader(filename=wav_file, sampleRate = fs)()
+        if not lab:
+            audio_monoloader               = ess.MonoLoader(downmix = 'left', filename = wav_file, sampleRate = fs)()
+        else:
+            audio, fs, nc, md5, br, codec = ess.AudioLoader(filename=wav_file)()
+            audio_monoloader = audio[:, 0]  # take the left channel
 
         if mth == 'jordi' or mth == 'jordi_horizontal_timbral' or mth == 'jan':
             mfcc, mfcc_reshaped = featureExtraction(audio_monoloader,
                                                           scaler,
-                                                          int(round(0.025 * fs)),
+                                                          framesize_t,
+                                                            hopsize_t,
+                                                            fs,
                                                           dmfcc=dmfcc,
                                                           nbf=nbf,
                                                           feature_type='mfccBands2D')
@@ -231,21 +246,27 @@ def onsetFunctionAllRecordings(wav_path,
             # for jan 3 channels input
             mfcc_23, mfcc_reshaped_23 = featureExtraction(audio_monoloader,
                                                     scaler_23,
-                                                    int(round(0.023 * fs)),
+                                                          framesize_t,
+                                                          hopsize_t,
+                                                          fs,
                                                     dmfcc=dmfcc,
                                                     nbf=nbf,
                                                     feature_type='mfccBands2D')
 
             mfcc_46, mfcc_reshaped_46 = featureExtraction(audio_monoloader,
                                                     scaler_46,
-                                                    int(round(0.046 * fs)),
+                                                          framesize_t,
+                                                          hopsize_t,
+                                                          fs,
                                                     dmfcc=dmfcc,
                                                     nbf=nbf,
                                                     feature_type='mfccBands2D')
 
             mfcc_93, mfcc_reshaped_93 = featureExtraction(audio_monoloader,
                                                     scaler_93,
-                                                    int(round(0.093 * fs)),
+                                                          framesize_t,
+                                                          hopsize_t,
+                                                          fs,
                                                     dmfcc=dmfcc,
                                                     nbf=nbf,
                                                     feature_type='mfccBands2D')
@@ -253,26 +274,28 @@ def onsetFunctionAllRecordings(wav_path,
         # print lineList
         i_line = 0
         for i_obs, line in enumerate(lineList):
-            if len(line[2]) == 0:
-                continue
+            if not lab:
+                if len(line[2]) == 0:
+                    continue
 
             # if i_line is not
             try:
-                print(syllables[i_line])
+                print(syllable_durations[i_line])
             except:
                 continue
 
             if float(bpm[i_line]) == 0:
                 continue
 
-            sample_start    = int(round(line[0] * fs))
-            sample_end      = int(round(line[1] * fs))
-            frame_start     = int(round(line[0] * fs / hopsize))
-            frame_end       = int(round(line[1] * fs / hopsize))
+            if not lab:
+                frame_start     = int(round(line[0] / hopsize_t))
+                frame_end       = int(round(line[1] / hopsize_t))
+            else:
+                frame_start = int(round(line[0][0] / hopsize_t))
+                frame_end = int(round(line[-1][1] /hopsize_t))
             # print(feature.shape)
 
             if mth == 'jordi' or mth == 'jordi_horizontal_timbral' or mth == 'jan':
-                audio_eqloudloder_line = audio_eqloudloder[sample_start:sample_end]
                 mfcc_line          = mfcc[frame_start:frame_end]
                 mfcc_reshaped_line = mfcc_reshaped[frame_start:frame_end]
             elif mth == 'jan_chan3':
@@ -331,31 +354,37 @@ def onsetFunctionAllRecordings(wav_path,
             print('Calculating: '+rn+' phrase '+str(i_obs))
             print('ODF Methods: '+mth_ODF+' Late fusion: '+str(fusion))
 
-            time_line      = line[1] - line[0]
+            if not lab:
+                time_line      = line[1] - line[0]
+                lyrics_line    = line[2]
+                print('Syllable:')
+                print(lyrics_line)
+            else:
+                time_line      = line[-1][1] - line[0][0]
 
-            lyrics_line    = line[2]
 
-            print('Syllable:')
-            print(lyrics_line)
-
-            pinyin_score   = pinyins[i_line]
-            pinyin_score   = [ps for ps in pinyin_score if len(ps)]
             duration_score = syllable_durations[i_line]
             duration_score = np.array([float(ds) for ds in duration_score if len(ds)])
             duration_score = duration_score * (time_line/np.sum(duration_score))
 
-            # segmental decoding
-            obs_i[0] = 1.0
-            obs_i[-1] = 1.0
             # print(duration_score)
 
-            i_boundary = viterbiDecoding.viterbiSegmental2(obs_i, duration_score, varin)
+            if varin['decoding'] == 'viterbi':
+                # segmental decoding
+                obs_i[0] = 1.0
+                obs_i[-1] = 1.0
+                i_boundary = viterbiDecoding.viterbiSegmental2(obs_i, duration_score, varin)
+                filename_syll_lab = join(eval_results_path, artist_path, rn + '_' + str(i_line + 1) + '.syll.lab')
+                label = True
+            else:
+                i_boundary = peakPicking(obs_i)
+                label = False
+                filename_syll_lab = join(eval_results_path+'_peakPicking', artist_path, rn + '_' + str(i_line + 1) + '.syll.lab')
 
             time_boundray_start = np.array(i_boundary[:-1])*hopsize_t
             time_boundray_end   = np.array(i_boundary[1:])*hopsize_t
 
             # uncomment this section if we want to write boundaries to .syll.lab file
-            filename_syll_lab = join(eval_results_path, artist_path, rn+'_'+str(i_line+1)+'.syll.lab')
 
             eval_results_data_path = dirname(filename_syll_lab)
 
@@ -363,9 +392,15 @@ def onsetFunctionAllRecordings(wav_path,
                 makedirs(eval_results_data_path)
 
             # write boundary lab file
-            boundaryLabWriter(boundaryList=zip(time_boundray_start.tolist(),time_boundray_end.tolist(),filter(None,pinyins[i_line])),
+            if not lab:
+                boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist(), filter(None,pinyins[i_line]))
+            else:
+                boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist())
+                label = False
+
+            boundaryLabWriter(boundaryList=boundary_list,
                               outputFilename=filename_syll_lab,
-                                label=True)
+                                label=label)
 
             i_line += 1
 
@@ -380,7 +415,7 @@ def onsetFunctionAllRecordings(wav_path,
                 # class weight
                 ax1 = plt.subplot(3,1,1)
                 y = np.arange(0, 80)
-                x = np.arange(0, mfcc_line.shape[0])*(hopsize/float(fs))
+                x = np.arange(0, mfcc_line.shape[0])*hopsize_t
                 cax = plt.pcolormesh(x, y, np.transpose(mfcc_line[:, 80 * 11:80 * 12]))
                 # for gs in groundtruth_syllable:
                 #     plt.axvline(gs, color='r', linewidth=2)
@@ -391,9 +426,9 @@ def onsetFunctionAllRecordings(wav_path,
                 plt.title('Calculating: '+rn+' phrase '+str(i_obs))
 
                 ax2 = plt.subplot(312, sharex=ax1)
-                plt.plot(np.arange(0,len(obs_i))*(hopsize/float(fs)), obs_i)
+                plt.plot(np.arange(0,len(obs_i))*hopsize_t, obs_i)
                 for ib in i_boundary:
-                    plt.axvline(ib * (hopsize / float(fs)), color='r', linewidth=2)
+                    plt.axvline(ib * hopsize_t, color='r', linewidth=2)
 
                 ax2.set_ylabel('ODF', fontsize=12)
                 ax2.axis('tight')
@@ -419,26 +454,39 @@ def onsetFunctionAllRecordings(wav_path,
 
 if __name__ == '__main__':
 
-    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordings()
+    # testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordings()
+    #
+    # # nacta2017
+    # onsetFunctionAllRecordings(wav_path=nacta2017_wav_path,
+    #                            textgrid_path=nacta2017_textgrid_path,
+    #                            score_path=nacta2017_score_path,
+    #                            test_recordings=testNacta2017,
+    #                            feature_type='mfccBands2D',
+    #                            dmfcc=False,
+    #                            nbf=True,
+    #                            mth=mth_ODF,
+    #                            late_fusion=fusion)
+    #
+    # # nacta
+    # onsetFunctionAllRecordings(wav_path=nacta_wav_path,
+    #                            textgrid_path=nacta_textgrid_path,
+    #                            score_path=nacta_score_path,
+    #                            test_recordings=testNacta,
+    #                            feature_type='mfccBands2D',
+    #                            dmfcc=False,
+    #                            nbf=True,
+    #                            mth=mth_ODF,
+    #                            late_fusion=fusion)
 
-    # nacta2017
-    onsetFunctionAllRecordings(wav_path=nacta2017_wav_path,
-                               textgrid_path=nacta2017_textgrid_path,
-                               score_path=nacta2017_score_path,
-                               test_recordings=testNacta2017,
+    testRiyaz, trainRiyaz = getTestTrainrecordingsRiyaz()
+
+    onsetFunctionAllRecordings(wav_path=riyaz_mp3_path,
+                               textgrid_path=riyaz_groundtruthlab_path,
+                               score_path=riyaz_score_path,
+                               test_recordings=testRiyaz,
                                feature_type='mfccBands2D',
                                dmfcc=False,
                                nbf=True,
                                mth=mth_ODF,
-                               late_fusion=fusion)
-
-    # nacta
-    onsetFunctionAllRecordings(wav_path=nacta_wav_path,
-                               textgrid_path=nacta_textgrid_path,
-                               score_path=nacta_score_path,
-                               test_recordings=testNacta,
-                               feature_type='mfccBands2D',
-                               dmfcc=False,
-                               nbf=True,
-                               mth=mth_ODF,
-                               late_fusion=fusion)
+                               late_fusion=fusion,
+                               lab=True)
