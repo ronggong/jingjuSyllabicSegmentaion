@@ -11,6 +11,7 @@ device=gpu0  # the device to be used. set it to "cpu" if you don't have GPUs
 #
 export PATH=/homedtic/rgong/anaconda2/bin:$PATH
 export THEANO_FLAGS=mode=FAST_RUN,device=$device,floatX=float32,lib.cnmem=0.95
+export PATH=/usr/local/cuda/bin/:$PATH
 export LD_LIBRARY_PATH=/soft/cuda/cudnn/cuda/lib64:$LD_LIBRARY_PATH
 export CPATH=/soft/cuda/cudnn/cuda/include:$CPATH
 export LIBRARY_PATH=/soft/cuda/cudnn/cuda/lib64:$LD_LIBRARY_PATH
@@ -32,7 +33,7 @@ printf "Copying feature files into scratch directory...\n"
 # Third, copy the experiment's data:
 # ----------------------------------
 start=`date +%s`
-cp -rp /homedtic/rgong/cnnSyllableSeg/syllableSeg/feature_all_nacta_imsir_split.h5 /scratch/rgongcnnSyllableSeg_jan/syllableSeg/
+cp -rp /homedtic/rgong/cnnSyllableSeg/syllableSeg/feature_all_nacta_ismir_split.h5 /scratch/rgongcnnSyllableSeg_jan/syllableSeg/
 end=`date +%s`
 
 printf "Finish copying feature files into scratch directory...\n"
