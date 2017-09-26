@@ -2,7 +2,7 @@ import sys, os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from data_preparation import load_data
-from models import jan, model_train
+from models import jan_deep, model_train
 
 
 nlen = 21
@@ -23,7 +23,7 @@ def train_model(filter_density, dropout, input_shape, file_path_model, filename_
         load_data(filename_labels_train_validation_set,
               filename_sample_weights)
 
-    model_0 = jan(filter_density=filter_density, dropout=dropout, input_shape=input_shape)
+    model_0 = jan_deep(filter_density=filter_density, dropout=dropout, input_shape=input_shape)
 
     batch_size = 128
     patience = 10
@@ -41,6 +41,6 @@ if __name__ == '__main__':
 
 
     # train the final model
-    file_path_model = '/homedtic/rgong/cnnSyllableSeg/out/keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_ismir_split.h5'
-    file_path_log = '/homedtic/rgong/cnnSyllableSeg/out/log/keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_ismir_split.csv'
+    file_path_model = '/homedtic/rgong/cnnSyllableSeg/out/keras.cnn_syllableSeg_jan_deep_class_weight_mfccBands_2D_all_ismir_split.h5'
+    file_path_log = '/homedtic/rgong/cnnSyllableSeg/out/log/keras.cnn_syllableSeg_jan_deep_class_weight_mfccBands_2D_all_ismir_split.csv'
     train_model(filter_density=1, dropout=0.5, input_shape=input_dim, file_path_model=file_path_model, filename_log=file_path_log)

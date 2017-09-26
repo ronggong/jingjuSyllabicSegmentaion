@@ -17,9 +17,9 @@ def train_model(filter_density1, filter_density2,
     train final model save to model path
     """
 
-    filename_train_validation_set = '/scratch/rgongcnnSyllableSeg_temporal/syllableSeg/feature_all_riyaz.h5'
-    filename_labels_train_validation_set = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/labels_train_set_all_syllableSeg_mfccBands2D_old+new.pickle.gz'
-    filename_sample_weights = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/sample_weights_syllableSeg_mfccBands2D_old+new.pickle.gz'
+    filename_train_validation_set = '/scratch/rgongcnnSyllableSeg_temporal/syllableSeg/feature_all_nacta_ismir_split.h5'
+    filename_labels_train_validation_set = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/labels_train_set_all_syllableSeg_mfccBands2D_ismir_split.pickle.gz'
+    filename_sample_weights = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/sample_weights_syllableSeg_mfccBands2D_ismir_split.pickle.gz'
 
     filenames_train, Y_train, sample_weights_train, \
     filenames_validation, Y_validation, sample_weights_validation, \
@@ -48,8 +48,8 @@ def train_model(filter_density1, filter_density2,
 if __name__ == '__main__':
 
     # train the model
-    file_path_model = '/homedtic/rgong/cnnSyllableSeg/out/keras.cnn_syllableSeg_jordi_temporal_class_weight_with_conv_dense_mfccBands_2D_old+new.h5'
-    file_path_log = '/homedtic/rgong/cnnSyllableSeg/out/log/keras.cnn_syllableSeg_jordi_temporal_class_weight_with_conv_dense_mfccBands_2D_old+new.csv'
+    file_path_model = '/homedtic/rgong/cnnSyllableSeg/out/keras.cnn_syllableSeg_jordi_temporal_class_weight_with_conv_dense_mfccBands_2D_ismir_split.h5'
+    file_path_log = '/homedtic/rgong/cnnSyllableSeg/out/log/keras.cnn_syllableSeg_jordi_temporal_class_weight_with_conv_dense_mfccBands_2D_ismir_split.csv'
     train_model(filter_density1=1, filter_density2=1,
                 pool_n_row=3, pool_n_col=5, dropout=0.30, input_shape=input_dim,
                 file_path_model=file_path_model, filename_log=file_path_log)

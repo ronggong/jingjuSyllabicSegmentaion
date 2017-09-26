@@ -5,7 +5,7 @@ module load cuda/8.0
 #module load theano/0.8.2
 
 # two variables you need to set
-device=gpu1  # the device to be used. set it to "cpu" if you don't have GPUs
+device=gpu0  # the device to be used. set it to "cpu" if you don't have GPUs
 
 # export environment variables
 #
@@ -32,7 +32,7 @@ printf "Copying feature files into scratch directory...\n"
 # Third, copy the experiment's data:
 # ----------------------------------
 start=`date +%s`
-cp -rp /homedtic/rgong/cnnSyllableSeg/syllableSeg/feature_all_riyaz.h5 /scratch/rgongcnnSyllableSeg_jan/syllableSeg/
+cp -rp /homedtic/rgong/cnnSyllableSeg/syllableSeg/feature_all_nacta_imsir_split.h5 /scratch/rgongcnnSyllableSeg_jan/syllableSeg/
 end=`date +%s`
 
 printf "Finish copying feature files into scratch directory...\n"

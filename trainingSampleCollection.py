@@ -14,7 +14,7 @@ from src.parameters import *
 from src.phonemeMap import *
 from src.textgridParser import textGrid2WordList, wordListsParseByLines, syllableTextgridExtraction
 from src.scoreParser import csvDurationScoreParser
-from src.trainTestSeparation import getTestTrainRecordings, getTestTrainrecordingsRiyaz
+from src.trainTestSeparation import getTestTrainRecordings, getTestTrainrecordingsRiyaz, getTestTrainRecordingsNactaISMIR
 from src.Fdeltas import Fdeltas
 from src.Fprev_sub import Fprev_sub
 from src.filePath import *
@@ -426,7 +426,7 @@ def dumpFeatureOnset(wav_path, textgrid_path, score_path, recordings, feature_ty
         if '2017' in artist_name:
             score_file = os.path.join(score_path, artist_name, recording_name+'.csv')
         else:
-            score_file = os.path.join(score_path, recording_name+'.csv')
+            score_file = os.path.join(score_path, artist_name, recording_name+'.csv')
 
         # if not os.path.isfile(score_file):
         #     print 'Score not found: ' + score_file
@@ -445,6 +445,8 @@ def dumpFeatureOnset(wav_path, textgrid_path, score_path, recordings, feature_ty
         _, utterance_durations, bpm = csvDurationScoreParser(score_file)
 
         # load audio
+        fs = 44100
+
         if not lab:
             audio               = ess.MonoLoader(downmix = 'left', filename = wav_file, sampleRate = fs)()
         else:
@@ -557,24 +559,13 @@ def dumpFeatureOnset(wav_path, textgrid_path, score_path, recordings, feature_ty
            np.concatenate(sample_weights_p_all), \
            np.concatenate(sample_weights_n_all)
 
-def dumpFeatureBatchOnset():
+def dumpFeatureBatchOnsetNactaISMIR():
     """
     dump features for all the dataset for onset detection
     :return:
     """
-    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordings()
+    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsNactaISMIR()
 
-    mfcc_p_nacta1017, \
-    mfcc_n_nacta2017, \
-    sample_weights_p_nacta2017, \
-    sample_weights_n_nacta2017 \
-        = dumpFeatureOnset(wav_path=nacta2017_wav_path,
-                           textgrid_path=nacta2017_textgrid_path,
-                           score_path=nacta2017_score_path,
-                           recordings=trainNacta2017,
-                           feature_type='mfccBands2D',
-                           dmfcc=False,
-                           nbf=True)
 
     mfcc_p_nacta, \
     mfcc_n_nacta, \
@@ -584,6 +575,18 @@ def dumpFeatureBatchOnset():
                            textgrid_path=nacta_textgrid_path,
                            score_path=nacta_score_path,
                            recordings=trainNacta,
+                           feature_type='mfccBands2D',
+                           dmfcc=False,
+                           nbf=True)
+
+    mfcc_p_nacta1017, \
+    mfcc_n_nacta2017, \
+    sample_weights_p_nacta2017, \
+    sample_weights_n_nacta2017 \
+        = dumpFeatureOnset(wav_path=nacta2017_wav_path,
+                           textgrid_path=nacta2017_textgrid_path,
+                           score_path=nacta2017_score_path,
+                           recordings=trainNacta2017,
                            feature_type='mfccBands2D',
                            dmfcc=False,
                            nbf=True)
@@ -607,7 +610,7 @@ def dumpFeatureBatchOnset():
 
     print(mfcc_p.shape, mfcc_n.shape, sample_weights_p.shape, sample_weights_n.shape)
 
-    pickle.dump(scaler, open('cnnModels/scaler_syllable_mfccBands2D_old+new.pkl', 'wb'))
+    pickle.dump(scaler, open('cnnModels/scaler_syllable_mfccBands2D_old+new_ismir_split.pkl', 'wb'))
 
     feature_all = featureReshape(feature_all, nlen=varin['nlen'])
 
@@ -618,15 +621,15 @@ def dumpFeatureBatchOnset():
     #     cPickle.dump(feature_all[ii,:,:],
     #                  gzip.open('trainingData/features_train_set_all_syllableSeg_mfccBands2D_old+new/'+str(ii)+'.pickle.gz', 'wb'),
     #                  cPickle.HIGHEST_PROTOCOL)
-    h5f = h5py.File(join(feature_data_path,'feature_all.h5'), 'w')
+    h5f = h5py.File(join(feature_data_path,'feature_all_nacta_ismir_split.h5'), 'w')
     h5f.create_dataset('feature_all', data=feature_all)
     h5f.close()
 
     cPickle.dump(label_all,
-                 gzip.open('trainingData/labels_train_set_all_syllableSeg_mfccBands2D_old+new.pickle.gz', 'wb'), cPickle.HIGHEST_PROTOCOL)
+                 gzip.open('trainingData/labels_train_set_all_syllableSeg_mfccBands2D_old+new_ismir_split.pickle.gz', 'wb'), cPickle.HIGHEST_PROTOCOL)
 
     cPickle.dump(sample_weights,
-                 gzip.open('trainingData/sample_weights_syllableSeg_mfccBands2D_old+new.pickle.gz', 'wb'), cPickle.HIGHEST_PROTOCOL)
+                 gzip.open('trainingData/sample_weights_syllableSeg_mfccBands2D_old+new_ismir_split.pickle.gz', 'wb'), cPickle.HIGHEST_PROTOCOL)
 
 def dumpFeatureBatchOnsetRiyaz():
     """
@@ -681,8 +684,8 @@ if __name__ == '__main__':
     #                           gmmModel_path=gmmModel_path)
 
     # dump feature for DNN training, with getFeature output MFCC bands
-    # dumpFeatureBatchOnsetRiyaz()
-    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordings()
+    dumpFeatureBatchOnsetNactaISMIR()
+    # testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordings()
     #
     # for artist_path, filename in testNacta:
     #     print(join(artist_path,filename))
