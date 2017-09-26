@@ -108,7 +108,7 @@ def getBoundaryNumber(textgrid_path, score_path):
                                                                                                  utteranceList)
 
             # parse score
-            utterance_durations, bpm = scoreParser.csvDurationScoreParser(score_file)
+            _, utterance_durations, bpm = scoreParser.csvDurationScoreParser(score_file)
 
             # create the ground truth lab files
             numOnset = 0

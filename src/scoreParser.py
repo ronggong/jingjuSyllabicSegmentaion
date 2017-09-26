@@ -4,17 +4,20 @@ import os
 
 def csvDurationScoreParser(scoreFilename):
 
+    syllables = []
     syllable_durations = []
     bpm                 = []
 
     with open(scoreFilename, 'rb') as csvfile:
         score = csv.reader(csvfile)
         for idx, row in enumerate(score):
+            if (idx+1)%2:
+                syllables.append(row[1:])
             if idx%2:
                 syllable_durations.append(row[1:])
                 bpm.append(row[0])
 
-    return syllable_durations, bpm
+    return syllables, syllable_durations, bpm
 
 def generatePinyin(scoreFilename):
 

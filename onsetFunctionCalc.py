@@ -220,8 +220,8 @@ def onsetFunctionAllRecordings(wav_path,
             # parse score
             syllables, pinyins, syllable_durations, bpm = generatePinyin(score_file)
         else:
-            lineList        = [lab2WordList(groundtruth_textgrid_file, label=False)]
-            syllable_durations, bpm = csvDurationScoreParser(score_file)
+            lineList        = [lab2WordList(groundtruth_textgrid_file, label=True)]
+            syllables, syllable_durations, bpm = csvDurationScoreParser(score_file)
 
         # print(pinyins)
         # print(syllable_durations)
@@ -395,20 +395,21 @@ def onsetFunctionAllRecordings(wav_path,
             if not lab:
                 boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist(), filter(None,pinyins[i_line]))
             else:
-                boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist())
-                label = False
+                boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist(), syllables[i_line])
+                label = True
 
             boundaryLabWriter(boundaryList=boundary_list,
                               outputFilename=filename_syll_lab,
                                 label=label)
-
-            i_line += 1
 
             print(i_boundary)
             print(len(obs_i))
             # print(np.array(groundtruth_syllable)*fs/hopsize)
 
             if varin['plot']:
+                groundtruth_onset = [l[0]-line[0][0] for l in line]
+                groundtruth_syllables = [l[2] for l in line]
+
                 # plot Error analysis figures
                 plt.figure(figsize=(16, 6))
                 # plt.figure(figsize=(8, 4))
@@ -417,18 +418,21 @@ def onsetFunctionAllRecordings(wav_path,
                 y = np.arange(0, 80)
                 x = np.arange(0, mfcc_line.shape[0])*hopsize_t
                 cax = plt.pcolormesh(x, y, np.transpose(mfcc_line[:, 80 * 11:80 * 12]))
-                # for gs in groundtruth_syllable:
-                #     plt.axvline(gs, color='r', linewidth=2)
+                for i_gs, gs in enumerate(groundtruth_onset):
+                    plt.axvline(gs, color='r', linewidth=2)
+                    plt.text(gs, ax1.get_ylim()[1], groundtruth_syllables[i_gs])
+
                 # cbar = fig.colorbar(cax)
                 ax1.set_ylabel('Mel bands', fontsize=12)
                 ax1.get_xaxis().set_visible(False)
                 ax1.axis('tight')
-                plt.title('Calculating: '+rn+' phrase '+str(i_obs))
+                # plt.title('Calculating: '+rn+' phrase '+str(i_obs))
 
                 ax2 = plt.subplot(312, sharex=ax1)
                 plt.plot(np.arange(0,len(obs_i))*hopsize_t, obs_i)
-                for ib in i_boundary:
-                    plt.axvline(ib * hopsize_t, color='r', linewidth=2)
+                for i_ib in range(len(i_boundary)-1):
+                    plt.axvline(i_boundary[i_ib] * hopsize_t, color='r', linewidth=2)
+                    plt.text(i_boundary[i_ib] * hopsize_t, ax2.get_ylim()[1], syllables[i_line][i_ib])
 
                 ax2.set_ylabel('ODF', fontsize=12)
                 ax2.axis('tight')
@@ -446,10 +450,14 @@ def onsetFunctionAllRecordings(wav_path,
                         ))
                     time_start += ds
                 ax3.set_ylim((0,len(duration_score)))
-                # plt.xlabel('Time (s)')
+                ax3.set_ylabel('Score duration', fontsize=12)
+                plt.xlabel('Time (s)')
                 # plt.tight_layout()
 
                 plt.show()
+
+            i_line += 1
+
 
 
 if __name__ == '__main__':

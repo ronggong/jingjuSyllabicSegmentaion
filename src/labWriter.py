@@ -23,8 +23,12 @@ def boundaryLabWriter(boundaryList, outputFilename, label=False):
         for list in boundaryList:
             if label:
                 # delete Chinese punctuation
-                syllable = re.sub(ur"[%s]+" %puncChinese, "", list[2])
-                syllable = re.sub(ur"[%s]+" %puncChinese, "", syllable)
+                # print(list[2])
+                if len(re.findall(ur'[\u4e00-\u9fff]+', list[2])):
+                    syllable = re.sub(ur"[%s]+" %puncChinese, "", list[2])
+                    syllable = re.sub(ur"[%s]+" %puncChinese, "", syllable)
+                else:
+                    syllable = list[2]
                 syllable = syllable.replace(" ", "")
 
                 lab_file.write("{0:.4f} {1:.4f} {2}\n".format(list[0],list[1],syllable))

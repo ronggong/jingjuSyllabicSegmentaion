@@ -442,7 +442,7 @@ def dumpFeatureOnset(wav_path, textgrid_path, score_path, recordings, feature_ty
             nestedUtteranceLists = [lab2WordList(groundtruth_textgrid_file, label=False)]
 
         # parse score
-        utterance_durations, bpm = csvDurationScoreParser(score_file)
+        _, utterance_durations, bpm = csvDurationScoreParser(score_file)
 
         # load audio
         if not lab:

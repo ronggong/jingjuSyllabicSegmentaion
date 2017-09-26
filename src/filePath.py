@@ -44,7 +44,7 @@ cnnModels_path  = join(root_path, 'cnnModels')
 if mth_ODF == 'jan':
     # filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_optim.h5'
     filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jan_deep_class_weight_mfccBands_2D_all_riyaz.h5'
-    cnnModel_name         = 'jan_deep_riyaz'
+    cnnModel_name         = 'jan_deep_riyaz_syllables'
 elif mth_ODF == 'jan_chan3':
     filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jan_class_weight_3_chans_mfccBands_2D_all_optim.h5'
     # filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jan_class_weight_3_chans_layer1_70_mfccBands_2D_all_optim.h5'
