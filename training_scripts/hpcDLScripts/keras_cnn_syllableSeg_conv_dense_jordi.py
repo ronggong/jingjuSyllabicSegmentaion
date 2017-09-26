@@ -18,8 +18,8 @@ def train_model(filter_density1, filter_density2,
     """
 
     filename_train_validation_set = '/scratch/rgongcnnSyllableSeg_temporal/syllableSeg/feature_all_nacta_ismir_split.h5'
-    filename_labels_train_validation_set = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/labels_train_set_all_syllableSeg_mfccBands2D_ismir_split.pickle.gz'
-    filename_sample_weights = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/sample_weights_syllableSeg_mfccBands2D_ismir_split.pickle.gz'
+    filename_labels_train_validation_set = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/labels_train_set_all_syllableSeg_mfccBands2D_old+new_ismir_split.pickle.gz'
+    filename_sample_weights = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/sample_weights_syllableSeg_mfccBands2D_old+new_ismir_split.pickle.gz'
 
     filenames_train, Y_train, sample_weights_train, \
     filenames_validation, Y_validation, sample_weights_validation, \
