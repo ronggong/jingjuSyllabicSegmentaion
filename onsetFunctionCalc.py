@@ -20,7 +20,7 @@ from src.scoreParser import generatePinyin, csvDurationScoreParser
 from src.textgridParser import textGrid2WordList, wordListsParseByLines
 from trainingSampleCollection import featureReshape
 from trainingSampleCollection import getMFCCBands2D
-from trainingSampleCollection import getTestTrainRecordings, getTestTrainrecordingsRiyaz
+from trainingSampleCollection import getTestTrainRecordings, getTestTrainrecordingsRiyaz, getTestTrainRecordingsNactaISMIR
 
 from peakPicking import peakPicking
 import viterbiDecoding
@@ -227,6 +227,7 @@ def onsetFunctionAllRecordings(wav_path,
         # print(syllable_durations)
 
         # load audio
+        fs = 44100
         if not lab:
             audio_monoloader               = ess.MonoLoader(downmix = 'left', filename = wav_file, sampleRate = fs)()
         else:
@@ -486,15 +487,29 @@ if __name__ == '__main__':
     #                            mth=mth_ODF,
     #                            late_fusion=fusion)
 
-    testRiyaz, trainRiyaz = getTestTrainrecordingsRiyaz()
+    # # Riyaz
+    # testRiyaz, trainRiyaz = getTestTrainrecordingsRiyaz()
+    #
+    # onsetFunctionAllRecordings(wav_path=riyaz_mp3_path,
+    #                            textgrid_path=riyaz_groundtruthlab_path,
+    #                            score_path=riyaz_score_path,
+    #                            test_recordings=testRiyaz,
+    #                            feature_type='mfccBands2D',
+    #                            dmfcc=False,
+    #                            nbf=True,
+    #                            mth=mth_ODF,
+    #                            late_fusion=fusion,
+    #                            lab=True)
 
-    onsetFunctionAllRecordings(wav_path=riyaz_mp3_path,
-                               textgrid_path=riyaz_groundtruthlab_path,
-                               score_path=riyaz_score_path,
-                               test_recordings=testRiyaz,
+    # # nacta ismir split
+    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsNactaISMIR()
+
+    onsetFunctionAllRecordings(wav_path=nacta_wav_path,
+                               textgrid_path=nacta_textgrid_path,
+                               score_path=nacta_score_path,
+                               test_recordings=testNacta,
                                feature_type='mfccBands2D',
                                dmfcc=False,
                                nbf=True,
                                mth=mth_ODF,
-                               late_fusion=fusion,
-                               lab=True)
+                               late_fusion=fusion)

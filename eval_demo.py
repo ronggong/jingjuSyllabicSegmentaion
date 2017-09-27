@@ -10,7 +10,7 @@ import scoreParser
 # import evaluation
 import evaluation2
 from filePath import *
-from trainingSampleCollection import getTestTrainRecordings, getTestTrainrecordingsRiyaz
+from trainingSampleCollection import getTestTrainRecordings, getTestTrainrecordingsRiyaz, getTestTrainRecordingsNactaISMIR
 
 
 def batch_eval(root_path, annotation_path, segPhrase_path, segSyllable_path, score_path, groundtruth_path, eval_details_path, recordings, tolerance, method='obin', label=False):
@@ -263,7 +263,7 @@ def evaluation_test_dataset(segSyllablePath, tolerance, method):
     DB, GB, GP, C, OnC, OffC, I, D = batch_eval(nacta_dataset_root_path, nacta_textgrid_path, nacta_segPhrase_path,
                                                 segSyllablePath, nacta_score_path,
                                                 nacta_groundtruthlab_path, nacta_eval_details_path,
-                                                testNacta, tolerance, method, True)
+                                                testNacta, tolerance, method, label=True)
 
     sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumOffsetCorrect, \
     sumInsertion, sumDeletion = stat_Add(sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases,
@@ -307,8 +307,8 @@ def evaluation_riyaz_test_dataset(segSyllablePath, tolerance, method, label):
 #       jan jordi class weight             #
 ############################################
 if mth_ODF == 'jan':
-    eval_result_file_name       = './eval/results/jan_deep_riyaz_syllables/eval_result_jan_class_weight.csv'
-    segSyllable_path            = './eval/results/jan_deep_riyaz_syllables'
+    eval_result_file_name       = './eval/results/jan_old+new/eval_result_jan_class_weight_label.csv'
+    segSyllable_path            = './eval/results/jan_old+new'
 elif mth_ODF == 'jan_chan3':
     eval_result_file_name       = './eval/results/jan_cw_3_chans_win/eval_result_jan_class_weight.csv'
     segSyllable_path            = './eval/results/jan_cw_3_chans_win'
@@ -335,7 +335,7 @@ else:
                 segSyllable_path            = './eval/results/jordi_cw_conv_dense_layer2_20_win'
             else:
                 # layer2 32 nodes
-                eval_result_file_name       = './eval/results/jordi_temporal_old+new/eval_result_jordi_class_weight_conv_dense_win.csv'
+                eval_result_file_name       = './eval/results/jordi_temporal_old+new/eval_result_jordi_class_weight_conv_dense_win_label.csv'
                 segSyllable_path            = './eval/results/jordi_temporal_old+new'
         else:
             # timbral filter shape
@@ -344,7 +344,7 @@ else:
                 segSyllable_path            = './eval/results/jordi_cw_conv_dense_timbral_filter_layer2_20_win'
             else:
                 # layer2 32 nodes
-                eval_result_file_name       = './eval/results/jordi_timbral_old+new/eval_result_jordi_class_weight_conv_dense_timbral_filter_win.csv'
+                eval_result_file_name       = './eval/results/jordi_timbral_old+new/eval_result_jordi_class_weight_conv_dense_timbral_filter_win_label.csv'
                 segSyllable_path            = './eval/results/jordi_timbral_old+new'
 
 print(eval_result_file_name)
@@ -354,7 +354,7 @@ with open(eval_result_file_name, 'wb') as testfile:
     csv_writer = csv.writer(testfile)
     for t in tols:
         detected, ground_truth, ground_truth_phrases, correct, insertion, deletion = \
-            evaluation_riyaz_test_dataset(segSyllable_path,tolerance=t, method='jan',label=True)
+            evaluation_test_dataset(segSyllable_path,tolerance=t, method='jan')
         recall,precision,F1 = evaluation2.metrics(detected,ground_truth,correct)
         print(detected, ground_truth, correct)
         print(recall, precision, F1)
