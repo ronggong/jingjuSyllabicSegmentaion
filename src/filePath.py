@@ -2,19 +2,19 @@ from os.path import join
 
 # audio and annotation root path
 
-dataset_root_path     = 'to/your/root/path'
+# dataset_root_path     = 'to/your/root/path'
 
-dataset_textgrid_path = dataset_root_path
-aCapella_root         = dataset_root_path
+# dataset_textgrid_path = dataset_root_path
+# aCapella_root         = dataset_root_path
 
 # text grid path which contains phoneme annotations
-# dataset_textgrid_path = '/Users/gong/Documents/MTG document/Jingju arias/phonemeSeg/'
+dataset_textgrid_path = '/Users/gong/Documents/MTG document/Jingju arias/jingju_a_cappella_singing_dataset/'
 
 textgrid_path_dan           = join(dataset_textgrid_path,'textgrid','danAll')
-textgrid_path_laosheng      = join(dataset_textgrid_path,'textgrid','qmLonUpf/laosheng')
+textgrid_path_laosheng      = join(dataset_textgrid_path,'textgrid','laosheng')
 
 # aCapella root
-# aCapella_root   = '/Users/gong/Documents/MTG document/Jingju arias/aCapella/'
+aCapella_root   = '/Users/gong/Documents/MTG document/Jingju arias/aCapella/'
 
 # dataset path
 queenMarydataset_path    = 'QueenMary/jingjuSingingMono'
@@ -99,7 +99,7 @@ dict_name_mapping_laosheng_qm = {'male_01/neg_1':'lseh-Wei_guo_jia-Hong_yang_don
                                  'male_01/pos_4':'lsxp-Shi_ye_shuo-Ding_jun_shan-qm',
                                  'male_01/pos_5':'lsxp-Wo_ben_shi-Kong_cheng_ji-qm',
                                  'male_01/pos_6':'lsxp-Wo_zheng_zai-Kong_cheng_ji04-qm',
-                                 'male_02/neg_1':'lsxp-Guo_liao_yi-Wen_zhao_guan-qm',
+                                 'male_02/neg_1':'lsxp-Guo_liao_yi-Wen_zhao_guan02-qm',
                                  'male_12/neg_1':'lsxp-Jiang_shen_er-San_jia_dian02-qm',
                                  'male_13/pos_1':'lsxp-Huai_nan_wang-Huai_he_ying02-qm',
                                  'male_13/pos_3':'lsxp-Qian_bai_wan-Si_lang_tang_mu01-qm'}
@@ -115,7 +115,7 @@ dict_name_mapping_dan_bcn = {'001':'daxp-Meng_ting_de-Mu_Gui_ying_gua_shuai01-up
                              '007':'daspd-Du_shou_kong-Wang_jiang_ting-upf'}
 dict_name_mapping_laosheng_bcn = {'003':'lsxp-Jiang_shen_er-San_jia_dian01-1-upf',
                                   '004':'lsxp-Jiang_shen_er-San_jia_dian01-2-upf',
-                                  '005':'lsxp-Guo_liao_yi-Wen_zhao_guan-upf',
+                                  '005':'lsxp-Guo_liao_yi-Wen_zhao_guan01-upf',
                                   '008':'lsxp-Wo_zheng_zai-Kong_cheng_ji01-upf'}
 
 # current path

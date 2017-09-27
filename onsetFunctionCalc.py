@@ -277,64 +277,64 @@ def onsetFunctionAllRecordings(recordings,
                 time_boundray_end   = np.array(i_boundary[1:])*hopsize_t
                 #
                 # # uncomment this section if we want to write boundaries to .syll.lab file
-                # filename_syll_lab = join(eval_results_path, dataset_path, recording_name+'_'+str(i_obs+1)+'.syll.lab')
-                #
-                # eval_results_data_path = dirname(filename_syll_lab)
-                #
-                # if not exists(eval_results_data_path):
-                #     makedirs(eval_results_data_path)
-                #
-                # # write boundary lab file
-                # boundaryLabWriter(boundaryList=zip(time_boundray_start.tolist(),time_boundray_end.tolist(),lyrics_line),
-                #                   outputFilename=filename_syll_lab,
-                #                     label=True)
+                filename_syll_lab = join(eval_results_path, dataset_path, recording_name+'_'+str(i_obs+1)+'.syll.lab')
+
+                eval_results_data_path = dirname(filename_syll_lab)
+
+                if not exists(eval_results_data_path):
+                    makedirs(eval_results_data_path)
+
+                # write boundary lab file
+                boundaryLabWriter(boundaryList=zip(time_boundray_start.tolist(),time_boundray_end.tolist(),lyrics_line),
+                                  outputFilename=filename_syll_lab,
+                                    label=True)
 
                 # print(i_boundary)
                 # print(len(obs_i))
                 # print(np.array(groundtruth_syllable)*fs/hopsize)
 
+                if varin['plot']:
+                    # plot Error analysis figures
+                    plt.figure(figsize=(16, 6))
+                    # plt.figure(figsize=(8, 4))
+                    # class weight
+                    ax1 = plt.subplot(3,1,1)
+                    y = np.arange(0, 80)
+                    x = np.arange(0, mfcc_line.shape[0])*(hopsize/float(fs))
+                    cax = plt.pcolormesh(x, y, np.transpose(mfcc_line[:, 80 * 11:80 * 12]))
+                    for gs in groundtruth_syllable:
+                        plt.axvline(gs, color='r', linewidth=2)
+                    # cbar = fig.colorbar(cax)
+                    ax1.set_ylabel('Mel bands', fontsize=12)
+                    ax1.get_xaxis().set_visible(False)
+                    ax1.axis('tight')
+                    plt.title('Calculating: '+recording_name+' phrase '+str(i_obs))
 
-                # plot Error analysis figures
-                plt.figure(figsize=(16, 6))
-                # plt.figure(figsize=(8, 4))
-                # class weight
-                ax1 = plt.subplot(3,1,1)
-                y = np.arange(0, 80)
-                x = np.arange(0, mfcc_line.shape[0])*(hopsize/float(fs))
-                cax = plt.pcolormesh(x, y, np.transpose(mfcc_line[:, 80 * 11:80 * 12]))
-                for gs in groundtruth_syllable:
-                    plt.axvline(gs, color='r', linewidth=2)
-                # cbar = fig.colorbar(cax)
-                ax1.set_ylabel('Mel bands', fontsize=12)
-                ax1.get_xaxis().set_visible(False)
-                ax1.axis('tight')
-                plt.title('Calculating: '+recording_name+' phrase '+str(i_obs))
+                    ax2 = plt.subplot(312, sharex=ax1)
+                    plt.plot(np.arange(0,len(obs_i))*(hopsize/float(fs)), obs_i)
+                    for ib in i_boundary:
+                        plt.axvline(ib * (hopsize / float(fs)), color='r', linewidth=2)
 
-                ax2 = plt.subplot(312, sharex=ax1)
-                plt.plot(np.arange(0,len(obs_i))*(hopsize/float(fs)), obs_i)
-                for ib in i_boundary:
-                    plt.axvline(ib * (hopsize / float(fs)), color='r', linewidth=2)
-
-                ax2.set_ylabel('ODF', fontsize=12)
-                ax2.axis('tight')
+                    ax2.set_ylabel('ODF', fontsize=12)
+                    ax2.axis('tight')
 
 
-                ax3 = plt.subplot(313, sharex=ax1)
-                print(duration_score)
-                time_start = 0
-                for ii_ds, ds in enumerate(duration_score):
-                    ax3.add_patch(
-                        patches.Rectangle(
-                            (time_start, ii_ds),  # (x,y)
-                            ds,  # width
-                            1,  # height
-                        ))
-                    time_start += ds
-                ax3.set_ylim((0,len(duration_score)))
-                # plt.xlabel('Time (s)')
-                # plt.tight_layout()
+                    ax3 = plt.subplot(313, sharex=ax1)
+                    print(duration_score)
+                    time_start = 0
+                    for ii_ds, ds in enumerate(duration_score):
+                        ax3.add_patch(
+                            patches.Rectangle(
+                                (time_start, ii_ds),  # (x,y)
+                                ds,  # width
+                                1,  # height
+                            ))
+                        time_start += ds
+                    ax3.set_ylim((0,len(duration_score)))
+                    # plt.xlabel('Time (s)')
+                    # plt.tight_layout()
 
-                plt.show()
+                    plt.show()
 
 
 if __name__ == '__main__':

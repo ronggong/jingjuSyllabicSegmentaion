@@ -258,8 +258,8 @@ def evaluation_test_dataset(segSyllablePath, tolerance):
 ############################################
 
 if mth_ODF == 'jan':
-    eval_result_file_name       = './eval/results/jan_cw/eval_result_jan_class_weight.csv'
-    segSyllable_path            = './eval/results/jan_cw'
+    eval_result_file_name       = './eval/results/jan_cw_win/eval_result_jan_class_weight.csv'
+    segSyllable_path            = './eval/results/jan_cw_win'
 elif mth_ODF == 'jan_chan3':
     eval_result_file_name       = './eval/results/jan_cw_3_chans_win/eval_result_jan_class_weight.csv'
     segSyllable_path            = './eval/results/jan_cw_3_chans_win'
