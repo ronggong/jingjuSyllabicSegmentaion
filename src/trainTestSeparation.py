@@ -414,15 +414,15 @@ def getTestTrainRecordingsNactaISMIR():
      ['laosheng', 'lsxp-Jiang_shen_er-San_jia_dian02-qm'], ['laosheng', 'lsxp-Qian_bai_wan-Si_lang_tang_mu01-qm'],
      ['laosheng', 'lsxp-Quan_qian_sui-Gan_lu_si-qm'],
      ['laosheng', 'lsxp-Wo_zheng_zai-Kong_cheng_ji04-qm'], ['laosheng', 'lsxp-Xi_ri_you-Zhu_lian_zhai-qm']]
-    testNacta = [['laosheng', 'lseh-Wei_guo_jia-Hong_yang_dong02-qm'],
+    testNacta = [['danAll', 'dagbz-Feng_xiao_xiao-Yang_men_nv_jiang-lon'],
+                ['laosheng', 'lseh-Wei_guo_jia-Hong_yang_dong02-qm'],
                  ['laosheng', 'lseh-Tan_Yang_jia-Hong_yang_dong-qm'],
                  ['laosheng', 'lsxp-Shi_ye_shuo-Ding_jun_shan-qm'],
                  ['laosheng', 'lsxp-Wo_ben_shi-Kong_cheng_ji-qm'],
                  ['danAll', 'daxp-Zhe_cai_shi-Suo_lin_nang01-qm'],
                  ['danAll', 'daxp-Meng_ting_de-Mu_Gui_ying_gua_shuai02-qm'],
                  ['laosheng', 'lsxp-Guo_liao_yi-Wen_zhao_guan01-upf'],
-                 ['laosheng', 'lsxp-Wo_zheng_zai-Kong_cheng_ji01-upf'],
-                 ['danAll', 'dagbz-Feng_xiao_xiao-Yang_men_nv_jiang-lon']]
+                 ['laosheng', 'lsxp-Wo_zheng_zai-Kong_cheng_ji01-upf']]
     testNacta2017 = []
 
     return testNacta2017, testNacta, trainNacta2017, trainNacta

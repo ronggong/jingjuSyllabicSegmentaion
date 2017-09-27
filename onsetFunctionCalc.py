@@ -273,17 +273,20 @@ def onsetFunctionAllRecordings(wav_path,
                                                     feature_type='mfccBands2D')
 
         # print lineList
-        i_line = 0
+        i_line = -1
         for i_obs, line in enumerate(lineList):
             if not lab:
                 if len(line[2]) == 0:
                     continue
+
+            i_line += 1
 
             # if i_line is not
             try:
                 print(syllable_durations[i_line])
             except:
                 continue
+
 
             if float(bpm[i_line]) == 0:
                 continue
@@ -456,9 +459,6 @@ def onsetFunctionAllRecordings(wav_path,
                 # plt.tight_layout()
 
                 plt.show()
-
-            i_line += 1
-
 
 
 if __name__ == '__main__':

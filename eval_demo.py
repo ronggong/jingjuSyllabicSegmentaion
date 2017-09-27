@@ -247,18 +247,18 @@ def evaluation_test_dataset(segSyllablePath, tolerance, method):
     sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumOffsetCorrect, \
     sumInsertion, sumDeletion = 0, 0, 0, 0, 0, 0, 0, 0
 
-    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordings()
+    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsNactaISMIR()
 
-    DB, GB, GP, C, OnC, OffC, I, D = batch_eval(nacta2017_dataset_root_path, nacta2017_textgrid_path,nacta2017_segPhrase_path,
-                                                segSyllablePath, nacta2017_score_path,
-                                                nacta2017_groundtruthlab_path, nacta2017_eval_details_path,
-                                                testNacta2017, tolerance, method, True)
-
-    sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumOffsetCorrect, \
-    sumInsertion, sumDeletion = stat_Add(sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases,
-                                         sumCorrect,
-                                         sumOnsetCorrect, sumOffsetCorrect, sumInsertion, sumDeletion, DB, GB, GP, C,
-                                         OnC, OffC, I, D)
+    # DB, GB, GP, C, OnC, OffC, I, D = batch_eval(nacta2017_dataset_root_path, nacta2017_textgrid_path,nacta2017_segPhrase_path,
+    #                                             segSyllablePath, nacta2017_score_path,
+    #                                             nacta2017_groundtruthlab_path, nacta2017_eval_details_path,
+    #                                             testNacta2017, tolerance, method, True)
+    #
+    # sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumOffsetCorrect, \
+    # sumInsertion, sumDeletion = stat_Add(sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases,
+    #                                      sumCorrect,
+    #                                      sumOnsetCorrect, sumOffsetCorrect, sumInsertion, sumDeletion, DB, GB, GP, C,
+    #                                      OnC, OffC, I, D)
 
     DB, GB, GP, C, OnC, OffC, I, D = batch_eval(nacta_dataset_root_path, nacta_textgrid_path, nacta_segPhrase_path,
                                                 segSyllablePath, nacta_score_path,
@@ -307,8 +307,8 @@ def evaluation_riyaz_test_dataset(segSyllablePath, tolerance, method, label):
 #       jan jordi class weight             #
 ############################################
 if mth_ODF == 'jan':
-    eval_result_file_name       = './eval/results/jan_old+new/eval_result_jan_class_weight_label.csv'
-    segSyllable_path            = './eval/results/jan_old+new'
+    eval_result_file_name       = './eval/results/jan_old+new_ismir_split/eval_result_jan_class_weight_label.csv'
+    segSyllable_path            = './eval/results/jan_old+new_ismir_split'
 elif mth_ODF == 'jan_chan3':
     eval_result_file_name       = './eval/results/jan_cw_3_chans_win/eval_result_jan_class_weight.csv'
     segSyllable_path            = './eval/results/jan_cw_3_chans_win'
