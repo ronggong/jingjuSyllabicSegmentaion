@@ -36,7 +36,7 @@ cp -rp /homedtic/rgong/cnnSyllableSeg/syllableSeg/* /scratch/rgongcnnSyllableSeg
 
 #$ -N cnnSyllableSeg
 #$ -q default.q
-#$ -l h=node07
+#$ -l h=node01
 
 # Output/Error Text
 # ----------------

@@ -43,7 +43,7 @@ printf $((end-start))
 
 #$ -N sseg_jan_deep
 #$ -q default.q
-#$ -l h=node10
+#$ -l h=node05
 
 # Output/Error Text
 # ----------------

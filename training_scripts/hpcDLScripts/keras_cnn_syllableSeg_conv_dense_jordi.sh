@@ -22,7 +22,7 @@ source activate /homedtic/rgong/keras_env
 
 #$ -N sseg_tem
 #$ -q default.q
-#$ -l h=node07
+#$ -l h=node01
 
 # Output/Error Text
 # ----------------

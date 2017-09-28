@@ -128,22 +128,22 @@ def timbral_layer(filter_density_layer1, pool_n_row, pool_n_col, dropout, input_
 
     input = Input(shape=reshape_dim)
 
-    x_1 = createModel(input, 40, 50, 1, filter_density_layer1, pool_n_row, pool_n_col,
+    x_1 = createModel(input, 12, 50, 1, filter_density_layer1, pool_n_row, pool_n_col,
                           dropout)
 
-    x_2 = createModel(input, 20, 50, 5, filter_density_layer1, pool_n_row, pool_n_col,
+    x_2 = createModel(input, 6, 50, 5, filter_density_layer1, pool_n_row, pool_n_col,
                           dropout)
 
-    x_3 = createModel(input, 10, 50, 10, filter_density_layer1, pool_n_row, pool_n_col,
+    x_3 = createModel(input, 3, 50, 10, filter_density_layer1, pool_n_row, pool_n_col,
                           dropout)
 
-    x_4 = createModel(input, 40, 70, 1, filter_density_layer1, pool_n_row, pool_n_col,
+    x_4 = createModel(input, 12, 70, 1, filter_density_layer1, pool_n_row, pool_n_col,
                           dropout)
 
-    x_5 = createModel(input, 20, 70, 5, filter_density_layer1, pool_n_row, pool_n_col,
+    x_5 = createModel(input, 6, 70, 5, filter_density_layer1, pool_n_row, pool_n_col,
                           dropout)
 
-    x_6 = createModel(input, 10, 70, 10, filter_density_layer1, pool_n_row, pool_n_col,
+    x_6 = createModel(input, 3, 70, 10, filter_density_layer1, pool_n_row, pool_n_col,
                           dropout)
 
     merged = concatenate([x_1, x_2, x_3, x_4, x_5, x_6], axis=1)
@@ -155,22 +155,22 @@ def temporal_layer(filter_density_layer1, pool_n_row, pool_n_col, dropout, input
 
     input = Input(shape=reshape_dim)
 
-    x_1 = createModel(input, 40, 1, 7, filter_density_layer1, pool_n_row, pool_n_col,
+    x_1 = createModel(input, 12, 1, 7, filter_density_layer1, pool_n_row, pool_n_col,
                           dropout)
 
-    x_2 = createModel(input, 20, 3, 7, filter_density_layer1, pool_n_row, pool_n_col,
+    x_2 = createModel(input, 6, 3, 7, filter_density_layer1, pool_n_row, pool_n_col,
                           dropout)
 
-    x_3 = createModel(input, 10, 5, 7, filter_density_layer1, pool_n_row, pool_n_col,
+    x_3 = createModel(input, 3, 5, 7, filter_density_layer1, pool_n_row, pool_n_col,
                           dropout)
 
-    x_4 = createModel(input, 40, 1, 12, filter_density_layer1, pool_n_row, pool_n_col,
+    x_4 = createModel(input, 12, 1, 12, filter_density_layer1, pool_n_row, pool_n_col,
                           dropout)
 
-    x_5 = createModel(input, 20, 3, 12, filter_density_layer1, pool_n_row, pool_n_col,
+    x_5 = createModel(input, 6, 3, 12, filter_density_layer1, pool_n_row, pool_n_col,
                           dropout)
 
-    x_6 = createModel(input, 10, 5, 12, filter_density_layer1, pool_n_row, pool_n_col,
+    x_6 = createModel(input, 3, 5, 12, filter_density_layer1, pool_n_row, pool_n_col,
                           dropout)
 
     merged = concatenate([x_1, x_2, x_3, x_4, x_5, x_6], axis=1)
@@ -278,7 +278,7 @@ def model_train(model_0, batch_size, patience, input_shape,
     model_0.load_weights(basename(file_path_model))
 
     # train again use all train and validation set
-    epochs_final = len(history.history['val_loss']) - patience
+    epochs_final = len(history.history['val_loss'])
     # epochs_final = 100
 
     steps_per_epoch_train_val = int(np.ceil(len(indices_all) / batch_size))

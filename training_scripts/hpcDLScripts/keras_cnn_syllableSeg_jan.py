@@ -43,4 +43,4 @@ if __name__ == '__main__':
     # train the final model
     file_path_model = '/homedtic/rgong/cnnSyllableSeg/out/keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_ismir_split.h5'
     file_path_log = '/homedtic/rgong/cnnSyllableSeg/out/log/keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_ismir_split.csv'
-    train_model(filter_density=1, dropout=0.5, input_shape=input_dim, file_path_model=file_path_model, filename_log=file_path_log)
+    train_model(filter_density=1, dropout=0.2503, input_shape=input_dim, file_path_model=file_path_model, filename_log=file_path_log)
