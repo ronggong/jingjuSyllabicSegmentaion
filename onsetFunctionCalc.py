@@ -39,13 +39,18 @@ def getOnsetFunction(observations, path_keras_cnn, method='jan'):
     model = load_model(path_keras_cnn)
 
     ##-- call pdnn to calculate the observation from the features
-    if method=='jordi':
-        observations = [observations, observations, observations, observations, observations, observations]
-    elif method=='jordi_horizontal_timbral':
-        observations = [observations, observations, observations, observations, observations, observations,
-                        observations, observations, observations, observations, observations, observations]
+    # if method=='jordi':
+    #     observations = [observations, observations, observations, observations, observations, observations]
+    # elif method=='jordi_horizontal_timbral':
+    #     observations = [observations, observations, observations, observations, observations, observations,
+    #                     observations, observations, observations, observations, observations, observations]
+    #
+    # obs = model.predict_proba(observations, batch_size=128)
 
-    obs = model.predict_proba(observations, batch_size=128)
+    if method == 'jordi':
+        obs = model.predict(observations, batch_size=128, verbose=1)
+    else:
+        obs = model.predict_proba(observations, batch_size=128)
     return obs
 
 
@@ -226,10 +231,12 @@ def onsetFunctionAllRecordings(recordings,
 
                     mfcc_reshaped_line = np.concatenate((mfcc_reshaped_line_23,mfcc_reshaped_line_46,mfcc_reshaped_line_93),axis=3)
 
+                mfcc_reshaped_line = np.expand_dims(mfcc_reshaped_line, axis=1)
                 obs     = getOnsetFunction(observations=mfcc_reshaped_line,
                                            path_keras_cnn=full_path_keras_cnn_0,
                                            method=mth)
-                obs_i   = obs[:,1]
+                # obs_i   = obs[:,1]
+                obs_i = obs[:, 0]
 
                 hann = np.hanning(5)
                 hann /= np.sum(hann)

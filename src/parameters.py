@@ -1,7 +1,7 @@
 # parameters of ODF onset detection function
 
 # ODF method: 'jordi': Pons' CNN, 'jan': Schluter' CNN, 'jan_chan3'
-mth_ODF         = 'jan'
+mth_ODF         = 'jordi'
 
 # layer2 node number: 20 or 32
 layer2          = 32

@@ -7,10 +7,10 @@ import pickle,cPickle,gzip
 import numpy as np
 from sklearn import mixture,preprocessing
 from sklearn.model_selection import train_test_split
-import essentia.standard as ess
+# import essentia.standard as ess
 
 from src.parameters import *
-from phonemeMap import *
+from src.phonemeMap import *
 from src.textgridParser import textGrid2WordList, wordListsParseByLines, syllableTextgridExtraction
 from src.scoreParser import csvDurationScoreParser
 from src.trainTestSeparation import getRecordingNames
@@ -193,7 +193,7 @@ def getMBE(audio):
     feature         = np.array(mfccBands)
     return feature
 
-def featureLabelOnset(mfcc_p, mfcc_n):
+def featureLabelOnset(mfcc_p, mfcc_n, scaling=False):
     '''
     organize the training feature and label
     :param
@@ -211,7 +211,9 @@ def featureLabelOnset(mfcc_p, mfcc_n):
 
     scaler = preprocessing.StandardScaler()
     scaler.fit(feature_all)
-    feature_all = scaler.transform(feature_all)
+
+    if scaling:
+        feature_all = scaler.transform(feature_all)
 
     return feature_all, label_all, scaler
 
@@ -566,7 +568,7 @@ def dumpFeatureBatchOnset():
 
     sample_weights = np.concatenate((sample_weights_p, sample_weights_n))
 
-    feature_all, label_all, scaler = featureLabelOnset(mfcc_p, mfcc_n)
+    feature_all, label_all, scaler = featureLabelOnset(mfcc_p, mfcc_n, scaling=True)
 
     print(mfcc_p.shape, mfcc_n.shape, sample_weights_p.shape, sample_weights_n.shape)
 
@@ -582,6 +584,53 @@ def dumpFeatureBatchOnset():
     cPickle.dump(sample_weights,
                  gzip.open('trainingData/sample_weights_syllableSeg_mfccBands2D.pickle.gz', 'wb'), cPickle.HIGHEST_PROTOCOL)
 
+def dumpFeatureBatchOnsetTest():
+    """
+    dump features for the test dataset for onset detection
+    :return:
+    """
+    recordings = getRecordingNames('TEST')
+
+    mfcc_p_qm, \
+    mfcc_n_qm, \
+    sample_weights_p_qm, \
+    sample_weights_n_qm \
+        = dumpFeatureOnset(recordings[0],
+                           queenMarydataset_path,
+                           feature_type='mfccBands2D',
+                           dmfcc=False,
+                           nbf=True)
+
+    mfcc_p_bcn, \
+    mfcc_n_bcn, \
+    sample_weights_p_bcn, \
+    sample_weights_n_bcn \
+        = dumpFeatureOnset(recordings[1],
+                           bcnRecording_path,
+                           feature_type='mfccBands2D',
+                           dmfcc=False,
+                           nbf=True)
+
+    mfcc_p_lon, \
+    mfcc_n_lon, \
+    sample_weights_p_lon, \
+    sample_weights_n_lon \
+        = dumpFeatureOnset(recordings[2],
+                           londonRecording_path,
+                           feature_type='mfccBands2D',
+                           dmfcc=False,
+                           nbf=True)
+
+    mfcc_p = np.concatenate((mfcc_p_qm, mfcc_p_lon, mfcc_p_bcn))
+    mfcc_n = np.concatenate((mfcc_n_qm, mfcc_n_lon, mfcc_n_bcn))
+
+    feature_all, label_all, scaler = featureLabelOnset(mfcc_p, mfcc_n, scaling=False)
+
+    print(mfcc_p.shape, mfcc_n.shape)
+
+    cPickle.dump((feature_all, label_all),
+                 gzip.open('trainingData/test_set_all_syllableSeg_mfccBands2D.pickle.gz', 'wb'), cPickle.HIGHEST_PROTOCOL)
+
 
 if __name__ == '__main__':
 
@@ -592,4 +641,4 @@ if __name__ == '__main__':
     #                           gmmModel_path=gmmModel_path)
 
     # dump feature for DNN training, with getFeature output MFCC bands
-    dumpFeatureBatchOnset()
+    dumpFeatureBatchOnsetTest()
