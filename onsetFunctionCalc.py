@@ -396,15 +396,15 @@ def onsetFunctionAllRecordings(wav_path,
                 makedirs(eval_results_data_path)
 
             # write boundary lab file
-            if not lab:
-                boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist(), filter(None,pinyins[i_line]))
-            else:
-                boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist(), syllables[i_line])
-                label = True
+            # if not lab:
+            #     boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist(), filter(None,pinyins[i_line]))
+            # else:
+            #     boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist(), syllables[i_line])
+            #     label = True
 
-            boundaryLabWriter(boundaryList=boundary_list,
-                              outputFilename=filename_syll_lab,
-                                label=label)
+            # boundaryLabWriter(boundaryList=boundary_list,
+            #                   outputFilename=filename_syll_lab,
+            #                     label=label)
 
             print(i_boundary)
             print(len(obs_i))
@@ -424,7 +424,7 @@ def onsetFunctionAllRecordings(wav_path,
                 cax = plt.pcolormesh(x, y, np.transpose(mfcc_line[:, 80 * 11:80 * 12]))
                 for i_gs, gs in enumerate(groundtruth_onset):
                     plt.axvline(gs, color='r', linewidth=2)
-                    plt.text(gs, ax1.get_ylim()[1], groundtruth_syllables[i_gs])
+                    # plt.text(gs, ax1.get_ylim()[1], groundtruth_syllables[i_gs])
 
                 # cbar = fig.colorbar(cax)
                 ax1.set_ylabel('Mel bands', fontsize=12)
@@ -436,7 +436,7 @@ def onsetFunctionAllRecordings(wav_path,
                 plt.plot(np.arange(0,len(obs_i))*hopsize_t, obs_i)
                 for i_ib in range(len(i_boundary)-1):
                     plt.axvline(i_boundary[i_ib] * hopsize_t, color='r', linewidth=2)
-                    plt.text(i_boundary[i_ib] * hopsize_t, ax2.get_ylim()[1], syllables[i_line][i_ib])
+                    # plt.text(i_boundary[i_ib] * hopsize_t, ax2.get_ylim()[1], syllables[i_line][i_ib])
 
                 ax2.set_ylabel('ODF', fontsize=12)
                 ax2.axis('tight')
@@ -501,7 +501,7 @@ if __name__ == '__main__':
     #                            late_fusion=fusion,
     #                            lab=True)
 
-    # # nacta ismir split
+    # nacta ismir split
     testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsNactaISMIR()
 
     onsetFunctionAllRecordings(wav_path=nacta_wav_path,

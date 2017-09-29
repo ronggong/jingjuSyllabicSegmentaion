@@ -7,9 +7,9 @@ def peakPicking(obs):
     :param obs:
     :return:
     """
-    a = 2
+    a = 5
     m = 2
-    w = 2
+    w = 20
     delta = 0.15
     len_conc = max(a,m)
     obs_extended = np.concatenate((np.array([0]*len_conc), obs))
