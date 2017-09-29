@@ -10,7 +10,7 @@ layer2          = 32
 fusion          = False
 
 # filter shape: 'temporal' or 'timbral' filter shape in Pons' CNN
-filter_shape    = 'timbral'
+filter_shape    = 'temporal'
 
 
 # other params
