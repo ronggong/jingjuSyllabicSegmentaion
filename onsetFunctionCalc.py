@@ -20,7 +20,7 @@ from src.scoreParser import generatePinyin, csvDurationScoreParser
 from src.textgridParser import textGrid2WordList, wordListsParseByLines
 from trainingSampleCollection import featureReshape
 from trainingSampleCollection import getMFCCBands2D
-from trainingSampleCollection import getTestTrainRecordings, getTestTrainrecordingsRiyaz, getTestTrainRecordingsNactaISMIR
+from trainingSampleCollection import getTestTrainRecordingsMaleFemale, getTestTrainrecordingsRiyaz, getTestTrainRecordingsNactaISMIR
 
 from peakPicking import peakPicking
 import viterbiDecoding

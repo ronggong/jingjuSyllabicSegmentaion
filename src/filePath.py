@@ -34,8 +34,8 @@ riyaz_score_path = join(riyaz_dataset_root_path, 'score')
 riyaz_segPhrase_path = join(riyaz_dataset_root_path, 'segPhrase')
 
 # where we have the dumped features
-feature_data_path = '/Users/gong/Documents/MTG document/dataset/syllableSeg/'
-# feature_data_path = riyaz_dataset_root_path
+# feature_data_path = '/Users/gong/Documents/MTG document/dataset/syllableSeg/'
+feature_data_path = riyaz_dataset_root_path
 
 from parameters import mth_ODF, fusion, layer2, filter_shape
 

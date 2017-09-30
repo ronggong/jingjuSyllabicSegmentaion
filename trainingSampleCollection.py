@@ -14,7 +14,7 @@ from src.parameters import *
 from src.phonemeMap import *
 from src.textgridParser import textGrid2WordList, wordListsParseByLines, syllableTextgridExtraction
 from src.scoreParser import csvDurationScoreParser
-from src.trainTestSeparation import getTestTrainRecordings, getTestTrainrecordingsRiyaz, getTestTrainRecordingsNactaISMIR
+from src.trainTestSeparation import getTestTrainRecordingsMaleFemale, getTestTrainrecordingsRiyaz, getTestTrainRecordingsNactaISMIR
 from src.Fdeltas import Fdeltas
 from src.Fprev_sub import Fprev_sub
 from src.filePath import *
@@ -439,7 +439,7 @@ def dumpFeatureOnset(wav_path, textgrid_path, score_path, recordings, feature_ty
             # parse lines of groundtruth
             nestedUtteranceLists, numLines, numUtterances = wordListsParseByLines(lineList, utteranceList)
         else:
-            nestedUtteranceLists = [lab2WordList(groundtruth_textgrid_file, label=False)]
+            nestedUtteranceLists = [lab2WordList(groundtruth_textgrid_file, label=True)]
 
         # parse score
         _, utterance_durations, bpm = csvDurationScoreParser(score_file)
@@ -657,22 +657,22 @@ def dumpFeatureBatchOnsetRiyaz():
 
     print(mfcc_p.shape, mfcc_n.shape, sample_weights_p.shape, sample_weights_n.shape)
 
-    pickle.dump(scaler, open('cnnModels/scaler_syllable_mfccBands2D_riyaz.pkl', 'wb'))
+    pickle.dump(scaler, open('cnnModels/scaler_syllable_mfccBands2D_riyaz'+str(varin['nlen'])+'.pkl', 'wb'))
 
     feature_all = featureReshape(feature_all, nlen=varin['nlen'])
 
     print(feature_all.shape)
 
-    h5f = h5py.File(join(feature_data_path, 'feature_all_riyaz.h5'), 'w')
+    h5f = h5py.File(join(feature_data_path, 'feature_all_riyaz'+str(varin['nlen'])+'.h5'), 'w')
     h5f.create_dataset('feature_all', data=feature_all)
     h5f.close()
 
     cPickle.dump(label_all,
-                 gzip.open('trainingData/labels_train_set_all_syllableSeg_mfccBands2D_riyaz.pickle.gz', 'wb'),
+                 gzip.open('trainingData/labels_train_set_all_syllableSeg_mfccBands2D_riyaz'+str(varin['nlen'])+'.pickle.gz', 'wb'),
                  cPickle.HIGHEST_PROTOCOL)
 
     cPickle.dump(sample_weights,
-                 gzip.open('trainingData/sample_weights_syllableSeg_mfccBands2D_riyaz.pickle.gz', 'wb'),
+                 gzip.open('trainingData/sample_weights_syllableSeg_mfccBands2D_riyaz'+str(varin['nlen'])+'.pickle.gz', 'wb'),
                  cPickle.HIGHEST_PROTOCOL)
 
 if __name__ == '__main__':
@@ -684,7 +684,8 @@ if __name__ == '__main__':
     #                           gmmModel_path=gmmModel_path)
 
     # dump feature for DNN training, with getFeature output MFCC bands
-    dumpFeatureBatchOnsetNactaISMIR()
+    # dumpFeatureBatchOnsetNactaISMIR()
+    dumpFeatureBatchOnsetRiyaz()
     # testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordings()
     #
     # for artist_path, filename in testNacta:

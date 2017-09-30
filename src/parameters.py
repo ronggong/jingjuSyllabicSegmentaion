@@ -29,7 +29,7 @@ varin['N_feature']   = 40
 varin['N_pattern']   = 21                # adjust this param, l in paper
 
 # mfccBands feature half context window length
-varin['nlen']        = 10
+varin['nlen']        = 30
 
 # parameters of viterbi
 varin['delta_mode'] = 'proportion'

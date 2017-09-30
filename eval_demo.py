@@ -10,7 +10,7 @@ import scoreParser
 # import evaluation
 import evaluation2
 from filePath import *
-from trainingSampleCollection import getTestTrainRecordings, getTestTrainrecordingsRiyaz, getTestTrainRecordingsNactaISMIR
+from trainingSampleCollection import getTestTrainRecordingsMaleFemale, getTestTrainrecordingsRiyaz, getTestTrainRecordingsNactaISMIR
 
 
 def batch_eval(root_path, annotation_path, segPhrase_path, segSyllable_path, score_path, groundtruth_path, eval_details_path, recordings, tolerance, method='obin', label=False):

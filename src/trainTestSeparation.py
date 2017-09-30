@@ -66,6 +66,11 @@ def testRecordings(boundaries,proportion_testset):
 
     return subsets_sorted[0]
 
+def chunks(l, n):
+    """Yield successive n-sized chunks from l."""
+    for i in xrange(0, len(l), n):
+        yield l[i:i + n]
+
 
 def getBoundaryNumber(textgrid_path, score_path):
     """
@@ -197,7 +202,11 @@ def getTestTrainrecordingsRiyaz():
     return recordingsTestRiyaz, recordingsTrainRiyaz
 
 
-def getTestTrainRecordings():
+def getTestTrainRecordingsMaleFemale():
+    """
+    only split male female
+    :return:
+    """
     list_onset_nacta2017 = getBoundaryNumber(textgrid_path=nacta2017_textgrid_path, score_path=nacta2017_score_path)
     list_onset_nacta = getBoundaryNumber(textgrid_path=nacta_textgrid_path, score_path=nacta_score_path)
 
@@ -275,6 +284,115 @@ def getTestTrainRecordings():
     return recordingsTestNacta2017Male+recordingsTestNacta2017Fem, recordingsTestNactaMale+recordingsTestNactaFem, \
            recordingsTrainNacta2017Male+recordingsTrainNacta2017Fem, recordingsTrainNactaMale+recordingsTrainNactaFem
 
+def getTestTrainRecordingsNacta2017Artist():
+    """
+    partition train test for each artist
+    :return:
+    """
+
+    """
+    list_onset_nacta2017 = getBoundaryNumber(textgrid_path=nacta2017_textgrid_path, score_path=nacta2017_score_path)
+    artists = list(set([list_recording[0] for list_recording in list_onset_nacta2017]))
+
+    recordingsTestNacta = []
+    recordingsNumTestNacta = 0
+    recordingsTrainNacta = []
+    recordingsNumTrainNacta = 0
+    for ar in artists:
+        print('partitioning', ar)
+
+        list_artist = []
+        for list_recording in list_onset_nacta2017:
+            if list_recording[0] == ar:
+                list_artist.append(list_recording)
+
+        list_onset = [list_ar[2] for list_ar in list_artist]
+        if len(list_onset) > 10:
+            idx_test_set = []
+            for ii_slo, sub_list_onset in enumerate(list(chunks(list_onset, 10))):
+                sub_idx_test_set = testRecordings(sub_list_onset, 0.2)
+                sub_idx_test_set = [its+ii_slo*10 for its in sub_idx_test_set]
+                idx_test_set += sub_idx_test_set
+        else:
+            idx_test_set = testRecordings(list_onset, 0.2)
+
+        recordingsTestNacta += [[list_artist[ii][0], list_artist[ii][1]] for ii in idx_test_set]
+        recordingsTrainNacta += [[list_artist[ii][0], list_artist[ii][1]] for ii in range(len(list_artist)) if ii not in idx_test_set]
+
+        recordingsNumTestNacta += sum([list_artist[ii][2] for ii in idx_test_set])
+        recordingsNumTrainNacta += sum([list_artist[ii][2] for ii in range(len(list_artist)) if ii not in idx_test_set])
+    """
+
+    testNacta2017 = [['20170424SunYuZhu', 'daeh-Yi_sha_shi-Suo_lin_nang-nacta'],
+     ['20170408SongRuoXuan', 'daxp-Su_san_li-Su_san_qi-nacta'],
+     ['20170327LiaoJiaNi', 'lsxp-Jiang_shen_er-San_jia_dian-nacta'],
+     ['20170425SunYuZhu', 'daeh-Wei_kai_yan-Dou_e_yuan-nacta'],
+     ['20170519LongTianMing', 'lseh-Wei_guo_jia-Hong_yang_dong-ustb'],
+     ['20170519LongTianMing', 'lseh-Zi_na_ri-Hong_yang_dong-ustb'],
+     ['20170519XuJingWei', 'lseh-Wei_kai_yan-Rang_xu_zhou-renmin'],
+     ['20170519XuJingWei', 'lsxp-Huai_nan_wang-Huai_he_ying-renmin'],
+     ['20170418TianHao', 'lseh-Lao_zhang_bu-Wu_pen_ji01-nacta'],
+     ['20170418TianHao', 'lseh-Niang_zi_bu-Sou_gu_jiu02-nacta'],
+     ['20170418TianHao', 'lseh-Niang_zi_bu-Sou_gu_jiu03-nacta'],
+     ['20170418TianHao', 'lseh-Xin_zhong_you-Wen_zhao_guan01-nacta'],
+     ['20170418TianHao', 'lseh-Xin_zhong_you-Wen_zhao_guan03-nacta'],
+     ['20170418TianHao', 'lseh-Yi_lun_ming-Wen_zhao_guan01-nacta'],
+     ['20170418TianHao', 'lsxp-Liang_guo_jiao-Shi_jie_ting02-nacta'],
+     ['20170418TianHao', 'lsxp-Wo_ben_shi-Kong_cheng_ji-nacta'],
+     ['20170506LiuHaiLin', 'daeh-Wang_chun_e-San_niang_jiao-ustb'],
+     ['20170506LiuHaiLin', 'daxp-Qiao_lou_shang-Huang_shan_lei-ustb']]
+    trainNacta2017 = [['20170424SunYuZhu', 'daxp-Dang_ri_li-Suo_lin_nang-nacta'],
+      ['20170424SunYuZhu', 'daxp-Er_ting_de-Suo_lin_nang_take1-nacta'],
+      ['20170424SunYuZhu', 'daxp-Er_ting_de-Suo_lin_nang_take2-nacta'],
+      ['20170424SunYuZhu', 'daxp-Er_ting_de-Suo_lin_nang_take3-nacta'],
+      ['20170424SunYuZhu', 'daxp-Zhe_cai_shi-Suo_lin_nang-nacta'],
+      ['20170424SunYuZhu', 'daxp-Zhe_cai_shi-Suo_lin_nang_first_half-nacta'],
+      ['20170408SongRuoXuan', 'daeh-Yang_yu_huan-Tai_zhen_wai-nacta'],
+      ['20170408SongRuoXuan', 'danbz-Kan_dai_wang-Ba_wang_bie-nacta'],
+      ['20170408SongRuoXuan', 'daspd-Hai_dao_bing-Gui_fei_zui-nacta'],
+      ['20170408SongRuoXuan', 'daxp-Lao_die_die-Yu_zhou_feng-nacta'],
+      ['20170327LiaoJiaNi', 'lseh-Niang_zi_bu-Sou_gu_jiu-nacta'],
+      ['20170327LiaoJiaNi', 'lseh-Yi_lun_ming-Wen_zhao_guan-nacta'],
+      ['20170327LiaoJiaNi', 'lsxp-Xi_ri_li-Zhu_lian_zhai-nacta'],
+      ['20170327LiaoJiaNi', 'lsxp-Yi_ma_li-Wu_jia_po-nacta'],
+      ['20170425SunYuZhu', 'daxp-Chui_qiu_ting-Suo_lin_nang-nacta'],
+      ['20170425SunYuZhu', 'daxp-Chui_qiu_ting-Suo_lin_nang_first_line-nacta'],
+      ['20170519LongTianMing', 'lseh-Tan_yang_jia-Hong_yang_dong-ustb'],
+      ['20170519LongTianMing', 'lseh-Yi_lun_ming-Zhuo_fang_cao-ustb'],
+      ['20170519LongTianMing', 'lsxp-Ting_ta_yan-Zhuo_fang_cao-ustb'],
+      ['20170519LongTianMing', 'lsxp-Wo_ben_shi-Kong_cheng_ji-ustb'],
+      ['20170519LongTianMing', 'lsxp-Wo_zheng_zai-Kong_cheng_ji-ustb'],
+      ['20170519XuJingWei', 'lseh-Jin_zhong_xiang-Shang_tian_tai-renmin'],
+      ['20170519XuJingWei', 'lseh-Wei_guo_jia-Hong_yang_dong-renmin'],
+      ['20170519XuJingWei', 'lsxp-Jiang_shen_er-San_jia_dian-renmin'],
+      ['20170519XuJingWei', 'lsxp-Wo_ben_shi-Kong_cheng_ji-renmin'],
+      ['20170519XuJingWei', 'lsxp-Wo_zheng_zai-Kong_cheng_ji-renmin'],
+      ['20170519XuJingWei', 'lsxp-Yi_ma_li-Wu_jia_po-renmin'],
+      ['20170418TianHao', 'lseh-Jin_zhong_xiang-Shang_tian_tai01-nacta'],
+      ['20170418TianHao', 'lseh-Jin_zhong_xiang-Shang_tian_tai02-nacta'],
+      ['20170418TianHao', 'lseh-Lao_zhang_bu-Wu_pen_ji02-nacta'],
+      ['20170418TianHao', 'lseh-Niang_zi_bu-Sou_gu_jiu01-nacta'],
+      ['20170418TianHao', 'lseh-Tan_yang_jia-Hong_yang_dong-nacta'],
+      ['20170418TianHao', 'lseh-Wei_guo_jia-Hong_yang_dong01-nacta'],
+      ['20170418TianHao', 'lseh-Wei_guo_jia-Hong_yang_dong02-nacta'],
+      ['20170418TianHao', 'lseh-Xin_zhong_you-Wen_zhao_guan02-nacta'],
+      ['20170418TianHao', 'lseh-Yi_lun_ming-Wen_zhao_guan02-nacta'],
+      ['20170418TianHao', 'lsxp-Jiang_shen_er-San_jia_dian-nacta'],
+      ['20170418TianHao', 'lsxp-Liang_guo_jiao-Shi_jie_ting01-nacta'],
+      ['20170418TianHao', 'lsxp-Ting_ta_yan-Zhuo_fang_cao01-nacta'],
+      ['20170418TianHao', 'lsxp-Ting_ta_yan-Zhuo_fang_cao02-nacta'],
+      ['20170418TianHao', 'lsxp-Ting_ta_yan-Zhuo_fang_cao03-nacta'],
+      ['20170418TianHao', 'lsxp-Wo_zheng_zai-Kong_cheng_ji01-nacta'],
+      ['20170418TianHao', 'lsxp-Wo_zheng_zai-Kong_cheng_ji02-nacta'],
+      ['20170418TianHao', 'lsxp-Xi_ri_li-Zhu_lian_zhai-nacta'],
+      ['20170506LiuHaiLin', 'daeh-Wei_kai_yan-Dou_e_yuan-ustb'],
+      ['20170506LiuHaiLin', 'daxp-Chun_qiu_ting-Suo_lin_nang-ustb'],
+      ['20170506LiuHaiLin', 'daxp-Dang_ri_li-Suo_lin_nang-ustb'],
+      ['20170506LiuHaiLin', 'daxp-Yi_sha_shi-Suo_lin_nang-ustb']]
+    # print(recordingsTestNacta, recordingsNumTestNacta)
+    # print(recordingsTrainNacta, recordingsNumTrainNacta)
+
+    return testNacta2017, trainNacta2017
 
 def getTestTrainRecordingsNactaISMIR():
     """
@@ -431,14 +549,16 @@ if __name__ == '__main__':
     # getTestTrainRecordings()
     # print getRecordingNames('TRAIN')
 
-    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordings()
+    # testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsMaleFemale()
 
 
     # print(testNacta2017)
     # print(testNacta)
-    print(trainNacta2017)
+    # print(trainNacta2017)
     # print(trainNacta)
 
     # testRiyaz, trainRiyaz = getTestTrainrecordingsRiyaz()
     # print(testRiyaz)
     # print(trainRiyaz)
+
+    getTestTrainRecordingsNacta2017Artist()

@@ -1,7 +1,7 @@
 import labWriter
 import os
 from src.filePath import *
-from trainingSampleCollection import getTestTrainRecordings, getTestTrainrecordingsRiyaz
+from trainingSampleCollection import getTestTrainRecordingsMaleFemale, getTestTrainrecordingsRiyaz
 
 # testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordings()
 #
