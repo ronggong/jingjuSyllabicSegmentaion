@@ -394,6 +394,74 @@ def getTestTrainRecordingsNacta2017Artist():
 
     return testNacta2017, trainNacta2017
 
+def getTestTrainRecordingsArtist():
+    testNacta2017, trainNacta2017 = getTestTrainRecordingsNacta2017Artist()
+
+    # calculated from the master branch trainTestSeparation.py
+    testNacta = [['danAll', 'daxp-Zhe_cai_shi-Suo_lin_nang01-qm'], ['danAll', 'dafeh-Bi_yun_tian-Xi_xiang_ji01-qm'],
+                     ['danAll', 'daspd-Hai_dao_bing-Gui_fei_zui_jiu02-qm'],
+                     ['laosheng', 'lseh-Wei_guo_jia-Hong_yang_dong02-qm'],
+                     ['laosheng', 'lseh-Wo_ben_shi-Qiong_lin_yan-qm'],
+                     ['laosheng', 'lseh-Yi_lun_ming-Wen_zhao_guan-qm'],
+                     ['laosheng', 'lsxp-Huai_nan_wang-Huai_he_ying02-qm'],
+                     ['danAll', 'dagbz-Feng_xiao_xiao-Yang_men_nv_jiang-lon'],
+                     ['laosheng', 'dagbz-Feng_xiao_xiao-Yang_men_nv_jiang-lon'],
+                     ['danAll', 'daspd-Du_shou_kong-Wang_jiang_ting-upf'],
+                     ['laosheng', 'lsxp-Wo_zheng_zai-Kong_cheng_ji01-upf'],
+                     ['laosheng', 'lsxp-Guo_liao_yi-Wen_zhao_guan02-qm'],
+                     ['danAll', 'daxp-Jiao_Zhang_sheng-Hong_niang01-qm']]
+    trainNacta = [['danAll', 'danbz-Kan_dai_wang-Ba_wang_bie_ji01-qm'],
+                      ['danAll', 'daxp-Meng_ting_de-Mu_Gui_ying_gua_shuai04-qm'],
+                      ['danAll', 'daxp-Jiao_Zhang_sheng-Hong_niang04-qm'],
+                      ['danAll', 'daxp-Chun_qiu_ting-Suo_lin_nang01-qm'],
+                      ['danAll', 'danbz-Bei_jiu_chan-Chun_gui_men01-qm'],
+                      ['danAll', 'daxp-Meng_ting_de-Mu_Gui_ying_gua_shuai02-qm'],
+                      ['laosheng', 'lseh-Tan_Yang_jia-Hong_yang_dong-qm'],
+                      ['laosheng', 'lseh-Zi_na_ri-Hong_yang_dong-qm'],
+                      ['laosheng', 'lsxp-Xi_ri_you-Zhu_lian_zhai-qm'], ['laosheng', 'lsxp-Quan_qian_sui-Gan_lu_si-qm'],
+                      ['laosheng', 'lsxp-Shi_ye_shuo-Ding_jun_shan-qm'],
+                      ['laosheng', 'lsxp-Wo_ben_shi-Kong_cheng_ji-qm'],
+                      ['laosheng', 'lsxp-Wo_zheng_zai-Kong_cheng_ji04-qm'],
+                      ['laosheng', 'lsxp-Qian_bai_wan-Si_lang_tang_mu01-qm'],
+                      ['danAll', 'daxp-Guan_Shi_yin-Tian_nv_san_hua-lon'],
+                      ['laosheng', 'daxp-Guan_Shi_yin-Tian_nv_san_hua-lon'],
+                      ['danAll', 'daeh-Yang_Yu_huan-Tai_zhen_wai_zhuan-lon'],
+                      ['laosheng', 'daeh-Yang_Yu_huan-Tai_zhen_wai_zhuan-lon'],
+                      ['danAll', 'daspd-Hai_dao_bing-Gui_fei_zui_jiu01-lon'],
+                      ['laosheng', 'daspd-Hai_dao_bing-Gui_fei_zui_jiu01-lon'],
+                      ['danAll', 'daxp-Meng_ting_de-Mu_Gui_ying_gua_shuai01-upf'],
+                      ['laosheng', 'lsxp-Jiang_shen_er-San_jia_dian01-1-upf'],
+                      ['laosheng', 'lsxp-Jiang_shen_er-San_jia_dian01-2-upf'],
+                      ['laosheng', 'lsxp-Guo_liao_yi-Wen_zhao_guan01-upf'],
+                      ['laosheng', 'lsxp-Jiang_shen_er-San_jia_dian02-qm']]
+
+    list_onset_nacta2017 = getBoundaryNumber(textgrid_path=nacta2017_textgrid_path, score_path=nacta2017_score_path)
+    list_onset_nacta = getBoundaryNumber(textgrid_path=nacta_textgrid_path, score_path=nacta_score_path)
+
+    list_onset_all = list_onset_nacta2017+list_onset_nacta
+
+    testRecordings = testNacta+testNacta2017
+    trainRecordings = trainNacta+trainNacta2017
+
+    numTest = 0
+    for tr in testRecordings:
+        print(tr)
+        for loa in list_onset_all:
+            if tr == loa[:2]:
+                print('find syllable number', tr)
+                numTest+=loa[2]
+    numTrain = 0
+    for tr in trainRecordings:
+        print(tr)
+        for loa in list_onset_all:
+            if tr == loa[:2]:
+                print('find syllable number', tr)
+                numTrain += loa[2]
+
+    print(numTest, numTrain)
+
+    return testNacta2017, testNacta, trainNacta2017, trainNacta
+
 def getTestTrainRecordingsNactaISMIR():
     """
     coherent to ismir datasplit
@@ -561,4 +629,4 @@ if __name__ == '__main__':
     # print(testRiyaz)
     # print(trainRiyaz)
 
-    getTestTrainRecordingsNacta2017Artist()
+    getTestTrainRecordingsArtist()
