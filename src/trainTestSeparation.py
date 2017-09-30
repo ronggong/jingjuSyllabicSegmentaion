@@ -171,7 +171,7 @@ def recordingNameMapping(recordings, dictFem, dictMale):
 
 def getTestTrainRecordingArtist():
 
-    """
+
     lineOnsetQmMale01 = getBoundaryNumber(queenMaryMale_01_Recordings, queenMarydataset_path)
     lineOnsetQmMale02 = getBoundaryNumber(queenMaryMale_02_Recordings, queenMarydataset_path)
     lineOnsetQmMale12 = getBoundaryNumber(queenMaryMale_12_Recordings, queenMarydataset_path)
@@ -248,20 +248,19 @@ def getTestTrainRecordingArtist():
 
     dictMale = dict(dict_name_mapping_laosheng_bcn)
     dictMale.update(dict_name_mapping_laosheng_qm)
-    dictMale.update(dict_name_mapping_dan_london)
+    dictMale.update(dict_name_mapping_laosheng_london)
 
     testNacta_out = recordingNameMapping(testNacta, dictFem, dictMale)
     trainNacta_out = recordingNameMapping(trainNacta, dictFem, dictMale)
 
-    # print(testNacta_out)
-    # print(trainNacta_out)
-    """
+    print(testNacta_out)
+    print(trainNacta_out)
 
     testNacta_out = [['danAll', 'daxp-Zhe_cai_shi-Suo_lin_nang01-qm'], ['danAll', 'dafeh-Bi_yun_tian-Xi_xiang_ji01-qm'],
      ['danAll', 'daspd-Hai_dao_bing-Gui_fei_zui_jiu02-qm'], ['laosheng', 'lseh-Wei_guo_jia-Hong_yang_dong02-qm'],
      ['laosheng', 'lseh-Wo_ben_shi-Qiong_lin_yan-qm'], ['laosheng', 'lseh-Yi_lun_ming-Wen_zhao_guan-qm'],
      ['laosheng', 'lsxp-Huai_nan_wang-Huai_he_ying02-qm'], ['danAll', 'dagbz-Feng_xiao_xiao-Yang_men_nv_jiang-lon'],
-     ['laosheng', 'dagbz-Feng_xiao_xiao-Yang_men_nv_jiang-lon'], ['danAll', 'daspd-Du_shou_kong-Wang_jiang_ting-upf'],
+     ['laosheng', 'lsxp-Huai_nan_wang-Huai_he_ying01-lon'], ['danAll', 'daspd-Du_shou_kong-Wang_jiang_ting-upf'],
      ['laosheng', 'lsxp-Wo_zheng_zai-Kong_cheng_ji01-upf'], ['laosheng', 'lsxp-Guo_liao_yi-Wen_zhao_guan02-qm'],
      ['danAll', 'daxp-Jiao_Zhang_sheng-Hong_niang01-qm']]
     trainNacta_out = [['danAll', 'danbz-Kan_dai_wang-Ba_wang_bie_ji01-qm'], ['danAll', 'daxp-Meng_ting_de-Mu_Gui_ying_gua_shuai04-qm'],
@@ -271,9 +270,8 @@ def getTestTrainRecordingArtist():
      ['laosheng', 'lsxp-Xi_ri_you-Zhu_lian_zhai-qm'], ['laosheng', 'lsxp-Quan_qian_sui-Gan_lu_si-qm'],
      ['laosheng', 'lsxp-Shi_ye_shuo-Ding_jun_shan-qm'], ['laosheng', 'lsxp-Wo_ben_shi-Kong_cheng_ji-qm'],
      ['laosheng', 'lsxp-Wo_zheng_zai-Kong_cheng_ji04-qm'], ['laosheng', 'lsxp-Qian_bai_wan-Si_lang_tang_mu01-qm'],
-     ['danAll', 'daxp-Guan_Shi_yin-Tian_nv_san_hua-lon'], ['laosheng', 'daxp-Guan_Shi_yin-Tian_nv_san_hua-lon'],
-     ['danAll', 'daeh-Yang_Yu_huan-Tai_zhen_wai_zhuan-lon'], ['laosheng', 'daeh-Yang_Yu_huan-Tai_zhen_wai_zhuan-lon'],
-     ['danAll', 'daspd-Hai_dao_bing-Gui_fei_zui_jiu01-lon'], ['laosheng', 'daspd-Hai_dao_bing-Gui_fei_zui_jiu01-lon'],
+     ['danAll', 'daxp-Guan_Shi_yin-Tian_nv_san_hua-lon'], ['danAll', 'daeh-Yang_Yu_huan-Tai_zhen_wai_zhuan-lon'],
+     ['danAll', 'daspd-Hai_dao_bing-Gui_fei_zui_jiu01-lon'], ['laosheng', 'lseh-Wei_guo_jia-Hong_yang_dong01-lon'],
      ['danAll', 'daxp-Meng_ting_de-Mu_Gui_ying_gua_shuai01-upf'],
      ['laosheng', 'lsxp-Jiang_shen_er-San_jia_dian01-1-upf'], ['laosheng', 'lsxp-Jiang_shen_er-San_jia_dian01-2-upf'],
      ['laosheng', 'lsxp-Guo_liao_yi-Wen_zhao_guan01-upf'], ['laosheng', 'lsxp-Jiang_shen_er-San_jia_dian02-qm']]
