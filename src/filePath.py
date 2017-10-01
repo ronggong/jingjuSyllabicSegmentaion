@@ -8,10 +8,10 @@ from os.path import join
 # aCapella_root         = dataset_root_path
 
 # text grid path which contains phoneme annotations
-dataset_textgrid_path = '/Users/gong/Documents/MTG document/Jingju arias/jingju_a_cappella_singing_dataset/'
+dataset_textgrid_path = '/Users/gong/Documents/MTG document/Jingju arias/aCappella-dataset-syllable-cnn/'
 
 textgrid_path_dan           = join(dataset_textgrid_path,'textgrid','danAll')
-textgrid_path_laosheng      = join(dataset_textgrid_path,'textgrid','laosheng')
+textgrid_path_laosheng      = join(dataset_textgrid_path,'textgrid','qmLonUpf/laosheng')
 
 # aCapella root
 aCapella_root   = '/Users/gong/Documents/MTG document/Jingju arias/aCapella/'
