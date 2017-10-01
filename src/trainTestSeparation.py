@@ -204,7 +204,7 @@ def getTestTrainrecordingsRiyaz():
 
 def getTestTrainRecordingsMaleFemale():
     """
-    only split male female
+    only split male female, new split
     :return:
     """
     list_onset_nacta2017 = getBoundaryNumber(textgrid_path=nacta2017_textgrid_path, score_path=nacta2017_score_path)
@@ -394,7 +394,37 @@ def getTestTrainRecordingsNacta2017Artist():
 
     return testNacta2017, trainNacta2017
 
+def getBoundaryNumberTestTrainHelper(records,list_onset_all):
+    num = 0
+    for tr in records:
+        print(tr)
+        for loa in list_onset_all:
+            if tr == loa[:2]:
+                print('find syllable number', tr)
+                num += loa[2]
+    return num
+
+def getBoundaryNumberTestTrain(testNacta2017, testNacta, trainNacta2017, trainNacta):
+    # check test train syllable numbers
+    list_onset_nacta2017 = getBoundaryNumber(textgrid_path=nacta2017_textgrid_path, score_path=nacta2017_score_path)
+    list_onset_nacta = getBoundaryNumber(textgrid_path=nacta_textgrid_path, score_path=nacta_score_path)
+
+    list_onset_all = list_onset_nacta2017+list_onset_nacta
+
+    testRecords = testNacta+testNacta2017
+    trainRecords = trainNacta+trainNacta2017
+
+    numTest = getBoundaryNumberTestTrainHelper(testRecords, list_onset_all)
+    numTrain = getBoundaryNumberTestTrainHelper(trainRecords, list_onset_all)
+
+    print(numTest, numTrain)
+
+
 def getTestTrainRecordingsArtist():
+    """
+    nacta 2017 artist partition + old dataset artist partition
+    :return:
+    """
     testNacta2017, trainNacta2017 = getTestTrainRecordingsNacta2017Artist()
 
     # calculated from the master branch trainTestSeparation.py
@@ -405,7 +435,7 @@ def getTestTrainRecordingsArtist():
                      ['laosheng', 'lseh-Yi_lun_ming-Wen_zhao_guan-qm'],
                      ['laosheng', 'lsxp-Huai_nan_wang-Huai_he_ying02-qm'],
                      ['danAll', 'dagbz-Feng_xiao_xiao-Yang_men_nv_jiang-lon'],
-                     ['laosheng', 'dagbz-Feng_xiao_xiao-Yang_men_nv_jiang-lon'],
+                     ['laosheng', 'lsxp-Huai_nan_wang-Huai_he_ying01-lon'],
                      ['danAll', 'daspd-Du_shou_kong-Wang_jiang_ting-upf'],
                      ['laosheng', 'lsxp-Wo_zheng_zai-Kong_cheng_ji01-upf'],
                      ['laosheng', 'lsxp-Guo_liao_yi-Wen_zhao_guan02-qm'],
@@ -424,47 +454,21 @@ def getTestTrainRecordingsArtist():
                       ['laosheng', 'lsxp-Wo_zheng_zai-Kong_cheng_ji04-qm'],
                       ['laosheng', 'lsxp-Qian_bai_wan-Si_lang_tang_mu01-qm'],
                       ['danAll', 'daxp-Guan_Shi_yin-Tian_nv_san_hua-lon'],
-                      ['laosheng', 'daxp-Guan_Shi_yin-Tian_nv_san_hua-lon'],
                       ['danAll', 'daeh-Yang_Yu_huan-Tai_zhen_wai_zhuan-lon'],
-                      ['laosheng', 'daeh-Yang_Yu_huan-Tai_zhen_wai_zhuan-lon'],
                       ['danAll', 'daspd-Hai_dao_bing-Gui_fei_zui_jiu01-lon'],
-                      ['laosheng', 'daspd-Hai_dao_bing-Gui_fei_zui_jiu01-lon'],
+                      ['laosheng', 'lseh-Wei_guo_jia-Hong_yang_dong01-lon'],
                       ['danAll', 'daxp-Meng_ting_de-Mu_Gui_ying_gua_shuai01-upf'],
                       ['laosheng', 'lsxp-Jiang_shen_er-San_jia_dian01-1-upf'],
                       ['laosheng', 'lsxp-Jiang_shen_er-San_jia_dian01-2-upf'],
                       ['laosheng', 'lsxp-Guo_liao_yi-Wen_zhao_guan01-upf'],
                       ['laosheng', 'lsxp-Jiang_shen_er-San_jia_dian02-qm']]
 
-    list_onset_nacta2017 = getBoundaryNumber(textgrid_path=nacta2017_textgrid_path, score_path=nacta2017_score_path)
-    list_onset_nacta = getBoundaryNumber(textgrid_path=nacta_textgrid_path, score_path=nacta_score_path)
-
-    list_onset_all = list_onset_nacta2017+list_onset_nacta
-
-    testRecordings = testNacta+testNacta2017
-    trainRecordings = trainNacta+trainNacta2017
-
-    numTest = 0
-    for tr in testRecordings:
-        print(tr)
-        for loa in list_onset_all:
-            if tr == loa[:2]:
-                print('find syllable number', tr)
-                numTest+=loa[2]
-    numTrain = 0
-    for tr in trainRecordings:
-        print(tr)
-        for loa in list_onset_all:
-            if tr == loa[:2]:
-                print('find syllable number', tr)
-                numTrain += loa[2]
-
-    print(numTest, numTrain)
 
     return testNacta2017, testNacta, trainNacta2017, trainNacta
 
 def getTestTrainRecordingsNactaISMIR():
     """
-    coherent to ismir datasplit
+    coherent to ismir 2017 paper datasplit
     :return:
     """
     trainNacta2017 = [['20170327LiaoJiaNi', 'lseh-Niang_zi_bu-Sou_gu_jiu-nacta'],
