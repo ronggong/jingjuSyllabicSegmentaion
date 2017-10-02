@@ -5,7 +5,7 @@ from data_preparation import load_data
 from models import jan_deep, model_train
 
 
-nlen = 21
+nlen = 41
 input_dim = (80, nlen)
 
 def train_model(filter_density, dropout, input_shape, file_path_model, filename_log):
