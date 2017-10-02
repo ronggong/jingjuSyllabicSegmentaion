@@ -1,6 +1,10 @@
+# -*- coding: utf-8 -*-
+
 import csv
 import pinyin
 import os
+from zhon.hanzi import punctuation as puncChinese
+import re
 
 def csvDurationScoreParser(scoreFilename):
 
@@ -19,6 +23,24 @@ def csvDurationScoreParser(scoreFilename):
 
     return syllables, syllable_durations, bpm
 
+def csvScorePinyinParser(scoreFilename):
+    syllables = []
+    syllable_durations = []
+    bpm = []
+    pinyins = []
+
+    with open(scoreFilename, 'rb') as csvfile:
+        score = csv.reader(csvfile)
+        for idx, row in enumerate(score):
+            if idx%3 == 0:
+                syllables.append(row[1:])
+            if idx%3 == 1:
+                pinyins.append(row[1:])
+            if idx%3 == 2:
+                syllable_durations.append(row[1:])
+                bpm.append(row[0])
+    return syllables, pinyins, syllable_durations, bpm
+
 def generatePinyin(scoreFilename):
 
     syllables           = []
@@ -35,6 +57,8 @@ def generatePinyin(scoreFilename):
                     row_pinyin = []
                     for r in row[1:]:
                         if len(r):
+                            if len(re.findall(ur'[\u4e00-\u9fff]+', r.decode("utf8"))):
+                                r = re.sub(ur"[%s]+" % puncChinese, "", r.decode("utf8"))
                             row_pinyin.append(pinyin.get(r, format="strip", delimiter=" "))
                         else:
                             row_pinyin.append('')

@@ -154,22 +154,6 @@ def stat_Add(sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhra
     return sumDetectedBoundaries+DB, sumGroundtruthBoundaries+GB, sumGroundtruthPhrases+GP, sumCorrect+C, \
            sumOnsetCorrect+OnC, sumOffsetCorrect+OffC, sumInsertion+I,sumDeletion+D
 
-####---- function to insert pinyin into duration csv files
-def batch_insert_pinyin_2_csv(aCapella_root, dataset_path, score_path, recordings):
-    for i_recording, recording_name in enumerate(recordings):
-        score_file                  = os.path.join(aCapella_root, dataset_path, score_path, recording_name+'.csv')
-        score_file_pinyin           = os.path.join(aCapella_root, dataset_path, score_path, recording_name+'_pinyin.csv')
-
-        scoreParser.writeCsvPinyin(score_file,score_file_pinyin)
-
-def insert_pinyin_2_csv_whole_dataset():
-
-    batch_insert_pinyin_2_csv(aCapella_root,queenMarydataset_path,score_path,queenMary_Recordings)
-
-    batch_insert_pinyin_2_csv(aCapella_root,londonRecording_path,score_path,london_Recordings)
-
-    batch_insert_pinyin_2_csv(aCapella_root,bcnRecording_path,score_path,bcn_Recordings)
-
 
 def evaluation_whole_dataset(segSyllable_path,tolerance):
 
@@ -347,18 +331,18 @@ else:
                 eval_result_file_name       = './eval/results/jordi_timbral_old+new/eval_result_jordi_class_weight_conv_dense_timbral_filter_win_label.csv'
                 segSyllable_path            = './eval/results/jordi_timbral_old+new'
 
-print(eval_result_file_name)
-print(segSyllable_path)
-tols                = [0.025,0.05,0.1,0.15,0.2,0.25,0.3]
-with open(eval_result_file_name, 'wb') as testfile:
-    csv_writer = csv.writer(testfile)
-    for t in tols:
-        detected, ground_truth, ground_truth_phrases, correct, insertion, deletion = \
-            evaluation_test_dataset(segSyllable_path,tolerance=t, method='jan')
-        recall,precision,F1 = evaluation2.metrics(detected,ground_truth,correct)
-        print(detected, ground_truth, correct)
-        print(recall, precision, F1)
-        csv_writer.writerow([t,detected, ground_truth, ground_truth_phrases, recall,precision,F1])
+# print(eval_result_file_name)
+# print(segSyllable_path)
+# tols                = [0.025,0.05,0.1,0.15,0.2,0.25,0.3]
+# with open(eval_result_file_name, 'wb') as testfile:
+#     csv_writer = csv.writer(testfile)
+#     for t in tols:
+#         detected, ground_truth, ground_truth_phrases, correct, insertion, deletion = \
+#             evaluation_test_dataset(segSyllable_path,tolerance=t, method='jan')
+#         recall,precision,F1 = evaluation2.metrics(detected,ground_truth,correct)
+#         print(detected, ground_truth, correct)
+#         print(recall, precision, F1)
+#         csv_writer.writerow([t,detected, ground_truth, ground_truth_phrases, recall,precision,F1])
 
 # not used
 
@@ -505,20 +489,20 @@ with open(eval_result_file_name, 'wb') as testfile:
 #      rong                    #
 ################################
 
-# # vad
-# eval_result_file_name       = './eval/results/obin_riyaz_peakPicking/eval_result_obin_test.csv'
-# segSyllable_path            = 'segSyllable_obin_peakPicking_proportion' + '_' + str(0.35) + '_' + str(0.2)
-#
-# # no vad
-# # eval_result_file_name       = '/Users/gong/Documents/MTG document/Jingju arias/aCapella/eval_result_rong_novad_different_tolerence_test.csv'
-# # segSyllable_path            = 'segSyllable/vadnoAperiocityWeighting/segSyllable_rong_proportion' + '_' + str(0.35) + '_' + str(1)
-#
-# # tols                = [0.025, 0.05,0.1,0.15,0.2,0.25,0.3]
-# tols = [0.05]
-# with open(eval_result_file_name, 'wb') as testfile:
-#     csv_writer = csv.writer(testfile)
-#     for t in tols:
-#         detected, ground_truth, ground_truth_phrases, correct, insertion, deletion = \
-#             evaluation_riyaz_test_dataset(segSyllable_path,tolerance=t,method='obin',label=True)
-#         recall,precision,F1 = evaluation2.metrics(detected,ground_truth,correct)
-#         csv_writer.writerow([t,detected, ground_truth, ground_truth_phrases, recall,precision,F1])
+# vad
+eval_result_file_name       = './eval/results/obin_riyaz_syllables/eval_result_obin_test.csv'
+segSyllable_path            = 'segSyllable_obin_proportion' + '_' + str(0.35) + '_' + str(0.2)
+
+# no vad
+# eval_result_file_name       = '/Users/gong/Documents/MTG document/Jingju arias/aCapella/eval_result_rong_novad_different_tolerence_test.csv'
+# segSyllable_path            = 'segSyllable/vadnoAperiocityWeighting/segSyllable_rong_proportion' + '_' + str(0.35) + '_' + str(1)
+
+# tols                = [0.025, 0.05,0.1,0.15,0.2,0.25,0.3]
+tols = [0.05]
+with open(eval_result_file_name, 'wb') as testfile:
+    csv_writer = csv.writer(testfile)
+    for t in tols:
+        detected, ground_truth, ground_truth_phrases, correct, insertion, deletion = \
+            evaluation_riyaz_test_dataset(segSyllable_path,tolerance=t,method='obin',label=True)
+        recall,precision,F1 = evaluation2.metrics(detected,ground_truth,correct)
+        csv_writer.writerow([t,detected, ground_truth, ground_truth_phrases, recall,precision,F1])
