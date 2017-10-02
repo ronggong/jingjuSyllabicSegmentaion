@@ -62,7 +62,7 @@ def featureExtraction(audio_monoloader, scaler, framesize_t, hopsize_t, fs, dmfc
 
         mfcc = np.array(mfcc, dtype='float32')
         mfcc_scaled = scaler.transform(mfcc)
-        mfcc_reshaped = featureReshape(mfcc_scaled)
+        mfcc_reshaped = featureReshape(mfcc_scaled, nlen=varin['nlen'])
     else:
         print(feature_type + ' is not exist.')
         raise
@@ -131,7 +131,6 @@ def onsetFunctionAllRecordings(wav_path,
     """
 
     scaler = pickle.load(open(full_path_mfccBands_2D_scaler_onset, 'rb'))
-
 
 
     for artist_path, rn in test_recordings:
@@ -228,40 +227,37 @@ def onsetFunctionAllRecordings(wav_path,
                 obs_i[-1] = 1.0
                 i_boundary = viterbiDecoding.viterbiSegmental2(obs_i, duration_score, varin)
                 filename_syll_lab = join(eval_results_path, artist_path, rn + '_' + str(i_line + 1) + '.syll.lab')
-                label = True
             else:
                 i_boundary = peakPicking(obs_i)
-                label = False
                 filename_syll_lab = join(eval_results_path+'_peakPicking', artist_path, rn + '_' + str(i_line + 1) + '.syll.lab')
 
             time_boundray_start = np.array(i_boundary[:-1])*hopsize_t
             time_boundray_end   = np.array(i_boundary[1:])*hopsize_t
 
-            list_pitch = pitchLabeling(audio_monoloader,
-                                      int(framesize_t*fs),
-                                      fs,
-                                      2000,
-                                      line[0][0],
-                                      time_boundray_start,
-                                      time_boundray_end)
+            # list_pitch = pitchLabeling(audio_monoloader,
+            #                           int(framesize_t*fs),
+            #                           fs,
+            #                           2000,
+            #                           line[0][0],
+            #                           time_boundray_start,
+            #                           time_boundray_end)
 
             # uncomment this section if we want to write boundaries to .syll.lab file
 
-            # eval_results_data_path = dirname(filename_syll_lab)
-            #
-            # if not exists(eval_results_data_path):
-            #     makedirs(eval_results_data_path)
+            eval_results_data_path = dirname(filename_syll_lab)
+
+            if not exists(eval_results_data_path):
+                makedirs(eval_results_data_path)
 
             # write boundary lab file
-            # if not lab:
-            #     boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist(), filter(None,pinyins[i_line]))
-            # else:
-            #     boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist(), syllables[i_line])
-            #     label = True
 
-            # boundaryLabWriter(boundaryList=boundary_list,
-            #                   outputFilename=filename_syll_lab,
-            #                     label=label)
+            # boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist(), syllables[i_line])
+            boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist())
+            label = False
+
+            boundaryLabWriter(boundaryList=boundary_list,
+                              outputFilename=filename_syll_lab,
+                                label=label)
 
             print(i_boundary)
             print(len(obs_i))
@@ -278,7 +274,7 @@ def onsetFunctionAllRecordings(wav_path,
                 ax1 = plt.subplot(3,1,1)
                 y = np.arange(0, 80)
                 x = np.arange(0, mfcc_line.shape[0])*hopsize_t
-                cax = plt.pcolormesh(x, y, np.transpose(mfcc_line[:, 80 * 11:80 * 12]))
+                cax = plt.pcolormesh(x, y, np.transpose(mfcc_line[:, 80 * varin['nlen']:80 * (varin['nlen']+1)]))
                 for i_gs, gs in enumerate(groundtruth_onset):
                     plt.axvline(gs, color='r', linewidth=2)
                     # plt.text(gs, ax1.get_ylim()[1], groundtruth_syllables[i_gs])

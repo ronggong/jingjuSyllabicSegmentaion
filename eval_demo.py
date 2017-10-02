@@ -291,8 +291,8 @@ def evaluation_riyaz_test_dataset(segSyllablePath, tolerance, method, label):
 #       jan jordi class weight             #
 ############################################
 if mth_ODF == 'jan':
-    eval_result_file_name       = './eval/results/jan_old+new_ismir_split/eval_result_jan_class_weight_label.csv'
-    segSyllable_path            = './eval/results/jan_old+new_ismir_split'
+    eval_result_file_name       = './eval/results/jan_deep_riyaz30_peakPicking/eval_result_jan_class_weight_label.csv'
+    segSyllable_path            = './eval/results/jan_deep_riyaz30_peakPicking'
 elif mth_ODF == 'jan_chan3':
     eval_result_file_name       = './eval/results/jan_cw_3_chans_win/eval_result_jan_class_weight.csv'
     segSyllable_path            = './eval/results/jan_cw_3_chans_win'
@@ -331,18 +331,18 @@ else:
                 eval_result_file_name       = './eval/results/jordi_timbral_old+new/eval_result_jordi_class_weight_conv_dense_timbral_filter_win_label.csv'
                 segSyllable_path            = './eval/results/jordi_timbral_old+new'
 
-# print(eval_result_file_name)
-# print(segSyllable_path)
-# tols                = [0.025,0.05,0.1,0.15,0.2,0.25,0.3]
-# with open(eval_result_file_name, 'wb') as testfile:
-#     csv_writer = csv.writer(testfile)
-#     for t in tols:
-#         detected, ground_truth, ground_truth_phrases, correct, insertion, deletion = \
-#             evaluation_test_dataset(segSyllable_path,tolerance=t, method='jan')
-#         recall,precision,F1 = evaluation2.metrics(detected,ground_truth,correct)
-#         print(detected, ground_truth, correct)
-#         print(recall, precision, F1)
-#         csv_writer.writerow([t,detected, ground_truth, ground_truth_phrases, recall,precision,F1])
+print(eval_result_file_name)
+print(segSyllable_path)
+tols                = [0.025,0.05,0.1,0.15,0.2,0.25,0.3]
+with open(eval_result_file_name, 'wb') as testfile:
+    csv_writer = csv.writer(testfile)
+    for t in tols:
+        detected, ground_truth, ground_truth_phrases, correct, insertion, deletion = \
+            evaluation_riyaz_test_dataset(segSyllable_path,tolerance=t, method='jan', label=False)
+        recall,precision,F1 = evaluation2.metrics(detected,ground_truth,correct)
+        print(detected, ground_truth, correct)
+        print(recall, precision, F1)
+        csv_writer.writerow([t,detected, ground_truth, ground_truth_phrases, recall,precision,F1])
 
 # not used
 
@@ -489,20 +489,20 @@ else:
 #      rong                    #
 ################################
 
-# vad
-eval_result_file_name       = './eval/results/obin_riyaz_syllables/eval_result_obin_test.csv'
-segSyllable_path            = 'segSyllable_obin_proportion' + '_' + str(0.35) + '_' + str(0.2)
-
-# no vad
-# eval_result_file_name       = '/Users/gong/Documents/MTG document/Jingju arias/aCapella/eval_result_rong_novad_different_tolerence_test.csv'
-# segSyllable_path            = 'segSyllable/vadnoAperiocityWeighting/segSyllable_rong_proportion' + '_' + str(0.35) + '_' + str(1)
-
-# tols                = [0.025, 0.05,0.1,0.15,0.2,0.25,0.3]
-tols = [0.05]
-with open(eval_result_file_name, 'wb') as testfile:
-    csv_writer = csv.writer(testfile)
-    for t in tols:
-        detected, ground_truth, ground_truth_phrases, correct, insertion, deletion = \
-            evaluation_riyaz_test_dataset(segSyllable_path,tolerance=t,method='obin',label=True)
-        recall,precision,F1 = evaluation2.metrics(detected,ground_truth,correct)
-        csv_writer.writerow([t,detected, ground_truth, ground_truth_phrases, recall,precision,F1])
+# # vad
+# eval_result_file_name       = './eval/results/obin_riyaz_syllables/eval_result_obin_test.csv'
+# segSyllable_path            = 'segSyllable_obin_proportion' + '_' + str(0.35) + '_' + str(0.2)
+#
+# # no vad
+# # eval_result_file_name       = '/Users/gong/Documents/MTG document/Jingju arias/aCapella/eval_result_rong_novad_different_tolerence_test.csv'
+# # segSyllable_path            = 'segSyllable/vadnoAperiocityWeighting/segSyllable_rong_proportion' + '_' + str(0.35) + '_' + str(1)
+#
+# # tols                = [0.025, 0.05,0.1,0.15,0.2,0.25,0.3]
+# tols = [0.05]
+# with open(eval_result_file_name, 'wb') as testfile:
+#     csv_writer = csv.writer(testfile)
+#     for t in tols:
+#         detected, ground_truth, ground_truth_phrases, correct, insertion, deletion = \
+#             evaluation_riyaz_test_dataset(segSyllable_path,tolerance=t,method='obin',label=True)
+#         recall,precision,F1 = evaluation2.metrics(detected,ground_truth,correct)
+#         csv_writer.writerow([t,detected, ground_truth, ground_truth_phrases, recall,precision,F1])

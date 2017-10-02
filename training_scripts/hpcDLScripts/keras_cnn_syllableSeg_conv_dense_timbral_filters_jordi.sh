@@ -44,7 +44,7 @@ printf "Copying feature files into scratch directory...\n"
 # Third, copy the experiment's data:
 # ----------------------------------
 start=`date +%s`
-cp -rp /homedtic/rgong/cnnSyllableSeg/syllableSeg/feature_all_nacta_artist_split.h5 /scratch/rgongcnnSyllableSeg_timbral/syllableSeg/
+cp -rp /homedtic/rgong/cnnSyllableSeg/syllableSeg/feature_all_artist_split.h5 /scratch/rgongcnnSyllableSeg_timbral/syllableSeg/
 end=`date +%s`
 
 printf "Finish copying feature files into scratch directory...\n"

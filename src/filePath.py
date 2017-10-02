@@ -45,8 +45,8 @@ cnnModels_path  = join(root_path, 'cnnModels')
 
 if mth_ODF == 'jan':
     # filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_optim.h5'
-    filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_riyaz.h5'
-    cnnModel_name         = 'jan_riyaz'
+    filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jan_deep_class_weight_mfccBands_2D_all_riyaz30.h5'
+    cnnModel_name         = 'jan_deep_riyaz30'
 elif mth_ODF == 'jan_chan3':
     filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jan_class_weight_3_chans_mfccBands_2D_all_optim.h5'
     # filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jan_class_weight_3_chans_layer1_70_mfccBands_2D_all_optim.h5'
@@ -97,7 +97,7 @@ else:
                 # filename_keras_cnn_1 = 'keras.cnn_syllableSeg_jordi_class_weight_with_conv_dense_timbral_filter_second_model_32_mfccBands_2D_all_optim.h5'
                 cnnModel_name          = 'jordi_timbral_old+new_ismir_split'
 
-filename_scaler_onset    = 'scaler_syllable_mfccBands2D_riyaz.pkl'
+filename_scaler_onset    = 'scaler_syllable_mfccBands2D_riyaz30.pkl'
 filename_scaler_onset_23 = 'scaler_syllable_mfccBands2D_23.pkl'
 filename_scaler_onset_46 = 'scaler_syllable_mfccBands2D_46.pkl'
 filename_scaler_onset_93 = 'scaler_syllable_mfccBands2D_93.pkl'
