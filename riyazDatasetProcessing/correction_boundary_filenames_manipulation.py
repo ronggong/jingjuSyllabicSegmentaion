@@ -138,14 +138,20 @@ if __name__ == '__main__':
     list_filename = correction_boundary_filenames_parser(filename_boundary_correction_csv)
 
     for fn in list_filename:
+        print(fn)
         filename_mp3, filename_json, filename_ref = mp3JsonRefFinder(filepath_riyaz_dataset, fn)
         print(filename_mp3, filename_json, filename_ref)
-        list_gt_ref = startEndTime(filename_json)
-        list_gt = keepOnsetTime(list_gt_ref)
-        list_s = readRef(filename_ref)
-        onsetOffset, syllables, syllable_durations, bpm = reformScoreElements(list_s)
-        syllables_gt = syllableGt(list_gt_ref, onsetOffset, syllables)
-        list_gt = [z[0] + [z[1]] for z in zip(list_gt, syllables_gt)]
-        shutil.copy2(filename_mp3, os.path.join('./mp3'))
-        boundaryLabWriter(list_gt, os.path.join('./groundtruth', fn+'.lab'), label=True)
-        writeCsv(os.path.join('./score', fn+'.csv'), syllables, syllable_durations, bpm)
+        # list_gt_ref = startEndTime(filename_json)
+        # list_gt = keepOnsetTime(list_gt_ref)
+        # list_s = readRef(filename_ref)
+        # onsetOffset, syllables, syllable_durations, bpm = reformScoreElements(list_s)
+        # syllables_gt = syllableGt(list_gt_ref, onsetOffset, syllables)
+        # list_gt = [z[0] + [z[1]] for z in zip(list_gt, syllables_gt)]
+        #
+        # shutil.copy2(filename_mp3, os.path.join('./mp3'))
+
+        shutil.copy2(filename_json, os.path.join(filepath_riyaz_dataset, 'groundtruth_original'))
+        shutil.copy2(filename_ref, os.path.join(filepath_riyaz_dataset, 'score_original'))
+
+        # boundaryLabWriter(list_gt, os.path.join('./groundtruth', fn+'.lab'), label=True)
+        # writeCsv(os.path.join('./score', fn+'.csv'), syllables, syllable_durations, bpm)

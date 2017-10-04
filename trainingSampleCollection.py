@@ -17,7 +17,8 @@ from src.scoreParser import csvDurationScoreParser
 from src.trainTestSeparation import getTestTrainRecordingsMaleFemale, \
                             getTestTrainrecordingsRiyaz, \
                             getTestTrainRecordingsNactaISMIR, \
-                            getTestTrainRecordingsArtist
+                            getTestTrainRecordingsArtist, \
+                            getTestTrainRecordingsArtistAlbumFilter
 from src.Fdeltas import Fdeltas
 from src.Fprev_sub import Fprev_sub
 from src.filePath import *
@@ -203,7 +204,7 @@ def getMBE(audio):
     feature         = np.array(mfccBands)
     return feature
 
-def featureLabelOnset(mfcc_p, mfcc_n):
+def featureLabelOnset(mfcc_p, mfcc_n, scaling=False):
     '''
     organize the training feature and label
     :param
@@ -221,7 +222,51 @@ def featureLabelOnset(mfcc_p, mfcc_n):
 
     scaler = preprocessing.StandardScaler()
     scaler.fit(feature_all)
-    feature_all = scaler.transform(feature_all)
+
+    if scaling:
+        feature_all = scaler.transform(feature_all)
+
+    return feature_all, label_all, scaler
+
+def featureLabelOnsetH5py(filename_mfcc_p, filename_mfcc_n, scaling=True):
+    '''
+    organize the training feature and label
+    :param
+    :return:
+    '''
+
+    # feature_all = np.concatenate((mfcc_p, mfcc_n), axis=0)
+    f_mfcc_p = h5py.File(filename_mfcc_p, 'a')
+    f_mfcc_n = h5py.File(filename_mfcc_n, 'r')
+
+    dim_p_0 = f_mfcc_p['mfcc_p'].shape[0]
+    dim_n_0 = f_mfcc_n['mfcc_n'].shape[0]
+    dim_1 = f_mfcc_p['mfcc_p'].shape[1]
+
+    label_p = [1] * dim_p_0
+    label_n = [0] * dim_n_0
+    label_all = label_p + label_n
+
+    feature_all = np.zeros((dim_p_0+dim_n_0, dim_1), dtype='float32')
+
+    print('concatenate features... ...')
+
+    feature_all[:dim_p_0, :] = f_mfcc_p['mfcc_p']
+    feature_all[dim_p_0:, :] = f_mfcc_n['mfcc_n']
+
+    f_mfcc_p.flush()
+    f_mfcc_p.close()
+    f_mfcc_n.flush()
+    f_mfcc_n.close()
+
+    label_all = np.array(label_all,dtype='int64')
+
+    print('scaling features... ... ')
+
+    scaler = preprocessing.StandardScaler()
+    scaler.fit(feature_all)
+    if scaling:
+        feature_all = scaler.transform(feature_all)
 
     return feature_all, label_all, scaler
 
@@ -571,6 +616,8 @@ def dumpFeatureBatchOnset(split='ismir'):
         testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsNactaISMIR()
     elif split == 'artist':
         testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtist()
+    elif split == 'artist_filter':
+        testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtistAlbumFilter()
     else:
         testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsMaleFemale()
 
@@ -602,6 +649,20 @@ def dumpFeatureBatchOnset(split='ismir'):
 
     mfcc_p = np.concatenate((mfcc_p_nacta1017, mfcc_p_nacta))
     mfcc_n = np.concatenate((mfcc_n_nacta2017, mfcc_n_nacta))
+
+    filename_mfcc_p = join(feature_data_path, 'mfcc_p_' + split + '_split.h5')
+    h5f = h5py.File(filename_mfcc_p, 'w')
+    h5f.create_dataset('mfcc_p', data=mfcc_p)
+    h5f.close()
+
+    filename_mfcc_n = join(feature_data_path, 'mfcc_n_' + split + '_split.h5')
+    h5f = h5py.File(filename_mfcc_n, 'w')
+    h5f.create_dataset('mfcc_n', data=mfcc_n)
+    h5f.close()
+
+    del mfcc_p
+    del mfcc_n
+
     sample_weights_p = np.concatenate((sample_weights_p_nacta2017, sample_weights_p_nacta))
     sample_weights_n = np.concatenate((sample_weights_n_nacta2017, sample_weights_n_nacta))
 
@@ -609,9 +670,17 @@ def dumpFeatureBatchOnset(split='ismir'):
 
     sample_weights = np.concatenate((sample_weights_p, sample_weights_n))
 
-    feature_all, label_all, scaler = featureLabelOnset(mfcc_p, mfcc_n)
+    cPickle.dump(sample_weights,
+                 gzip.open('trainingData/sample_weights_syllableSeg_mfccBands2D_old+new_' + split + '_split.pickle.gz',
+                           'wb'), cPickle.HIGHEST_PROTOCOL)
 
-    print(mfcc_p.shape, mfcc_n.shape, sample_weights_p.shape, sample_weights_n.shape)
+
+    feature_all, label_all, scaler = featureLabelOnsetH5py(filename_mfcc_p, filename_mfcc_n)
+
+    os.remove(filename_mfcc_p)
+    os.remove(filename_mfcc_n)
+
+    print(sample_weights_p.shape, sample_weights_n.shape)
 
     pickle.dump(scaler, open('cnnModels/scaler_syllable_mfccBands2D_old+new_'+split+'_split.pkl', 'wb'))
 
@@ -619,15 +688,66 @@ def dumpFeatureBatchOnset(split='ismir'):
 
     print(feature_all.shape)
 
-    h5f = h5py.File(join(feature_data_path,'feature_all_'+split+'_split.h5'), 'w')
+    filename_feature_all = join(feature_data_path, 'feature_all_' + split + '_split.h5')
+    h5f = h5py.File(filename_feature_all, 'w')
     h5f.create_dataset('feature_all', data=feature_all)
     h5f.close()
 
     cPickle.dump(label_all,
                  gzip.open('trainingData/labels_train_set_all_syllableSeg_mfccBands2D_old+new_'+split+'_split.pickle.gz', 'wb'), cPickle.HIGHEST_PROTOCOL)
 
-    cPickle.dump(sample_weights,
-                 gzip.open('trainingData/sample_weights_syllableSeg_mfccBands2D_old+new_'+split+'_split.pickle.gz', 'wb'), cPickle.HIGHEST_PROTOCOL)
+
+def dumpFeatureBatchOnsetTest():
+    """
+    dump features for the test dataset for onset detection
+    :return:
+    """
+    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtist()
+
+    mfcc_p_nacta, \
+    mfcc_n_nacta, \
+    sample_weights_p_nacta, \
+    sample_weights_n_nacta \
+        = dumpFeatureOnset(wav_path=nacta_wav_path,
+                           textgrid_path=nacta_textgrid_path,
+                           score_path=nacta_score_path,
+                           recordings=testNacta,
+                           feature_type='mfccBands2D',
+                           dmfcc=False,
+                           nbf=True)
+
+    mfcc_p_nacta1017, \
+    mfcc_n_nacta2017, \
+    sample_weights_p_nacta2017, \
+    sample_weights_n_nacta2017 \
+        = dumpFeatureOnset(wav_path=nacta2017_wav_path,
+                           textgrid_path=nacta2017_textgrid_path,
+                           score_path=nacta2017_score_path,
+                           recordings=testNacta2017,
+                           feature_type='mfccBands2D',
+                           dmfcc=False,
+                           nbf=True)
+
+    print('finished feature extraction.')
+
+    mfcc_p = np.concatenate((mfcc_p_nacta1017, mfcc_p_nacta))
+    mfcc_n = np.concatenate((mfcc_n_nacta2017, mfcc_n_nacta))
+
+    print('finished feature concatenation.')
+
+    feature_all, label_all, scaler = featureLabelOnset(mfcc_p, mfcc_n, scaling=False)
+
+    print(mfcc_p.shape, mfcc_n.shape)
+
+    h5f = h5py.File('trainingData/feature_test_set_all_syllableSeg_mfccBands2D_old+new_artist_split.h5', 'w')
+    h5f.create_dataset('feature_all', data=feature_all)
+    h5f.close()
+
+    cPickle.dump(label_all,
+                 gzip.open(
+                     'trainingData/label_test_set_all_syllableSeg_mfccBands2D_old+new_artist_split.pickle.gz',
+                     'wb'), cPickle.HIGHEST_PROTOCOL)
+
 
 def dumpFeatureBatchOnsetRiyaz():
     """
@@ -682,8 +802,9 @@ if __name__ == '__main__':
     #                           gmmModel_path=gmmModel_path)
 
     # dump feature for DNN training, with getFeature output MFCC bands
-    dumpFeatureBatchOnset(split='artist')
+    dumpFeatureBatchOnset(split='artist_filter')
     # dumpFeatureBatchOnsetRiyaz()
+    # dumpFeatureBatchOnsetTest()
     # testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordings()
     #
     # for artist_path, filename in testNacta:

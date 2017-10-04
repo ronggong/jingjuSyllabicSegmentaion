@@ -14,9 +14,13 @@ def scorePinyinChecker(score_pinyin_list, textgrid_pinyin_list):
         return False
 
 def batchScorePinyinCheck():
+    """
+    check the score pinyin and textgrid pinyin coherence
+    :return:
+    """
     testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtist()
 
-    for artist_path, rn in testNacta2017:
+    for artist_path, rn in trainNacta2017:
         score_file  = join(nacta2017_score_pinyin_path, artist_path, rn+'.csv')
 
         syllables, pinyins, syllable_durations, bpm = csvScorePinyinParser(score_file)

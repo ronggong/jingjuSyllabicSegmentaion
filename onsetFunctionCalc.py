@@ -16,11 +16,15 @@ from src.labWriter import boundaryLabWriter
 from src.labParser import lab2WordList
 from src.parameters import *
 from src.scoreManip import phonemeDurationForLine
-from src.scoreParser import generatePinyin, csvDurationScoreParser
+from src.scoreParser import generatePinyin, csvDurationScoreParser, csvScorePinyinParser
 from src.textgridParser import textGrid2WordList, wordListsParseByLines
 from trainingSampleCollection import featureReshape
 from trainingSampleCollection import getMFCCBands2D
-from trainingSampleCollection import getTestTrainRecordingsMaleFemale, getTestTrainrecordingsRiyaz, getTestTrainRecordingsNactaISMIR
+from src.trainTestSeparation import getTestTrainRecordingsMaleFemale, \
+    getTestTrainrecordingsRiyaz, \
+    getTestTrainRecordingsNactaISMIR, \
+    getTestTrainRecordingsArtistAlbumFilter, \
+    getTestTrainRecordingsArtist
 
 from peakPicking import peakPicking
 import viterbiDecoding
@@ -218,7 +222,8 @@ def onsetFunctionAllRecordings(wav_path,
             lineList        = textGrid2WordList(groundtruth_textgrid_file, whichTier='line')
 
             # parse score
-            syllables, pinyins, syllable_durations, bpm = generatePinyin(score_file)
+            # syllables, pinyins, syllable_durations, bpm = generatePinyin(score_file)
+            syllables, pinyins, syllable_durations, bpm = csvScorePinyinParser(score_file)
         else:
             lineList        = [lab2WordList(groundtruth_textgrid_file, label=True)]
             syllables, syllable_durations, bpm = csvDurationScoreParser(score_file)
@@ -286,7 +291,6 @@ def onsetFunctionAllRecordings(wav_path,
                 print(syllable_durations[i_line])
             except:
                 continue
-
 
             if float(bpm[i_line]) == 0:
                 continue
@@ -396,15 +400,15 @@ def onsetFunctionAllRecordings(wav_path,
                 makedirs(eval_results_data_path)
 
             # write boundary lab file
-            # if not lab:
-            #     boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist(), filter(None,pinyins[i_line]))
-            # else:
-            #     boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist(), syllables[i_line])
-            #     label = True
+            if not lab:
+                boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist(), filter(None,pinyins[i_line]))
+            else:
+                boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist(), syllables[i_line])
+                label = True
 
-            # boundaryLabWriter(boundaryList=boundary_list,
-            #                   outputFilename=filename_syll_lab,
-            #                     label=label)
+            boundaryLabWriter(boundaryList=boundary_list,
+                              outputFilename=filename_syll_lab,
+                                label=label)
 
             print(i_boundary)
             print(len(obs_i))
@@ -463,29 +467,29 @@ def onsetFunctionAllRecordings(wav_path,
 
 if __name__ == '__main__':
 
-    # testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordings()
-    #
-    # # nacta2017
-    # onsetFunctionAllRecordings(wav_path=nacta2017_wav_path,
-    #                            textgrid_path=nacta2017_textgrid_path,
-    #                            score_path=nacta2017_score_path,
-    #                            test_recordings=testNacta2017,
-    #                            feature_type='mfccBands2D',
-    #                            dmfcc=False,
-    #                            nbf=True,
-    #                            mth=mth_ODF,
-    #                            late_fusion=fusion)
-    #
-    # # nacta
-    # onsetFunctionAllRecordings(wav_path=nacta_wav_path,
-    #                            textgrid_path=nacta_textgrid_path,
-    #                            score_path=nacta_score_path,
-    #                            test_recordings=testNacta,
-    #                            feature_type='mfccBands2D',
-    #                            dmfcc=False,
-    #                            nbf=True,
-    #                            mth=mth_ODF,
-    #                            late_fusion=fusion)
+    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtist()
+
+    # nacta2017
+    onsetFunctionAllRecordings(wav_path=nacta2017_wav_path,
+                               textgrid_path=nacta2017_textgrid_path,
+                               score_path=nacta2017_score_pinyin_path,
+                               test_recordings=testNacta2017,
+                               feature_type='mfccBands2D',
+                               dmfcc=False,
+                               nbf=True,
+                               mth=mth_ODF,
+                               late_fusion=fusion)
+
+    # nacta
+    onsetFunctionAllRecordings(wav_path=nacta_wav_path,
+                               textgrid_path=nacta_textgrid_path,
+                               score_path=nacta_score_pinyin_path,
+                               test_recordings=testNacta,
+                               feature_type='mfccBands2D',
+                               dmfcc=False,
+                               nbf=True,
+                               mth=mth_ODF,
+                               late_fusion=fusion)
 
     # # Riyaz
     # testRiyaz, trainRiyaz = getTestTrainrecordingsRiyaz()
@@ -500,16 +504,3 @@ if __name__ == '__main__':
     #                            mth=mth_ODF,
     #                            late_fusion=fusion,
     #                            lab=True)
-
-    # nacta ismir split
-    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsNactaISMIR()
-
-    onsetFunctionAllRecordings(wav_path=nacta_wav_path,
-                               textgrid_path=nacta_textgrid_path,
-                               score_path=nacta_score_path,
-                               test_recordings=testNacta,
-                               feature_type='mfccBands2D',
-                               dmfcc=False,
-                               nbf=True,
-                               mth=mth_ODF,
-                               late_fusion=fusion)
