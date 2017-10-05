@@ -30,11 +30,13 @@ def getObs(filename_model, scaler, feature, model_flag='jan', expand_dim=True):
     obs_0 = obs[:, 0]
     return obs_0
 
-def getObsOld(filename_model, scaler, feature, model_flag='jan'):
+def getObsOld(filename_model, scaler, feature, model_flag='jan', expand_dims=False):
     model = load_model(os.path.join('./cnnModels/',filename_model))
     observations = featureProcessing(feature, scaler)
     if model_flag=='jordi':
         observations = [observations, observations, observations, observations, observations, observations]
+    if expand_dims:
+        observations = np.expand_dims(observations, axis=1)
     obs = model.predict_proba(observations, batch_size=128, verbose=2)
     obs_0 = obs[:, 1]
     return obs_0
@@ -76,27 +78,29 @@ filename_jordi_oldnew_temporal_model = 'keras.cnn_syllableSeg_jordi_temporal_cla
 filename_jordi_oldnew_timbral_model = 'keras.cnn_syllableSeg_jordi_timbral_class_weight_with_conv_dense_filter_mfccBands_2D_ismir_split.h5'
 
 filename_jan_old_model = 'keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_optim.h5'
+filename_jan_deep_old_model = 'keras.cnn_syllableSeg_jan_deep_class_weight_mfccBands_2D_all_old_ismir.h5'
 filename_jordi_old_temporal_model = 'keras.cnn_syllableSeg_jordi_class_weight_with_conv_dense_mfccBands_2D_all_optim.h5'
 filename_jordi_old_timbral_model = 'keras.cnn_syllableSeg_jordi_class_weight_with_conv_dense_timbral_filter_mfccBands_node04_2D_all_optim.h5'
 
 # old + new dataset test
 
-y_pred_jordi_temporal_oldnew_set = getObs(filename_jordi_oldnew_temporal_model, scaler_oldnew_set, X_test, model_flag='jordi')
-print('jordi temporal oldnew set results:')
-predictionResults(y_pred_jordi_temporal_oldnew_set, Y_test)
+# y_pred_jordi_temporal_oldnew_set = getObs(filename_jordi_oldnew_temporal_model, scaler_oldnew_set, X_test, model_flag='jordi')
+# print('jordi temporal oldnew set results:')
+# predictionResults(y_pred_jordi_temporal_oldnew_set, Y_test)
 
 # y_pred_jordi_timbral_oldnew_set = getObs(filename_jordi_oldnew_timbral_model, scaler_oldnew_set, X_test, model_flag='jordi')
 # print('jordi timbral oldnew set results:')
 # predictionResults(y_pred_jordi_timbral_oldnew_set, Y_test)
 
-y_pred_jan_oldnew_set = getObs(filename_jan_oldnew_model, scaler_oldnew_set, X_test, model_flag='jan')
-print('jan oldnew set results:')
-predictionResults(y_pred_jan_oldnew_set, Y_test)
+# y_pred_jan_oldnew_set = getObs(filename_jan_oldnew_model, scaler_oldnew_set, X_test, model_flag='jan')
+# print('jan oldnew set results:')
+# predictionResults(y_pred_jan_oldnew_set, Y_test)
+#
+# y_pred_jan_deep_oldnew_set = getObs(filename_jan_deep_oldnew_model, scaler_oldnew_set, X_test, model_flag='jan')
+# print('jan deep oldnew set results:')
+# predictionResults(y_pred_jan_deep_oldnew_set, Y_test)
 
-y_pred_jan_deep_oldnew_set = getObs(filename_jan_deep_oldnew_model, scaler_oldnew_set, X_test, model_flag='jan')
-print('jan deep oldnew set results:')
-predictionResults(y_pred_jan_deep_oldnew_set, Y_test)
-
+# old dataset
 
 # y_pred_jan_oldnew_set = getObsOld(filename_jan_old_model, scaler_old_set, X_test, model_flag='jan')
 # print('jan old set results:')
@@ -109,3 +113,7 @@ predictionResults(y_pred_jan_deep_oldnew_set, Y_test)
 # y_pred_jordi_timbral_oldnew_set = getObsOld(filename_jordi_old_timbral_model, scaler_old_set, X_test, model_flag='jordi')
 # print('jordi timbral old set results:')
 # predictionResults(y_pred_jordi_timbral_oldnew_set, Y_test)
+
+y_pred_jan_deep_oldnew_set = getObsOld(filename_jan_deep_old_model, scaler_old_set, X_test, model_flag='jan', expand_dims=True)
+print('jan deep old set results:')
+predictionResults(y_pred_jan_deep_oldnew_set, Y_test)

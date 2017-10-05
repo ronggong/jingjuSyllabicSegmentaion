@@ -35,7 +35,7 @@ def getOnsetFunction(observations, path_keras_cnn, method='jan'):
     :param observations:
     :return:
     """
-
+    print('keras model name:', path_keras_cnn)
     model = load_model(path_keras_cnn)
 
     ##-- call pdnn to calculate the observation from the features
@@ -235,8 +235,8 @@ def onsetFunctionAllRecordings(recordings,
                 obs     = getOnsetFunction(observations=mfcc_reshaped_line,
                                            path_keras_cnn=full_path_keras_cnn_0,
                                            method=mth)
-                # obs_i   = obs[:,1]
-                obs_i = obs[:, 0]
+                obs_i   = obs[:,1]
+                # obs_i = obs[:, 0]
 
                 hann = np.hanning(5)
                 hann /= np.sum(hann)
