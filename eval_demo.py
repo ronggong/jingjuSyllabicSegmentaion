@@ -13,7 +13,8 @@ from filePath import *
 from src.trainTestSeparation import getTestTrainRecordingsMaleFemale, \
     getTestTrainrecordingsRiyaz, \
     getTestTrainRecordingsNactaISMIR, \
-    getTestTrainRecordingsArtist
+    getTestTrainRecordingsArtist, \
+    getTestTrainRecordingsArtistAlbumFilter
 
 
 def batch_eval(root_path, annotation_path, segPhrase_path, segSyllable_path, score_path, groundtruth_path, eval_details_path, recordings, tolerance, method='obin', label=False):
@@ -234,7 +235,7 @@ def evaluation_test_dataset(segSyllablePath, tolerance, method):
     sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumOffsetCorrect, \
     sumInsertion, sumDeletion = 0, 0, 0, 0, 0, 0, 0, 0
 
-    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtist()
+    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtistAlbumFilter()
 
     DB, GB, GP, C, OnC, OffC, I, D = batch_eval(nacta2017_dataset_root_path, nacta2017_textgrid_path,nacta2017_segPhrase_path,
                                                 segSyllablePath, nacta2017_score_path,
@@ -294,8 +295,8 @@ def evaluation_riyaz_test_dataset(segSyllablePath, tolerance, method, label):
 #       jan jordi class weight             #
 ############################################
 if mth_ODF == 'jan':
-    eval_result_file_name       = './eval/results/jan_old+new_artist_split/eval_result_jan_class_weight_label.csv'
-    segSyllable_path            = './eval/results/jan_old+new_artist_split'
+    eval_result_file_name       = './eval/results/jan_old+new_artist_filter_split/eval_result_jan_class_weight_label.csv'
+    segSyllable_path            = './eval/results/jan_old+new_artist_filter_split'
 elif mth_ODF == 'jan_chan3':
     eval_result_file_name       = './eval/results/jan_cw_3_chans_win/eval_result_jan_class_weight.csv'
     segSyllable_path            = './eval/results/jan_cw_3_chans_win'
@@ -322,8 +323,8 @@ else:
                 segSyllable_path            = './eval/results/jordi_cw_conv_dense_layer2_20_win'
             else:
                 # layer2 32 nodes
-                eval_result_file_name       = './eval/results/jordi_temporal_old+new_artist_split/eval_result_jordi_class_weight_conv_dense_win_label.csv'
-                segSyllable_path            = './eval/results/jordi_temporal_old+new_artist_split'
+                eval_result_file_name       = './eval/results/jordi_temporal_old+new_artist_filter_split/eval_result_jordi_class_weight_conv_dense_win_label.csv'
+                segSyllable_path            = './eval/results/jordi_temporal_old+new_artist_filter_split'
         else:
             # timbral filter shape
             if layer2 == 20:
@@ -331,8 +332,8 @@ else:
                 segSyllable_path            = './eval/results/jordi_cw_conv_dense_timbral_filter_layer2_20_win'
             else:
                 # layer2 32 nodes
-                eval_result_file_name       = './eval/results/jordi_timbral_old+new_artist_split/eval_result_jordi_class_weight_conv_dense_timbral_filter_win_label.csv'
-                segSyllable_path            = './eval/results/jordi_timbral_old+new_artist_split'
+                eval_result_file_name       = './eval/results/jordi_timbral_old+new_artist_filter_split/eval_result_jordi_class_weight_conv_dense_timbral_filter_win_label.csv'
+                segSyllable_path            = './eval/results/jordi_timbral_old+new_artist_filter_split'
 
 print(eval_result_file_name)
 print(segSyllable_path)

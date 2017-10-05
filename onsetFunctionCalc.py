@@ -220,6 +220,10 @@ def onsetFunctionAllRecordings(wav_path,
 
         if not lab:
             lineList        = textGrid2WordList(groundtruth_textgrid_file, whichTier='line')
+            utteranceList   = textGrid2WordList(groundtruth_textgrid_file, whichTier='dianSilence')
+
+            # parse lines of groundtruth
+            nestedUtteranceLists, _, _ = wordListsParseByLines(lineList, utteranceList)
 
             # parse score
             # syllables, pinyins, syllable_durations, bpm = generatePinyin(score_file)
@@ -415,8 +419,10 @@ def onsetFunctionAllRecordings(wav_path,
             # print(np.array(groundtruth_syllable)*fs/hopsize)
 
             if varin['plot']:
-                groundtruth_onset = [l[0]-line[0][0] for l in line]
-                groundtruth_syllables = [l[2] for l in line]
+                nestedUL = nestedUtteranceLists[i_line][1]
+                # print(nestedUL)
+                groundtruth_onset = [l[0]-line[0] for l in nestedUL]
+                groundtruth_syllables = [l[2] for l in nestedUL]
 
                 # plot Error analysis figures
                 plt.figure(figsize=(16, 6))
@@ -467,7 +473,7 @@ def onsetFunctionAllRecordings(wav_path,
 
 if __name__ == '__main__':
 
-    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtist()
+    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtistAlbumFilter()
 
     # nacta2017
     onsetFunctionAllRecordings(wav_path=nacta2017_wav_path,

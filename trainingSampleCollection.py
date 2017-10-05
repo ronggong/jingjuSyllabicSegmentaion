@@ -702,7 +702,7 @@ def dumpFeatureBatchOnsetTest():
     dump features for the test dataset for onset detection
     :return:
     """
-    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtist()
+    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtistAlbumFilter()
 
     mfcc_p_nacta, \
     mfcc_n_nacta, \
@@ -739,13 +739,13 @@ def dumpFeatureBatchOnsetTest():
 
     print(mfcc_p.shape, mfcc_n.shape)
 
-    h5f = h5py.File('trainingData/feature_test_set_all_syllableSeg_mfccBands2D_old+new_artist_split.h5', 'w')
+    h5f = h5py.File('trainingData/feature_test_set_all_syllableSeg_mfccBands2D_old+new_artist_filter_split.h5', 'w')
     h5f.create_dataset('feature_all', data=feature_all)
     h5f.close()
 
     cPickle.dump(label_all,
                  gzip.open(
-                     'trainingData/label_test_set_all_syllableSeg_mfccBands2D_old+new_artist_split.pickle.gz',
+                     'trainingData/label_test_set_all_syllableSeg_mfccBands2D_old+new_artist_filter_split.pickle.gz',
                      'wb'), cPickle.HIGHEST_PROTOCOL)
 
 
@@ -802,9 +802,9 @@ if __name__ == '__main__':
     #                           gmmModel_path=gmmModel_path)
 
     # dump feature for DNN training, with getFeature output MFCC bands
-    dumpFeatureBatchOnset(split='artist_filter')
+    # dumpFeatureBatchOnset(split='artist_filter')
     # dumpFeatureBatchOnsetRiyaz()
-    # dumpFeatureBatchOnsetTest()
+    dumpFeatureBatchOnsetTest()
     # testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordings()
     #
     # for artist_path, filename in testNacta:
