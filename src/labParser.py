@@ -1,6 +1,6 @@
 import os
 
-def lab2WordList(lab_file):
+def lab2WordList(lab_file, withLabel=True):
     '''
     Parse Lab file into python list
     :param lab_file: Lab file path
@@ -12,8 +12,12 @@ def lab2WordList(lab_file):
         lineList = [line.rstrip() for line in f]
         dataList = []
         for l in lineList:
-            startTime, endTime, label = l.split()
-            if label != '##':
-                dataList.append([float(startTime), float(endTime), label])
+            if withLabel:
+                startTime, endTime, label = l.split()
+                if label != '##':
+                    dataList.append([float(startTime), float(endTime), label])
+            else:
+                startTime, endTime = l.split()
+                dataList.append([float(startTime), float(endTime)])
 
     return dataList

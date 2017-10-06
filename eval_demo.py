@@ -12,7 +12,7 @@ import evaluation2
 from filePath import *
 
 
-def batch_eval(aCapella_root, dataset_path, annotation_path, segPhrase_path, segSyllable_path, score_path, recordings, tolerance):
+def batch_eval(aCapella_root, dataset_path, annotation_path, segPhrase_path, segSyllable_path, score_path, recordings, tolerance, label=True):
 
     sumDetectedBoundaries, sumGroundtruthPhrases, sumGroundtruthBoundaries, sumCorrect, sumOnsetCorrect, \
     sumOffsetCorrect, sumInsertion, sumDeletion = 0 ,0 ,0 ,0 ,0 ,0, 0, 0
@@ -66,52 +66,52 @@ def batch_eval(aCapella_root, dataset_path, annotation_path, segPhrase_path, seg
                         text_file.write("{0} {1} {2}\n".format(gtbs[0],gtbs[1],gtbs[2]))
 
         # syllable boundaries groundtruth of each line
-        eval_details_csv    = eval_result_details_file_head+'.csv'
-        with open(eval_details_csv, 'wb') as csv_file:
-            csv_writer = csv.writer(csv_file)
+        # eval_details_csv    = eval_result_details_file_head+'.csv'
+        # with open(eval_details_csv, 'wb') as csv_file:
+        #     csv_writer = csv.writer(csv_file)
 
-            for idx, list in enumerate(nestedUtteranceLists):
-                if int(bpm[idx]):
-                    print 'Evaluating... ' + recording_name + ' phrase ' + str(idx+1)
+        for idx, list in enumerate(nestedUtteranceLists):
+            if int(bpm[idx]):
+                print 'Evaluating... ' + recording_name + ' phrase ' + str(idx+1)
 
-                    ul = list[1]
-                    firstStartTime          = ul[0][0]
-                    groundtruthBoundaries   = [(np.array(ul_element[:2]) - firstStartTime).tolist() + [ul_element[2]] for ul_element in ul]
+                ul = list[1]
+                firstStartTime          = ul[0][0]
+                groundtruthBoundaries   = [(np.array(ul_element[:2]) - firstStartTime).tolist() + [ul_element[2]] for ul_element in ul]
 
-                    detected_syllable_lab   = detected_lab_file_head+'_'+str(idx+1)+'.syll.lab'
-                    if not os.path.isfile(detected_syllable_lab):
-                        print 'Syll lab file not found: ' + detected_syllable_lab
-                        continue
+                detected_syllable_lab   = detected_lab_file_head+'_'+str(idx+1)+'.syll.lab'
+                if not os.path.isfile(detected_syllable_lab):
+                    print 'Syll lab file not found: ' + detected_syllable_lab
+                    continue
 
-                    # read boundary detected lab into python list
-                    detectedBoundaries          = labParser.lab2WordList(detected_syllable_lab)
+                # read boundary detected lab into python list
+                detectedBoundaries          = labParser.lab2WordList(detected_syllable_lab, withLabel=label)
 
-                    #
-                    numDetectedBoundaries, numGroundtruthBoundaries, numCorrect, numOnsetCorrect, numOffsetCorrect, \
-                    numInsertion, numDeletion, correct_list = evaluation2.boundaryEval(groundtruthBoundaries, detectedBoundaries, tolerance)
+                #
+                numDetectedBoundaries, numGroundtruthBoundaries, numCorrect, numOnsetCorrect, numOffsetCorrect, \
+                numInsertion, numDeletion, correct_list = evaluation2.boundaryEval(groundtruthBoundaries, detectedBoundaries, tolerance)
 
-                    sumDetectedBoundaries       += numDetectedBoundaries
-                    sumGroundtruthBoundaries    += numGroundtruthBoundaries
-                    sumGroundtruthPhrases       += 1
-                    sumCorrect                  += numCorrect
-                    sumOnsetCorrect             += numOnsetCorrect
-                    sumOffsetCorrect            += numOffsetCorrect
-                    sumInsertion                += numInsertion
-                    sumDeletion                 += numDeletion
+                sumDetectedBoundaries       += numDetectedBoundaries
+                sumGroundtruthBoundaries    += numGroundtruthBoundaries
+                sumGroundtruthPhrases       += 1
+                sumCorrect                  += numCorrect
+                sumOnsetCorrect             += numOnsetCorrect
+                sumOffsetCorrect            += numOffsetCorrect
+                sumInsertion                += numInsertion
+                sumDeletion                 += numDeletion
 
-                    if numCorrect/float(numGroundtruthBoundaries) < 0.7:
-                        print "Detected: {0}, Ground truth: {1}, Correct: {2}, Onset correct: {3}, " \
-                              "Offset correct: {4}, Insertion: {5}, Deletion: {6}\n".\
-                            format(numDetectedBoundaries, numGroundtruthBoundaries,numCorrect, numOnsetCorrect,
-                                   numOffsetCorrect, numInsertion, numDeletion)
+                if numCorrect/float(numGroundtruthBoundaries) < 0.7:
+                    print "Detected: {0}, Ground truth: {1}, Correct: {2}, Onset correct: {3}, " \
+                          "Offset correct: {4}, Insertion: {5}, Deletion: {6}\n".\
+                        format(numDetectedBoundaries, numGroundtruthBoundaries,numCorrect, numOnsetCorrect,
+                               numOffsetCorrect, numInsertion, numDeletion)
 
-                    csv_writer.writerow([recording_name+'_'+str(idx+1),
-                                         numDetectedBoundaries,
-                                         numGroundtruthBoundaries,
-                                         numCorrect,
-                                         numInsertion,
-                                         numDeletion,
-                                         correct_list])
+                    # csv_writer.writerow([recording_name+'_'+str(idx+1),
+                    #                      numDetectedBoundaries,
+                    #                      numGroundtruthBoundaries,
+                    #                      numCorrect,
+                    #                      numInsertion,
+                    #                      numDeletion,
+                    #                      correct_list])
 
     return sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, \
            sumOffsetCorrect, sumInsertion, sumDeletion
@@ -210,14 +210,14 @@ def evaluation_whole_dataset(segSyllable_path,tolerance):
 
     return sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumInsertion, sumDeletion
 
-def evaluation_test_dataset(segSyllablePath, tolerance):
+def evaluation_test_dataset(segSyllablePath, tolerance, label):
 
     sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumOffsetCorrect, \
     sumInsertion, sumDeletion = 0, 0, 0, 0, 0, 0, 0, 0
 
     # queen mary
     DB, GB, GP, C, OnC, OffC, I, D = batch_eval(aCapella_root, queenMarydataset_path, annotation_path, segPhrase_path,
-                                                segSyllable_path, score_path, queenMary_Recordings_test, tolerance)
+                                                segSyllable_path, score_path, queenMary_Recordings_test, tolerance, label)
 
     sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumOffsetCorrect, \
     sumInsertion, sumDeletion = stat_Add(sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases,
@@ -227,7 +227,7 @@ def evaluation_test_dataset(segSyllablePath, tolerance):
 
     # london
     DB, GB, GP, C, OnC, OffC, I, D = batch_eval(aCapella_root, londonRecording_path, annotation_path, segPhrase_path,
-                                                segSyllable_path, score_path, london_Recordings_test, tolerance)
+                                                segSyllable_path, score_path, london_Recordings_test, tolerance, label)
 
     sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumOffsetCorrect, \
     sumInsertion, sumDeletion = stat_Add(sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases,
@@ -237,7 +237,7 @@ def evaluation_test_dataset(segSyllablePath, tolerance):
 
     # bcn
     DB, GB, GP, C, OnC, OffC, I, D = batch_eval(aCapella_root, bcnRecording_path, annotation_path, segPhrase_path,
-                                                segSyllable_path, score_path, bcn_Recordings_test, tolerance)
+                                                segSyllable_path, score_path, bcn_Recordings_test, tolerance, label)
 
     sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumOffsetCorrect, \
     sumInsertion, sumDeletion = stat_Add(sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases,
@@ -258,8 +258,8 @@ def evaluation_test_dataset(segSyllablePath, tolerance):
 ############################################
 
 if mth_ODF == 'jan':
-    eval_result_file_name       = './eval/results/jan_deep_old_ismir_win/eval_result_jan_class_weight.csv'
-    segSyllable_path            = './eval/results/jan_deep_old_ismir_win'
+    eval_result_file_name       = './eval/results/jan_old_ismir_win_peakPicking/eval_result_jan_class_weight.csv'
+    segSyllable_path            = './eval/results/jan_old_ismir_win_peakPicking'
 elif mth_ODF == 'jan_chan3':
     eval_result_file_name       = './eval/results/jan_cw_3_chans_win/eval_result_jan_class_weight.csv'
     segSyllable_path            = './eval/results/jan_cw_3_chans_win'
@@ -277,8 +277,8 @@ else:
             eval_result_file_name       = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply_layer2_20_win/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
             segSyllable_path            = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply_layer2_20_win'
         else:
-            eval_result_file_name       = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply_win/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
-            segSyllable_path            = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply_win'
+            eval_result_file_name       = './eval/results/jordi_fusion_old_ismir_win_peakPicking/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
+            segSyllable_path            = './eval/results/jordi_fusion_old_ismir_win_peakPicking'
     else:
         if filter_shape == 'temporal':
             if layer2 == 20:
@@ -286,8 +286,8 @@ else:
                 segSyllable_path            = './eval/results/jordi_cw_conv_dense_layer2_20_win'
             else:
                 # layer2 32 nodes
-                eval_result_file_name       = './eval/results/jordi_temporal_old+new+ismir_split_win/eval_result_jordi_class_weight_conv_dense_win.csv'
-                segSyllable_path            = './eval/results/jordi_temporal_old+new+ismir_split_win'
+                eval_result_file_name       = './eval/results/jordi_temporal_old_ismir_win_peakPicking/eval_result_jordi_class_weight_conv_dense_win.csv'
+                segSyllable_path            = './eval/results/jordi_temporal_old_ismir_win_peakPicking'
         else:
             # timbral filter shape
             if layer2 == 20:
@@ -295,17 +295,17 @@ else:
                 segSyllable_path            = './eval/results/jordi_cw_conv_dense_timbral_filter_layer2_20_win'
             else:
                 # layer2 32 nodes
-                eval_result_file_name       = './eval/results/jordi_timbral_old+new+ismir_split_win/eval_result_jordi_class_weight_conv_dense_timbral_filter_win.csv'
-                segSyllable_path            = './eval/results/jordi_timbral_old+new+ismir_split_win'
+                eval_result_file_name       = './eval/results/jordi_timbral_old_ismir_win_peakPicking/eval_result_jordi_class_weight_conv_dense_timbral_filter_win.csv'
+                segSyllable_path            = './eval/results/jordi_timbral_old_ismir_win_peakPicking'
 
 
-# tols                = [0.025,0.05,0.1,0.15,0.2,0.25,0.3]
-tols = [0.05]
+tols                = [0.025,0.05,0.1,0.15,0.2,0.25,0.3]
+# tols = [0.05]
 with open(eval_result_file_name, 'wb') as testfile:
     csv_writer = csv.writer(testfile)
     for t in tols:
         detected, ground_truth, ground_truth_phrases, correct, insertion, deletion = \
-            evaluation_test_dataset(segSyllable_path,tolerance=t)
+            evaluation_test_dataset(segSyllable_path,tolerance=t, label=False)
         recall,precision,F1 = evaluation2.metrics(detected,ground_truth,correct)
         csv_writer.writerow([t,detected, ground_truth, ground_truth_phrases, recall,precision,F1])
 

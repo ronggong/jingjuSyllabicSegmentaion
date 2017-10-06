@@ -150,7 +150,7 @@ else:
         else:
             filename_keras_cnn_0 = 'keras.cnn_syllableSeg_jordi_class_weight_with_conv_dense_mfccBands_2D_all_optim.h5'
             filename_keras_cnn_1 = 'keras.cnn_syllableSeg_jordi_class_weight_with_conv_dense_timbral_filter_mfccBands_node04_2D_all_optim.h5'
-            cnnModel_name        = 'jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply'
+            cnnModel_name        = 'jordi_fusion_old_ismir'
     else:
         if filter_shape == 'temporal':
             # filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jordi_class_weight_mfccBands_2D_all_optim.h5'
@@ -160,10 +160,10 @@ else:
                 cnnModel_name           = 'jordi_cw_conv_dense_layer2_20'
             else:
                 # layer2 32 nodes
-                filename_keras_cnn_0    = 'keras.cnn_syllableSeg_jordi_temporal_class_weight_with_conv_dense_mfccBands_2D_ismir_split.h5'
+                filename_keras_cnn_0    = 'keras.cnn_syllableSeg_jordi_class_weight_with_conv_dense_mfccBands_2D_all_optim.h5'
                 # filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jordi_class_weight_with_conv_dense_149k_mfccBands_2D_all_optim.h5'
                 # filename_keras_cnn_1  = 'keras.cnn_syllableSeg_jordi_class_weight_with_conv_dense_second_model_32_mfccBands_2D_all_optim.h5'
-                cnnModel_name           = 'jordi_temporal_old+new+ismir_split'
+                cnnModel_name           = 'jordi_temporal_old_ismir'
         else:
             # timbral filter shape
             if layer2 == 20:
@@ -171,10 +171,10 @@ else:
                 cnnModel_name           = 'jordi_cw_conv_dense_timbral_filter_layer2_20'
             else:
                 # layer2 32 nodes
-                filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jordi_timbral_class_weight_with_conv_dense_filter_mfccBands_2D_ismir_split.h5'
+                filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jordi_class_weight_with_conv_dense_timbral_filter_mfccBands_node04_2D_all_optim.h5'
                 # filename_keras_cnn_0 = 'keras.cnn_syllableSeg_jordi_class_weight_with_conv_dense_timbral_filter_152k_mfccBands_2D_all_optim.h5'
                 # filename_keras_cnn_1 = 'keras.cnn_syllableSeg_jordi_class_weight_with_conv_dense_timbral_filter_second_model_32_mfccBands_2D_all_optim.h5'
-                cnnModel_name          = 'jordi_timbral_old+new+ismir_split'
+                cnnModel_name          = 'jordi_timbral_old_ismir'
 
 filename_scaler_onset    = 'scaler_syllable_mfccBands2D.pkl'
 filename_scaler_onset_23 = 'scaler_syllable_mfccBands2D_23.pkl'

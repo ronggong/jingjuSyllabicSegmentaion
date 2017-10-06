@@ -8,8 +8,7 @@ import numpy as np
 from keras.models import load_model
 
 import pyximport
-pyximport.install(reload_support=True,
-                  setup_args={'include_dirs': np.get_include()})
+
 
 from src.filePath import *
 from src.labWriter import boundaryLabWriter
@@ -19,6 +18,7 @@ from src.scoreParser import generatePinyin
 from src.textgridParser import textGrid2WordList, wordListsParseByLines
 from trainingSampleCollection import featureReshape
 from trainingSampleCollection import getMFCCBands2D
+from peakPicking import peakPicking
 
 pyximport.install(reload_support=True,
                   setup_args={'include_dirs': np.get_include()})
@@ -27,18 +27,20 @@ from viterbiDecoding import viterbiSegmental2
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
+cnnModel_name = 'jordi_temporal_old_ismir'
+cnnModel_name_1 = 'jordi_timbral_old_ismir'
 
+# print(full_path_keras_cnn_0)
+# model_keras_cnn_0 = load_model(full_path_keras_cnn_0)
 
-def getOnsetFunction(observations, path_keras_cnn, method='jan'):
+def getOnsetFunction(observations, model, method='jan'):
     """
     Load CNN model to calculate ODF
     :param observations:
     :return:
     """
-    print('keras model name:', path_keras_cnn)
-    model = load_model(path_keras_cnn)
 
-    ##-- call pdnn to calculate the observation from the features
+    # ##-- call pdnn to calculate the observation from the features
     # if method=='jordi':
     #     observations = [observations, observations, observations, observations, observations, observations]
     # elif method=='jordi_horizontal_timbral':
@@ -141,10 +143,6 @@ def onsetFunctionAllRecordings(recordings,
     """
 
     scaler = pickle.load(open(full_path_mfccBands_2D_scaler_onset, 'rb'))
-    if mth == 'jan_chan3':
-        scaler_23 = pickle.load(open(full_path_mfccBands_2D_scaler_onset_23, 'rb'))
-        scaler_46 = pickle.load(open(full_path_mfccBands_2D_scaler_onset_46, 'rb'))
-        scaler_93 = pickle.load(open(full_path_mfccBands_2D_scaler_onset_93, 'rb'))
 
     # kerasModel = _LRHMM.kerasModel(full_path_keras_cnn_am)
 
@@ -170,39 +168,18 @@ def onsetFunctionAllRecordings(recordings,
         # print(pinyins)
         # print(syllable_durations)
 
-        # load audio
-        audio_monoloader               = ess.MonoLoader(downmix = 'left', filename = wav_file, sampleRate = fs)()
-        audio_eqloudloder              = ess.EqloudLoader(filename=wav_file, sampleRate = fs)()
+        if varin['obs'] == 'tocal':
+            # load audio
+            audio_monoloader               = ess.MonoLoader(downmix = 'left', filename = wav_file, sampleRate = fs)()
+            audio_eqloudloder              = ess.EqloudLoader(filename=wav_file, sampleRate = fs)()
 
-        if mth == 'jordi' or mth == 'jordi_horizontal_timbral' or mth == 'jan':
-            mfcc, mfcc_reshaped = featureExtraction(audio_monoloader,
-                                                          scaler,
-                                                          int(round(0.025 * fs)),
-                                                          dmfcc=dmfcc,
-                                                          nbf=nbf,
-                                                          feature_type='mfccBands2D')
-        elif mth == 'jan_chan3':
-            # for jan 3 channels input
-            mfcc_23, mfcc_reshaped_23 = featureExtraction(audio_monoloader,
-                                                    scaler_23,
-                                                    int(round(0.023 * fs)),
-                                                    dmfcc=dmfcc,
-                                                    nbf=nbf,
-                                                    feature_type='mfccBands2D')
-
-            mfcc_46, mfcc_reshaped_46 = featureExtraction(audio_monoloader,
-                                                    scaler_46,
-                                                    int(round(0.046 * fs)),
-                                                    dmfcc=dmfcc,
-                                                    nbf=nbf,
-                                                    feature_type='mfccBands2D')
-
-            mfcc_93, mfcc_reshaped_93 = featureExtraction(audio_monoloader,
-                                                    scaler_93,
-                                                    int(round(0.093 * fs)),
-                                                    dmfcc=dmfcc,
-                                                    nbf=nbf,
-                                                    feature_type='mfccBands2D')
+            if mth == 'jordi' or mth == 'jordi_horizontal_timbral' or mth == 'jan':
+                mfcc, mfcc_reshaped = featureExtraction(audio_monoloader,
+                                                              scaler,
+                                                              int(round(0.025 * fs)),
+                                                              dmfcc=dmfcc,
+                                                              nbf=nbf,
+                                                              feature_type='mfccBands2D')
 
         for i_obs, lineList in enumerate(nestedUtteranceLists):
             if int(bpm[i_obs]):
@@ -212,45 +189,50 @@ def onsetFunctionAllRecordings(recordings,
                 frame_end       = int(round(lineList[0][1] * fs / hopsize))
                 # print(feature.shape)
 
-                if mth == 'jordi' or mth == 'jordi_horizontal_timbral' or mth == 'jan':
-                    audio_eqloudloder_line = audio_eqloudloder[sample_start:sample_end]
-                    mfcc_line          = mfcc[frame_start:frame_end]
-                    mfcc_reshaped_line = mfcc_reshaped[frame_start:frame_end]
-                elif mth == 'jan_chan3':
-                    mfcc_line_23 = mfcc_23[frame_start:frame_end]
-                    mfcc_reshaped_line_23 = mfcc_reshaped_23[frame_start:frame_end]
-                    mfcc_reshaped_line_23 = mfcc_reshaped_line_23[...,np.newaxis]
+                obs_path = join('./obs', cnnModel_name, dataset_path)
+                obs_filename = recording_name + '_' + str(i_obs + 1) + '.pkl'
+                full_obs_name = join(obs_path, obs_filename)
 
-                    mfcc_line_46 = mfcc_46[frame_start:frame_end]
-                    mfcc_reshaped_line_46 = mfcc_reshaped_46[frame_start:frame_end]
-                    mfcc_reshaped_line_46 = mfcc_reshaped_line_46[...,np.newaxis]
+                if varin['obs'] == 'tocal':
+                    if mth == 'jordi' or mth == 'jordi_horizontal_timbral' or mth == 'jan':
+                        audio_eqloudloder_line = audio_eqloudloder[sample_start:sample_end]
+                        mfcc_line          = mfcc[frame_start:frame_end]
+                        mfcc_reshaped_line = mfcc_reshaped[frame_start:frame_end]
 
-                    mfcc_line_93 = mfcc_93[frame_start:frame_end]
-                    mfcc_reshaped_line_93 = mfcc_reshaped_93[frame_start:frame_end]
-                    mfcc_reshaped_line_93 = mfcc_reshaped_line_93[...,np.newaxis]
+                    mfcc_reshaped_line = np.expand_dims(mfcc_reshaped_line, axis=1)
+                    obs     = getOnsetFunction(observations=mfcc_reshaped_line,
+                                               model=model_keras_cnn_0,
+                                               method=mth)
+                    # obs_i   = obs[:,1]
+                    obs_i = obs[:, 0]
 
-                    mfcc_reshaped_line = np.concatenate((mfcc_reshaped_line_23,mfcc_reshaped_line_46,mfcc_reshaped_line_93),axis=3)
+                    hann = np.hanning(5)
+                    hann /= np.sum(hann)
 
-                mfcc_reshaped_line = np.expand_dims(mfcc_reshaped_line, axis=1)
-                obs     = getOnsetFunction(observations=mfcc_reshaped_line,
-                                           path_keras_cnn=full_path_keras_cnn_0,
-                                           method=mth)
-                obs_i   = obs[:,1]
-                # obs_i = obs[:, 0]
+                    obs_i = np.convolve(hann, obs_i, mode='same')
 
-                hann = np.hanning(5)
-                hann /= np.sum(hann)
-
-                obs_i = np.convolve(hann, obs_i, mode='same')
+                    # save onset curve
+                    print('save onset curve ... ...')
+                    obs_dirpath = dirname(full_obs_name)
+                    if not exists(obs_dirpath):
+                        makedirs(obs_dirpath)
+                    pickle.dump(obs_i, open(full_obs_name, 'w'))
+                else:
+                    obs_i = pickle.load(open(full_obs_name, 'r'))
 
                 if late_fusion:
-                    obs_2 = getOnsetFunction(observations=mfcc_reshaped_line,
-                                             path_keras_cnn=full_path_keras_cnn_1,
-                                             method=mth)
-                    obs_2_i = obs_2[:, 1]
-                    obs_2_i = np.convolve(hann, obs_2_i, mode='same')
-                    obs_i = late_fusion_calc(obs_i, obs_2_i, mth=2)
+                    if varin['obs'] == 'viterbi':
+                        obs_2 = getOnsetFunction(observations=mfcc_reshaped_line,
+                                                 path_keras_cnn=full_path_keras_cnn_1,
+                                                 method=mth)
+                        obs_2_i = obs_2[:, 1]
+                        obs_2_i = np.convolve(hann, obs_2_i, mode='same')
+                    else:
+                        obs_path_1 = join('./obs', cnnModel_name_1, dataset_path)
+                        full_obs_name_1 = join(obs_path_1, obs_filename)
+                        obs_2_i = pickle.load(open(full_obs_name_1, 'r'))
 
+                    obs_i = late_fusion_calc(obs_i, obs_2_i, mth=2)
 
                 # organize score
                 print('Calculating: '+recording_name+' phrase '+str(i_obs))
@@ -273,28 +255,38 @@ def onsetFunctionAllRecordings(recordings,
                 duration_score = np.array([float(ds) for ds in duration_score if len(ds)])
                 duration_score = duration_score * (time_line/np.sum(duration_score))
 
-                # segmental decoding
-                obs_i[0] = 1.0
-                obs_i[-1] = 1.0
-                # print(duration_score)
+                if varin['decoding'] == 'viterbi':
+                    # segmental decoding
+                    obs_i[0] = 1.0
+                    obs_i[-1] = 1.0
+                    i_boundary = viterbiSegmental2(obs_i, duration_score, varin)
+                    # # uncomment this section if we want to write boundaries to .syll.lab file
+                    filename_syll_lab = join(eval_results_path, dataset_path, recording_name+'_'+str(i_obs+1)+'.syll.lab')
+                    label = True
 
-                i_boundary = viterbiSegmental2(obs_i, duration_score, varin)
+                else:
+                    i_boundary = peakPicking(obs_i)
+                    filename_syll_lab = join(eval_results_path + '_peakPicking', dataset_path,
+                                             recording_name + '_' + str(i_obs + 1) + '.syll.lab')
+                    label = False
 
-                time_boundray_start = np.array(i_boundary[:-1])*hopsize_t
-                time_boundray_end   = np.array(i_boundary[1:])*hopsize_t
-                #
-                # # uncomment this section if we want to write boundaries to .syll.lab file
-                filename_syll_lab = join(eval_results_path, dataset_path, recording_name+'_'+str(i_obs+1)+'.syll.lab')
+                time_boundray_start = np.array(i_boundary[:-1]) * hopsize_t
+                time_boundray_end = np.array(i_boundary[1:]) * hopsize_t
 
                 eval_results_data_path = dirname(filename_syll_lab)
 
                 if not exists(eval_results_data_path):
                     makedirs(eval_results_data_path)
 
+                if varin['decoding'] == 'viterbi':
+                    boundaryList = zip(time_boundray_start.tolist(), time_boundray_end.tolist(), lyrics_line)
+                else:
+                    boundaryList = zip(time_boundray_start.tolist(), time_boundray_end.tolist())
+
                 # write boundary lab file
-                boundaryLabWriter(boundaryList=zip(time_boundray_start.tolist(),time_boundray_end.tolist(),lyrics_line),
+                boundaryLabWriter(boundaryList=boundaryList,
                                   outputFilename=filename_syll_lab,
-                                    label=True)
+                                    label=label)
 
                 # print(i_boundary)
                 # print(len(obs_i))

@@ -7,7 +7,7 @@ import pickle,cPickle,gzip
 import numpy as np
 from sklearn import mixture,preprocessing
 from sklearn.model_selection import train_test_split
-# import essentia.standard as ess
+import essentia.standard as ess
 
 from src.parameters import *
 from src.phonemeMap import *
