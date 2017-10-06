@@ -7,7 +7,7 @@ mth_ODF         = 'jordi'
 layer2          = 32
 
 # late fusion: Bool
-fusion          = False
+fusion          = True
 
 # filter shape: 'temporal' or 'timbral' filter shape in Pons' CNN
 filter_shape    = 'timbral'
@@ -38,3 +38,5 @@ varin['delta']      = 0.35
 varin['plot'] = False
 
 varin['decoding'] = 'viterbi'
+
+varin['obs'] = 'toload'

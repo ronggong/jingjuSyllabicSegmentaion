@@ -41,7 +41,8 @@ def batch_eval(root_path, annotation_path, segPhrase_path, segSyllable_path, sco
 
         score_file                  = os.path.join(score_path, artist_path,  recording_name+'.csv')
         # parse score
-        _, utterance_durations, bpm = scoreParser.csvDurationScoreParser(score_file)
+        _, _, utterance_durations, bpm = scoreParser.csvScorePinyinParser(score_file)
+        # _, utterance_durations, bpm = scoreParser.csvDurationScoreParser(score_file)
 
         if eval_details_path:
             eval_result_details_file_head = os.path.join(eval_details_path, artist_path)
@@ -230,17 +231,17 @@ def evaluation_whole_dataset(segSyllable_path,tolerance):
 
     return sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumInsertion, sumDeletion
 
-def evaluation_test_dataset(segSyllablePath, tolerance, method):
+def evaluation_test_dataset(segSyllablePath, tolerance, method, label):
 
     sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumOffsetCorrect, \
     sumInsertion, sumDeletion = 0, 0, 0, 0, 0, 0, 0, 0
 
-    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtistAlbumFilter()
+    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtist()
 
     DB, GB, GP, C, OnC, OffC, I, D = batch_eval(nacta2017_dataset_root_path, nacta2017_textgrid_path,nacta2017_segPhrase_path,
-                                                segSyllablePath, nacta2017_score_path,
+                                                segSyllablePath, nacta2017_score_pinyin_path,
                                                 nacta2017_groundtruthlab_path, nacta2017_eval_details_path,
-                                                testNacta2017, tolerance, method, True)
+                                                testNacta2017, tolerance, method, label)
 
     sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumOffsetCorrect, \
     sumInsertion, sumDeletion = stat_Add(sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases,
@@ -249,9 +250,9 @@ def evaluation_test_dataset(segSyllablePath, tolerance, method):
                                          OnC, OffC, I, D)
 
     DB, GB, GP, C, OnC, OffC, I, D = batch_eval(nacta_dataset_root_path, nacta_textgrid_path, nacta_segPhrase_path,
-                                                segSyllablePath, nacta_score_path,
+                                                segSyllablePath, nacta_score_pinyin_path,
                                                 nacta_groundtruthlab_path, nacta_eval_details_path,
-                                                testNacta, tolerance, method, label=True)
+                                                testNacta, tolerance, method, label)
 
     sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumOffsetCorrect, \
     sumInsertion, sumDeletion = stat_Add(sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases,
@@ -295,8 +296,8 @@ def evaluation_riyaz_test_dataset(segSyllablePath, tolerance, method, label):
 #       jan jordi class weight             #
 ############################################
 if mth_ODF == 'jan':
-    eval_result_file_name       = './eval/results/jan_old+new_artist_filter_split/eval_result_jan_class_weight_label.csv'
-    segSyllable_path            = './eval/results/jan_old+new_artist_filter_split'
+    eval_result_file_name       = './eval/results/jan_deep_old+new_artist_split_peakPicking/eval_result_jan_class_weight_label.csv'
+    segSyllable_path            = './eval/results/jan_deep_old+new_artist_split_peakPicking'
 elif mth_ODF == 'jan_chan3':
     eval_result_file_name       = './eval/results/jan_cw_3_chans_win/eval_result_jan_class_weight.csv'
     segSyllable_path            = './eval/results/jan_cw_3_chans_win'
@@ -314,8 +315,8 @@ else:
             eval_result_file_name       = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply_layer2_20_win/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
             segSyllable_path            = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply_layer2_20_win'
         else:
-            eval_result_file_name       = './eval/results/jordi_3_fuison_old+new/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
-            segSyllable_path            = './eval/results/jordi_3_fuison_old+new'
+            eval_result_file_name       = './eval/results/jordi_fusion_old+new_artist_split/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
+            segSyllable_path            = './eval/results/jordi_fusion_old+new_artist_split'
     else:
         if filter_shape == 'temporal':
             if layer2 == 20:
@@ -323,8 +324,8 @@ else:
                 segSyllable_path            = './eval/results/jordi_cw_conv_dense_layer2_20_win'
             else:
                 # layer2 32 nodes
-                eval_result_file_name       = './eval/results/jordi_temporal_old+new_artist_filter_split/eval_result_jordi_class_weight_conv_dense_win_label.csv'
-                segSyllable_path            = './eval/results/jordi_temporal_old+new_artist_filter_split'
+                eval_result_file_name       = './eval/results/jordi_temporal_old+new_artist_split_peakPicking/eval_result_jordi_class_weight_conv_dense_win_label.csv'
+                segSyllable_path            = './eval/results/jordi_temporal_old+new_artist_split_peakPicking'
         else:
             # timbral filter shape
             if layer2 == 20:
@@ -332,8 +333,8 @@ else:
                 segSyllable_path            = './eval/results/jordi_cw_conv_dense_timbral_filter_layer2_20_win'
             else:
                 # layer2 32 nodes
-                eval_result_file_name       = './eval/results/jordi_timbral_old+new_artist_filter_split/eval_result_jordi_class_weight_conv_dense_timbral_filter_win_label.csv'
-                segSyllable_path            = './eval/results/jordi_timbral_old+new_artist_filter_split'
+                eval_result_file_name       = './eval/results/jordi_timbral_old+new_artist_split_peakPicking/eval_result_jordi_class_weight_conv_dense_timbral_filter_win_label.csv'
+                segSyllable_path            = './eval/results/jordi_timbral_old+new_artist_split_peakPicking'
 
 print(eval_result_file_name)
 print(segSyllable_path)
@@ -342,7 +343,7 @@ with open(eval_result_file_name, 'wb') as testfile:
     csv_writer = csv.writer(testfile)
     for t in tols:
         detected, ground_truth, ground_truth_phrases, correct, insertion, deletion = \
-            evaluation_test_dataset(segSyllable_path,tolerance=t, method='jan')
+            evaluation_test_dataset(segSyllable_path,tolerance=t, method='jordi', label=True)
         recall,precision,F1 = evaluation2.metrics(detected,ground_truth,correct)
         print(detected, ground_truth, correct)
         print(recall, precision, F1)

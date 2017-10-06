@@ -31,17 +31,18 @@ import viterbiDecoding
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
+cnnModel_name = 'jordi_temporal_old+new_artist_split'
+cnnModel_name_2 = 'jordi_timbral_old+new_artist_split'
 
+print(full_path_keras_cnn_0)
+model_keras_cnn_0 = load_model(full_path_keras_cnn_0)
 
-def getOnsetFunction(observations, path_keras_cnn, method='jan'):
+def getOnsetFunction(observations, model, method='jan'):
     """
     Load CNN model to calculate ODF
     :param observations:
     :return:
     """
-
-    model = load_model(path_keras_cnn)
-    print(path_keras_cnn)
 
     ##-- call pdnn to calculate the observation from the features
     # if method=='jordi':
@@ -157,7 +158,6 @@ def late_fusion_calc_3(obs_0, obs_1, obs_2, mth=2, coef=0.33333333):
 
     return obs_out
 
-
 def onsetFunctionAllRecordings(wav_path,
                                textgrid_path,
                                score_path,
@@ -169,7 +169,7 @@ def onsetFunctionAllRecordings(wav_path,
                                late_fusion=True,
                                lab=False):
     """
-    ODF and viter decoding
+    ODF and viterbi decoding
     :param recordings:
     :param textgrid_path:
     :param dataset_path:
@@ -182,10 +182,6 @@ def onsetFunctionAllRecordings(wav_path,
     """
 
     scaler = pickle.load(open(full_path_mfccBands_2D_scaler_onset, 'rb'))
-    if mth == 'jan_chan3':
-        scaler_23 = pickle.load(open(full_path_mfccBands_2D_scaler_onset_23, 'rb'))
-        scaler_46 = pickle.load(open(full_path_mfccBands_2D_scaler_onset_46, 'rb'))
-        scaler_93 = pickle.load(open(full_path_mfccBands_2D_scaler_onset_93, 'rb'))
 
     # kerasModel = _LRHMM.kerasModel(full_path_keras_cnn_am)
 
@@ -205,18 +201,18 @@ def onsetFunctionAllRecordings(wav_path,
     for artist_path, rn in test_recordings:
         # rn = rn.split('.')[0]
 
+        score_file                  = join(score_path, artist_path, rn+'.csv')
+
+        if not isfile(score_file):
+            print 'Score not found: ' + score_file
+            continue
+
         if not lab:
             groundtruth_textgrid_file   = join(textgrid_path, artist_path, rn+'.TextGrid')
             wav_file = join(wav_path, artist_path, rn + '.wav')
         else:
             groundtruth_textgrid_file   = join(textgrid_path, artist_path, rn+'.lab')
             wav_file = join(wav_path, artist_path, rn + '.mp3')
-
-        score_file                  = join(score_path, artist_path, rn+'.csv')
-
-        if not isfile(score_file):
-            print 'Score not found: ' + score_file
-            continue
 
         if not lab:
             lineList        = textGrid2WordList(groundtruth_textgrid_file, whichTier='line')
@@ -235,51 +231,24 @@ def onsetFunctionAllRecordings(wav_path,
         # print(pinyins)
         # print(syllable_durations)
 
-        # load audio
-        fs = 44100
-        if not lab:
-            audio_monoloader               = ess.MonoLoader(downmix = 'left', filename = wav_file, sampleRate = fs)()
-        else:
-            audio, fs, nc, md5, br, codec = ess.AudioLoader(filename=wav_file)()
-            audio_monoloader = audio[:, 0]  # take the left channel
+        if varin['obs'] == 'tocal':
+            # load audio
+            fs = 44100
+            if not lab:
+                audio_monoloader               = ess.MonoLoader(downmix = 'left', filename = wav_file, sampleRate = fs)()
+            else:
+                audio, fs, nc, md5, br, codec = ess.AudioLoader(filename=wav_file)()
+                audio_monoloader = audio[:, 0]  # take the left channel
 
-        if mth == 'jordi' or mth == 'jordi_horizontal_timbral' or mth == 'jan':
-            mfcc, mfcc_reshaped = featureExtraction(audio_monoloader,
-                                                          scaler,
-                                                          framesize_t,
-                                                            hopsize_t,
-                                                            fs,
-                                                          dmfcc=dmfcc,
-                                                          nbf=nbf,
-                                                          feature_type='mfccBands2D')
-        elif mth == 'jan_chan3':
-            # for jan 3 channels input
-            mfcc_23, mfcc_reshaped_23 = featureExtraction(audio_monoloader,
-                                                    scaler_23,
-                                                          framesize_t,
-                                                          hopsize_t,
-                                                          fs,
-                                                    dmfcc=dmfcc,
-                                                    nbf=nbf,
-                                                    feature_type='mfccBands2D')
-
-            mfcc_46, mfcc_reshaped_46 = featureExtraction(audio_monoloader,
-                                                    scaler_46,
-                                                          framesize_t,
-                                                          hopsize_t,
-                                                          fs,
-                                                    dmfcc=dmfcc,
-                                                    nbf=nbf,
-                                                    feature_type='mfccBands2D')
-
-            mfcc_93, mfcc_reshaped_93 = featureExtraction(audio_monoloader,
-                                                    scaler_93,
-                                                          framesize_t,
-                                                          hopsize_t,
-                                                          fs,
-                                                    dmfcc=dmfcc,
-                                                    nbf=nbf,
-                                                    feature_type='mfccBands2D')
+            if mth == 'jordi' or mth == 'jan':
+                mfcc, mfcc_reshaped = featureExtraction(audio_monoloader,
+                                                              scaler,
+                                                              framesize_t,
+                                                                hopsize_t,
+                                                                fs,
+                                                              dmfcc=dmfcc,
+                                                              nbf=nbf,
+                                                              feature_type='mfccBands2D')
 
         # print lineList
         i_line = -1
@@ -307,57 +276,54 @@ def onsetFunctionAllRecordings(wav_path,
                 frame_end = int(round(line[-1][1] /hopsize_t))
             # print(feature.shape)
 
-            if mth == 'jordi' or mth == 'jordi_horizontal_timbral' or mth == 'jan':
-                mfcc_line          = mfcc[frame_start:frame_end]
-                mfcc_reshaped_line = mfcc_reshaped[frame_start:frame_end]
-            elif mth == 'jan_chan3':
-                mfcc_line_23 = mfcc_23[frame_start:frame_end]
-                mfcc_reshaped_line_23 = mfcc_reshaped_23[frame_start:frame_end]
-                mfcc_reshaped_line_23 = mfcc_reshaped_line_23[...,np.newaxis]
+            obs_path = join('./obs', cnnModel_name, artist_path)
+            obs_filename = rn + '_' + str(i_line + 1) + '.pkl'
 
-                mfcc_line_46 = mfcc_46[frame_start:frame_end]
-                mfcc_reshaped_line_46 = mfcc_reshaped_46[frame_start:frame_end]
-                mfcc_reshaped_line_46 = mfcc_reshaped_line_46[...,np.newaxis]
+            if varin['obs'] == 'tocal':
+                if mth == 'jordi' or mth == 'jan':
+                    mfcc_line          = mfcc[frame_start:frame_end]
+                    mfcc_reshaped_line = mfcc_reshaped[frame_start:frame_end]
 
-                mfcc_line_93 = mfcc_93[frame_start:frame_end]
-                mfcc_reshaped_line_93 = mfcc_reshaped_93[frame_start:frame_end]
-                mfcc_reshaped_line_93 = mfcc_reshaped_line_93[...,np.newaxis]
+                mfcc_reshaped_line = np.expand_dims(mfcc_reshaped_line, axis=1)
+                obs     = getOnsetFunction(observations=mfcc_reshaped_line,
+                                           model=model_keras_cnn_0,
+                                           method=mth)
+                # obs_i   = obs[:,1]
 
-                mfcc_reshaped_line = np.concatenate((mfcc_reshaped_line_23,mfcc_reshaped_line_46,mfcc_reshaped_line_93),axis=3)
-
-            mfcc_reshaped_line = np.expand_dims(mfcc_reshaped_line, axis=1)
-            obs     = getOnsetFunction(observations=mfcc_reshaped_line,
-                                       path_keras_cnn=full_path_keras_cnn_0,
-                                       method=mth)
-            # obs_i   = obs[:,1]
-
-            obs_i = obs[:,0]
+                obs_i = obs[:,0]
 
 
-            hann = np.hanning(5)
-            hann /= np.sum(hann)
+                hann = np.hanning(5)
+                hann /= np.sum(hann)
 
-            obs_i = np.convolve(hann, obs_i, mode='same')
+                obs_i = np.convolve(hann, obs_i, mode='same')
 
-            # plt.figure()
-            # plt.plot(obs_i)
-            # plt.show()
+                # save onset curve
+                print('save onset curve ... ...')
+                if not exists(obs_path):
+                    makedirs(obs_path)
+                pickle.dump(obs_i, open(join(obs_path, obs_filename), 'w'))
+
+                # plt.figure()
+                # plt.plot(obs_i)
+                # plt.show()
+            else:
+                obs_i = pickle.load(open(join(obs_path, obs_filename), 'r'))
 
             if late_fusion:
-                # fuse second observation
-                obs_2 = getOnsetFunction(observations=mfcc_reshaped_line,
-                                         path_keras_cnn=full_path_keras_cnn_1,
-                                         method=mth)
-                obs_2_i = obs_2[:, 0]
-                obs_2_i = np.convolve(hann, obs_2_i, mode='same')
+                if varin['obs'] == 'tocal':
+                    # fuse second observation
+                    obs_2 = getOnsetFunction(observations=mfcc_reshaped_line,
+                                             model=full_path_keras_cnn_1,
+                                             method=mth)
+                    obs_2_i = obs_2[:, 0]
+                    obs_2_i = np.convolve(hann, obs_2_i, mode='same')
+                else:
+                    obs_path_2 = join('./obs', cnnModel_name_2, artist_path)
+                    obs_filename = rn + '_' + str(i_line + 1) + '.pkl'
+                    obs_2_i = pickle.load(open(join(obs_path_2, obs_filename), 'r'))
 
-                # fuse the third observation
-                obs_3 = getOnsetFunction(observations=mfcc_reshaped_line,
-                                         path_keras_cnn=full_path_keras_cnn_2,
-                                         method=mth)
-                obs_3_i = obs_3[:, 0]
-                obs_3_i = np.convolve(hann, obs_3_i, mode='same')
-                obs_i = late_fusion_calc_3(obs_i, obs_2_i, obs_3_i, mth=2)
+                obs_i = late_fusion_calc(obs_i, obs_2_i, mth=2)
 
             obs_i = np.squeeze(obs_i)
 
@@ -405,7 +371,11 @@ def onsetFunctionAllRecordings(wav_path,
 
             # write boundary lab file
             if not lab:
-                boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist(), filter(None,pinyins[i_line]))
+                if varin['decoding'] == 'viterbi':
+                    boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist(), filter(None,pinyins[i_line]))
+                else:
+                    boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist())
+
             else:
                 boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist(), syllables[i_line])
                 label = True
@@ -473,18 +443,18 @@ def onsetFunctionAllRecordings(wav_path,
 
 if __name__ == '__main__':
 
-    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtistAlbumFilter()
+    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtist()
 
-    # nacta2017
-    onsetFunctionAllRecordings(wav_path=nacta2017_wav_path,
-                               textgrid_path=nacta2017_textgrid_path,
-                               score_path=nacta2017_score_pinyin_path,
-                               test_recordings=testNacta2017,
-                               feature_type='mfccBands2D',
-                               dmfcc=False,
-                               nbf=True,
-                               mth=mth_ODF,
-                               late_fusion=fusion)
+    # # nacta2017
+    # onsetFunctionAllRecordings(wav_path=nacta2017_wav_path,
+    #                            textgrid_path=nacta2017_textgrid_path,
+    #                            score_path=nacta2017_score_pinyin_path,
+    #                            test_recordings=testNacta2017,
+    #                            feature_type='mfccBands2D',
+    #                            dmfcc=False,
+    #                            nbf=True,
+    #                            mth=mth_ODF,
+    #                            late_fusion=fusion)
 
     # nacta
     onsetFunctionAllRecordings(wav_path=nacta_wav_path,
