@@ -117,29 +117,29 @@ scaler_oldnew_artist_filter_split_set = pickle.load(open(filename_scaler_oldnew_
 filename_jan_oldnew_artist_filter_split_model = 'keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_artist_filter_split.h5'
 filename_jan_deep_oldnew_artist_filter_split_model = 'keras.cnn_syllableSeg_jan_deep_class_weight_mfccBands_2D_all_artist_filter_split.h5'
 filename_jordi_oldnew_temporal_artist_filter_split_model = 'keras.cnn_syllableSeg_jordi_temporal_class_weight_with_conv_dense_mfccBands_2D_artist_filter_split.h5'
-filename_jordi_oldnew_timbral_artist_filter_split_model = 'keras.cnn_syllableSeg_jordi_timbral_class_weight_with_conv_dense_filter_mfccBands_2D_artist_filter_split.h5'
+filename_jordi_oldnew_timbral_artist_filter_split_model = 'keras.cnn_syllableSeg_jordi_timbral_class_weight_with_conv_dense_filter_mfccBands_2D_artist_filter_split_2_train.h5'
 
-# artist filter split
-# y_pred_jan_oldnew_set = getObs(filename_jan_oldnew_artist_filter_split_model, scaler_oldnew_artist_filter_split_set, X_test, model_flag='jan')
-y_pred_jan_oldnew_set = loadPredictionResults(label = 'jan_artist_filter_split')
-print('jan oldnew set artist filter split results:')
-predictionResults(y_pred_jan_oldnew_set, Y_test)
-# savePredictionResults(y_pred_jan_oldnew_set, label='jan_artist_filter_split')
-
+# # artist filter split
+# # y_pred_jan_oldnew_set = getObs(filename_jan_oldnew_artist_filter_split_model, scaler_oldnew_artist_filter_split_set, X_test, model_flag='jan')
+# y_pred_jan_oldnew_set = loadPredictionResults(label = 'jan_artist_filter_split')
+# print('jan oldnew set artist filter split results:')
+# predictionResults(y_pred_jan_oldnew_set, Y_test)
+# # savePredictionResults(y_pred_jan_oldnew_set, label='jan_artist_filter_split')
+#
 # y_pred_jan_deep_oldnew_set = getObs(filename_jan_deep_oldnew_artist_filter_split_model, scaler_oldnew_artist_filter_split_set, X_test, model_flag='jan')
 y_pred_jan_deep_oldnew_set = loadPredictionResults(label = 'jan_deep_artist_filter_split')
 print('jan deep oldnew set artist filter split results:')
 predictionResults(y_pred_jan_deep_oldnew_set, Y_test)
 # savePredictionResults(y_pred_jan_deep_oldnew_set, label='jan_deep_artist_filter_split')
-
-# y_pred_jordi_temporal_oldnew_set = getObs(filename_jordi_oldnew_temporal_artist_filter_split_model, scaler_oldnew_artist_filter_split_set, X_test, model_flag='jordi')
-y_pred_jordi_temporal_oldnew_set = loadPredictionResults(label = 'temporal_artist_filter_split')
-print('jordi temporal oldnew set artist filter split results:')
-predictionResults(y_pred_jordi_temporal_oldnew_set, Y_test)
-# savePredictionResults(y_pred_jordi_temporal_oldnew_set, label='temporal_artist_filter_split')
+#
+# # y_pred_jordi_temporal_oldnew_set = getObs(filename_jordi_oldnew_temporal_artist_filter_split_model, scaler_oldnew_artist_filter_split_set, X_test, model_flag='jordi')
+# y_pred_jordi_temporal_oldnew_set = loadPredictionResults(label = 'temporal_artist_filter_split')
+# print('jordi temporal oldnew set artist filter split results:')
+# predictionResults(y_pred_jordi_temporal_oldnew_set, Y_test)
+# # savePredictionResults(y_pred_jordi_temporal_oldnew_set, label='temporal_artist_filter_split')
 
 # y_pred_jordi_timbral_oldnew_set = getObs(filename_jordi_oldnew_timbral_artist_filter_split_model, scaler_oldnew_artist_filter_split_set, X_test, model_flag='jordi')
-y_pred_jordi_timbral_oldnew_set = loadPredictionResults(label = 'timbral_artist_filter_split')
-print('jordi timbral oldnew set artist filter split results:')
-predictionResults(y_pred_jordi_timbral_oldnew_set, Y_test)
-# savePredictionResults(y_pred_jordi_timbral_oldnew_set, label='timbral_artist_filter_split')
+# y_pred_jordi_timbral_oldnew_set = loadPredictionResults(label = 'timbral_artist_filter_split_2_train')
+# print('jordi timbral oldnew set artist filter split results:')
+# predictionResults(y_pred_jordi_timbral_oldnew_set, Y_test)
+# savePredictionResults(y_pred_jordi_timbral_oldnew_set, label='timbral_artist_filter_split_2_train')

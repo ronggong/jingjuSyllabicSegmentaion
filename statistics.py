@@ -8,6 +8,7 @@ sys.path.append(os.path.realpath('./src/'))
 import textgridParser
 import scoreParser
 from src.phonemeMap import nonvoicedconsonants
+from src.trainTestSeparation import getTestTrainRecordingsNacta2017Artist
 
 def wordDuration(nestedWordLists):
     '''
@@ -66,29 +67,39 @@ filePaths       = []                                              # entire file 
 maleFilePaths   = []                                          # male singers file paths
 femaleFilePaths = []                                        # female singers file paths
 
+testNacta2017, trainNacta2017 = getTestTrainRecordingsNacta2017Artist()
+
+overallNacta2017 = trainNacta2017 + testNacta2017
 
 laosheng_artists = ['20170327LiaoJiaNi', '20170418TianHao', '20170519LongTianMing', '20170519XuJingWei']
 
 dan_artists = ['20170408SongRuoXuan', '20170418TianHao', '20170424SunYuZhu', '20170425SunYuZhu', '20170506LiuHaiLin', ]
 
 
-for artist_path in dan_artists:
-    textgrid_artist_path = join(textgrid_path, artist_path)
-    recording_names = [f for f in os.listdir(textgrid_artist_path) if os.path.isfile(join(textgrid_artist_path, f))]
-    for rn in recording_names:
-        rn = rn.split('.')[0]
-        textgrid_file = join(textgrid_path, artist_path, rn + '.TextGrid')
+# for artist_path in dan_artists:
+#     textgrid_artist_path = join(nacta2017_textgrid_path, artist_path)
+#     recording_names = [f for f in os.listdir(textgrid_artist_path) if os.path.isfile(join(textgrid_artist_path, f))]
+#     for rn in recording_names:
+#         rn = rn.split('.')[0]
+#         textgrid_file = join(nacta2017_textgrid_path, artist_path, rn + '.TextGrid')
+#         femaleFilePaths.append(textgrid_file)
+#
+# for artist_path in laosheng_artists:
+#     textgrid_artist_path = join(nacta2017_textgrid_path, artist_path)
+#     recording_names = [f for f in os.listdir(textgrid_artist_path) if
+#                        os.path.isfile(join(textgrid_artist_path, f))]
+#     for rn in recording_names:
+#         rn = rn.split('.')[0]
+#         textgrid_file = join(nacta2017_textgrid_path, artist_path, rn + '.TextGrid')
+#         maleFilePaths.append(textgrid_file)
+
+for recording in overallNacta2017:
+    if recording[0] in dan_artists:
+        textgrid_file = join(nacta2017_textgrid_path, recording[0], recording[1] + '.Textgrid')
         femaleFilePaths.append(textgrid_file)
-
-for artist_path in laosheng_artists:
-    textgrid_artist_path = join(textgrid_path, artist_path)
-    recording_names = [f for f in os.listdir(textgrid_artist_path) if
-                       os.path.isfile(join(textgrid_artist_path, f))]
-    for rn in recording_names:
-        rn = rn.split('.')[0]
-        textgrid_file = join(textgrid_path, artist_path, rn + '.TextGrid')
+    elif recording[0] in laosheng_artists:
+        textgrid_file = join(nacta2017_textgrid_path, recording[0], recording[1] + '.Textgrid')
         maleFilePaths.append(textgrid_file)
-
 
 # ----------------------------------------------------------------------
 # total number of lines, words, dian for male and female singers
@@ -118,6 +129,7 @@ for ii, tgfile in enumerate(femaleFilePaths):
 ddlTotal = ddlMale + ddlFemale
 
 
+print "number of recordings: {0}".format(len(overallNacta2017))
 print 'Male total number of lines: {0}, dian {1}'.format(nlSumMale, ndSumMale)
 print 'Female total number of lines: {0}, dian {1}'.format(nlSumFemale,ndSumFemale)
 print 'Total number of lines: {0}, dian {1}'.format(nlSumFemale+nlSumMale, ndSumFemale+ndSumMale)

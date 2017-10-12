@@ -41,8 +41,10 @@ def batch_eval(root_path, annotation_path, segPhrase_path, segSyllable_path, sco
 
         score_file                  = os.path.join(score_path, artist_path,  recording_name+'.csv')
         # parse score
-        _, _, utterance_durations, bpm = scoreParser.csvScorePinyinParser(score_file)
-        # _, utterance_durations, bpm = scoreParser.csvDurationScoreParser(score_file)
+        if annotation_path:
+            _, _, utterance_durations, bpm = scoreParser.csvScorePinyinParser(score_file)
+        else:
+            _, utterance_durations, bpm = scoreParser.csvDurationScoreParser(score_file)
 
         if eval_details_path:
             eval_result_details_file_head = os.path.join(eval_details_path, artist_path)
@@ -236,7 +238,7 @@ def evaluation_test_dataset(segSyllablePath, tolerance, method, label):
     sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumOffsetCorrect, \
     sumInsertion, sumDeletion = 0, 0, 0, 0, 0, 0, 0, 0
 
-    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtist()
+    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtistAlbumFilter()
 
     DB, GB, GP, C, OnC, OffC, I, D = batch_eval(nacta2017_dataset_root_path, nacta2017_textgrid_path,nacta2017_segPhrase_path,
                                                 segSyllablePath, nacta2017_score_pinyin_path,
@@ -315,8 +317,8 @@ else:
             eval_result_file_name       = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply_layer2_20_win/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
             segSyllable_path            = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply_layer2_20_win'
         else:
-            eval_result_file_name       = './eval/results/jordi_fusion_old+new_artist_split/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
-            segSyllable_path            = './eval/results/jordi_fusion_old+new_artist_split'
+            eval_result_file_name       = './eval/results/jordi_fusion_old+new_artist_filter_split_2_train/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
+            segSyllable_path            = './eval/results/jordi_fusion_old+new_artist_filter_split_2_train'
     else:
         if filter_shape == 'temporal':
             if layer2 == 20:
@@ -324,8 +326,8 @@ else:
                 segSyllable_path            = './eval/results/jordi_cw_conv_dense_layer2_20_win'
             else:
                 # layer2 32 nodes
-                eval_result_file_name       = './eval/results/jordi_temporal_old+new_artist_split_peakPicking/eval_result_jordi_class_weight_conv_dense_win_label.csv'
-                segSyllable_path            = './eval/results/jordi_temporal_old+new_artist_split_peakPicking'
+                eval_result_file_name       = './eval/results/jordi_temporal_riyaz/eval_result_jordi_class_weight_conv_dense_win_labeled.csv'
+                segSyllable_path            = './eval/results/jordi_temporal_riyaz'
         else:
             # timbral filter shape
             if layer2 == 20:
@@ -333,8 +335,8 @@ else:
                 segSyllable_path            = './eval/results/jordi_cw_conv_dense_timbral_filter_layer2_20_win'
             else:
                 # layer2 32 nodes
-                eval_result_file_name       = './eval/results/jordi_timbral_old+new_artist_split_peakPicking/eval_result_jordi_class_weight_conv_dense_timbral_filter_win_label.csv'
-                segSyllable_path            = './eval/results/jordi_timbral_old+new_artist_split_peakPicking'
+                eval_result_file_name       = './eval/results/jordi_timbral_old+new_artist_filter_split_2_train/eval_result_jordi_class_weight_conv_dense_timbral_filter_win_label.csv'
+                segSyllable_path            = './eval/results/jordi_timbral_old+new_artist_filter_split_2_train'
 
 print(eval_result_file_name)
 print(segSyllable_path)

@@ -31,8 +31,8 @@ import viterbiDecoding
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
-cnnModel_name = 'jordi_temporal_old+new_artist_split'
-cnnModel_name_2 = 'jordi_timbral_old+new_artist_split'
+cnnModel_name = 'jordi_temporal_old+new_artist_filter_split'
+cnnModel_name_2 = 'jordi_timbral_old+new_artist_filter_split_2_train'
 
 print(full_path_keras_cnn_0)
 model_keras_cnn_0 = load_model(full_path_keras_cnn_0)
@@ -377,8 +377,13 @@ def onsetFunctionAllRecordings(wav_path,
                     boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist())
 
             else:
-                boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist(), syllables[i_line])
-                label = True
+                if varin['decoding'] == 'viterbi':
+                    boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist(), syllables[i_line])
+                    label = True
+
+                else:
+                    boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist())
+                    label = False
 
             boundaryLabWriter(boundaryList=boundary_list,
                               outputFilename=filename_syll_lab,
@@ -389,8 +394,12 @@ def onsetFunctionAllRecordings(wav_path,
             # print(np.array(groundtruth_syllable)*fs/hopsize)
 
             if varin['plot']:
-                nestedUL = nestedUtteranceLists[i_line][1]
+                print(lineList)
+                # nestedUL = nestedUtteranceLists[i_line][1]
                 # print(nestedUL)
+                # groundtruth_onset = [l[0]-lineList[0][0][0] for l in nestedUL]
+
+                nestedUL = lineList[0]
                 groundtruth_onset = [l[0]-line[0] for l in nestedUL]
                 groundtruth_syllables = [l[2] for l in nestedUL]
 
@@ -401,7 +410,7 @@ def onsetFunctionAllRecordings(wav_path,
                 ax1 = plt.subplot(3,1,1)
                 y = np.arange(0, 80)
                 x = np.arange(0, mfcc_line.shape[0])*hopsize_t
-                cax = plt.pcolormesh(x, y, np.transpose(mfcc_line[:, 80 * 11:80 * 12]))
+                cax = plt.pcolormesh(x, y, np.transpose(mfcc_line[:, 80 * 10:80 * 11]))
                 for i_gs, gs in enumerate(groundtruth_onset):
                     plt.axvline(gs, color='r', linewidth=2)
                     # plt.text(gs, ax1.get_ylim()[1], groundtruth_syllables[i_gs])
@@ -443,29 +452,29 @@ def onsetFunctionAllRecordings(wav_path,
 
 if __name__ == '__main__':
 
-    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtist()
+    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtistAlbumFilter()
 
-    # # nacta2017
-    # onsetFunctionAllRecordings(wav_path=nacta2017_wav_path,
-    #                            textgrid_path=nacta2017_textgrid_path,
-    #                            score_path=nacta2017_score_pinyin_path,
-    #                            test_recordings=testNacta2017,
-    #                            feature_type='mfccBands2D',
-    #                            dmfcc=False,
-    #                            nbf=True,
-    #                            mth=mth_ODF,
-    #                            late_fusion=fusion)
-
-    # nacta
-    onsetFunctionAllRecordings(wav_path=nacta_wav_path,
-                               textgrid_path=nacta_textgrid_path,
-                               score_path=nacta_score_pinyin_path,
-                               test_recordings=testNacta,
+    # nacta2017
+    onsetFunctionAllRecordings(wav_path=nacta2017_wav_path,
+                               textgrid_path=nacta2017_textgrid_path,
+                               score_path=nacta2017_score_pinyin_path,
+                               test_recordings=testNacta2017,
                                feature_type='mfccBands2D',
                                dmfcc=False,
                                nbf=True,
                                mth=mth_ODF,
                                late_fusion=fusion)
+
+    # # nacta
+    # onsetFunctionAllRecordings(wav_path=nacta_wav_path,
+    #                            textgrid_path=nacta_textgrid_path,
+    #                            score_path=nacta_score_pinyin_path,
+    #                            test_recordings=testNacta,
+    #                            feature_type='mfccBands2D',
+    #                            dmfcc=False,
+    #                            nbf=True,
+    #                            mth=mth_ODF,
+    #                            late_fusion=fusion)
 
     # # Riyaz
     # testRiyaz, trainRiyaz = getTestTrainrecordingsRiyaz()
