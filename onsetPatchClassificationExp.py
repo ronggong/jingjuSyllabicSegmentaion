@@ -8,6 +8,7 @@ import gzip
 import os
 import numpy as np
 from trainingSampleCollection import featureReshape
+from onsetFunctionCalc import late_fusion_calc
 from keras.models import load_model
 from sklearn.metrics import cohen_kappa_score, confusion_matrix, average_precision_score
 
@@ -59,6 +60,10 @@ def predictionResults(y_pred, y_test):
 def savePredictionResults(y_pred, label='ismir'):
     np.save(os.path.join('./eval/prediction_results/', label+'.npy'), y_pred)
 
+def loadPredictionResults(label='ismir'):
+    y_pred = np.load(os.path.join('./eval/prediction_results/', label + '.npy'))
+    return y_pred
+
 
 filename_test_set = './trainingData/test_set_all_syllableSeg_mfccBands2D.pickle.gz'
 with gzip.open(filename_test_set, 'rb') as f:
@@ -102,6 +107,13 @@ filename_jordi_old_timbral_model = 'keras.cnn_syllableSeg_jordi_class_weight_wit
 # predictionResults(y_pred_jordi_timbral_oldnew_set, Y_test)
 # savePredictionResults(y_pred_jordi_timbral_oldnew_set, label='timbral_old+new_ismir_split')
 
+y_pred_jordi_temporal_oldnew_set = loadPredictionResults('temporal_old+new_ismir_split')
+y_pred_jordi_timbral_oldnew_set = loadPredictionResults('timbral_old+new_ismir_split')
+y_pred_jordi_fusion_old_set = late_fusion_calc(y_pred_jordi_temporal_oldnew_set, y_pred_jordi_timbral_oldnew_set, mth=2, coef=0.5)
+
+print('jordi fusion oldnew set results:')
+predictionResults(y_pred_jordi_fusion_old_set, Y_test)
+
 # # old dataset
 
 # y_pred_jan_oldnew_set = getObsOld(filename_jan_old_model, scaler_old_set, X_test, model_flag='jan')
@@ -119,7 +131,14 @@ filename_jordi_old_timbral_model = 'keras.cnn_syllableSeg_jordi_class_weight_wit
 # predictionResults(y_pred_jordi_temporal_oldnew_set, Y_test)
 # savePredictionResults(y_pred_jordi_temporal_oldnew_set, label='temporal_old_ismir_split')
 #
-y_pred_jordi_timbral_oldnew_set = getObsOld(filename_jordi_old_timbral_model, scaler_old_set, X_test, model_flag='jordi')
-print('jordi timbral old set results:')
-predictionResults(y_pred_jordi_timbral_oldnew_set, Y_test)
-savePredictionResults(y_pred_jordi_timbral_oldnew_set, label='timbral_old_ismir_split')
+# y_pred_jordi_timbral_oldnew_set = getObsOld(filename_jordi_old_timbral_model, scaler_old_set, X_test, model_flag='jordi')
+# print('jordi timbral old set results:')
+# predictionResults(y_pred_jordi_timbral_oldnew_set, Y_test)
+# savePredictionResults(y_pred_jordi_timbral_oldnew_set, label='timbral_old_ismir_split')
+
+# y_pred_jordi_temporal_oldnew_set = loadPredictionResults('temporal_old_ismir_split')
+# y_pred_jordi_timbral_oldnew_set = loadPredictionResults('timbral_old_ismir_split')
+# y_pred_jordi_fusion_old_set = late_fusion_calc(y_pred_jordi_temporal_oldnew_set, y_pred_jordi_timbral_oldnew_set, mth=2, coef=0.5)
+#
+# print('jordi fusion old set results:')
+# predictionResults(y_pred_jordi_fusion_old_set, Y_test)
