@@ -127,7 +127,7 @@ def batch_eval(root_path, annotation_path, segPhrase_path, segSyllable_path, sco
                 print(detected_syllable_lab)
                 #
                 numDetectedBoundaries, numGroundtruthBoundaries, numCorrect, numOnsetCorrect, numOffsetCorrect, \
-                numInsertion, numDeletion, correct_list = evaluation2.boundaryEval(groundtruthBoundaries, detectedBoundaries, tolerance)
+                numInsertion, numDeletion, correct_list = evaluation2.boundaryEval(groundtruthBoundaries, detectedBoundaries, tolerance, label)
 
                 sumDetectedBoundaries       += numDetectedBoundaries
                 sumGroundtruthBoundaries    += numGroundtruthBoundaries
@@ -298,8 +298,8 @@ def evaluation_riyaz_test_dataset(segSyllablePath, tolerance, method, label):
 #       jan jordi class weight             #
 ############################################
 if mth_ODF == 'jan':
-    eval_result_file_name       = './eval/results/jan_deep_old+new_artist_split_peakPicking/eval_result_jan_class_weight_label.csv'
-    segSyllable_path            = './eval/results/jan_deep_old+new_artist_split_peakPicking'
+    eval_result_file_name       = './eval/results/jan_old+new_artist_filter_split_peakPickingMadmom/eval_result_jan_class_weight_label.csv'
+    segSyllable_path            = './eval/results/jan_old+new_artist_filter_split_peakPickingMadmom'
 elif mth_ODF == 'jan_chan3':
     eval_result_file_name       = './eval/results/jan_cw_3_chans_win/eval_result_jan_class_weight.csv'
     segSyllable_path            = './eval/results/jan_cw_3_chans_win'
@@ -317,8 +317,8 @@ else:
             eval_result_file_name       = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply_layer2_20_win/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
             segSyllable_path            = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply_layer2_20_win'
         else:
-            eval_result_file_name       = './eval/results/jordi_fusion_old+new_artist_filter_split_2_train/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
-            segSyllable_path            = './eval/results/jordi_fusion_old+new_artist_filter_split_2_train'
+            eval_result_file_name       = './eval/results/jordi_fusion_old+new_artist_filter_split_2_train_peakPickingMadmom/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
+            segSyllable_path            = './eval/results/jordi_fusion_old+new_artist_filter_split_2_train_peakPickingMadmom'
     else:
         if filter_shape == 'temporal':
             if layer2 == 20:
@@ -326,8 +326,8 @@ else:
                 segSyllable_path            = './eval/results/jordi_cw_conv_dense_layer2_20_win'
             else:
                 # layer2 32 nodes
-                eval_result_file_name       = './eval/results/jordi_temporal_riyaz/eval_result_jordi_class_weight_conv_dense_win_labeled.csv'
-                segSyllable_path            = './eval/results/jordi_temporal_riyaz'
+                eval_result_file_name       = './eval/results/jordi_temporal_old+new_artist_filter_split_peakPickingMadmom/eval_result_jordi_class_weight_conv_dense_win_labeled.csv'
+                segSyllable_path            = './eval/results/jordi_temporal_old+new_artist_filter_split_peakPickingMadmom'
         else:
             # timbral filter shape
             if layer2 == 20:
@@ -335,8 +335,8 @@ else:
                 segSyllable_path            = './eval/results/jordi_cw_conv_dense_timbral_filter_layer2_20_win'
             else:
                 # layer2 32 nodes
-                eval_result_file_name       = './eval/results/jordi_timbral_old+new_artist_filter_split_2_train/eval_result_jordi_class_weight_conv_dense_timbral_filter_win_label.csv'
-                segSyllable_path            = './eval/results/jordi_timbral_old+new_artist_filter_split_2_train'
+                eval_result_file_name       = './eval/results/jordi_timbral_old+new_artist_filter_split_2_train_peakPickingMadmom/eval_result_jordi_class_weight_conv_dense_timbral_filter_win_label.csv'
+                segSyllable_path            = './eval/results/jordi_timbral_old+new_artist_filter_split_2_train_peakPickingMadmom'
 
 print(eval_result_file_name)
 print(segSyllable_path)
@@ -345,7 +345,7 @@ with open(eval_result_file_name, 'wb') as testfile:
     csv_writer = csv.writer(testfile)
     for t in tols:
         detected, ground_truth, ground_truth_phrases, correct, insertion, deletion = \
-            evaluation_test_dataset(segSyllable_path,tolerance=t, method='jordi', label=True)
+            evaluation_test_dataset(segSyllable_path,tolerance=t, method='jan', label=False)
         recall,precision,F1 = evaluation2.metrics(detected,ground_truth,correct)
         print(detected, ground_truth, correct)
         print(recall, precision, F1)

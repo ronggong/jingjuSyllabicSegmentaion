@@ -9,6 +9,7 @@ import os
 import h5py
 import numpy as np
 from trainingSampleCollection import featureReshape
+from onsetFunctionCalc import late_fusion_calc
 from keras.models import load_model
 from sklearn.metrics import average_precision_score
 from sklearn.metrics import cohen_kappa_score, confusion_matrix
@@ -53,7 +54,7 @@ def predictionResults(y_pred, y_test):
     AP = average_precision_score(y_test, y_pred)
     print("AUC precision-recall curve:")
     print(AP)
-    y_pred_binary = [1 if p>0.1 else 0 for p in y_pred]
+    y_pred_binary = [1 if p>0.5 else 0 for p in y_pred]
     eval_metrics(y_pred_binary, y_test)
 
 def savePredictionResults(y_pred, label='ismir'):
@@ -67,10 +68,10 @@ def loadPredictionResults(label='ismir'):
 # f = h5py.File(filename_test_feature, 'r')
 # X_test = f['feature_all']
 #
-# filename_test_label = 'trainingData/label_test_set_all_syllableSeg_mfccBands2D_old+new_artist_split.pickle.gz'
-# with gzip.open(filename_test_label, 'rb') as f:
-#     Y_test = cPickle.load(f)
-#
+filename_test_label = 'trainingData/label_test_set_all_syllableSeg_mfccBands2D_old+new_artist_split.pickle.gz'
+with gzip.open(filename_test_label, 'rb') as f:
+    Y_test = cPickle.load(f)
+
 # filename_scaler_oldnew_artist_split_set = './cnnModels/scaler_syllable_mfccBands2D_old+new_artist_split.pkl'
 # scaler_oldnew_artist_split_set = pickle.load(open(filename_scaler_oldnew_artist_split_set, 'rb'))
 #
@@ -101,23 +102,29 @@ def loadPredictionResults(label='ismir'):
 # predictionResults(y_pred_jordi_timbral_oldnew_set, Y_test)
 # savePredictionResults(y_pred_jordi_timbral_oldnew_set, label='timbral_artist_split')
 
+y_pred_jordi_timbral_oldnew_set = loadPredictionResults(label = 'timbral_artist_split')
+y_pred_jordi_temporal_oldnew_set = loadPredictionResults(label = 'temporal_artist_split')
+y_pred_jordi_fusion_oldnew_set = late_fusion_calc(y_pred_jordi_temporal_oldnew_set, y_pred_jordi_timbral_oldnew_set, mth=2, coef=0.5)
+print('jordi fusion oldnew set artist split results:')
+predictionResults(y_pred_jordi_fusion_oldnew_set, Y_test)
+
 # artist filter split
 
-filename_test_feature = 'trainingData/feature_test_set_all_syllableSeg_mfccBands2D_old+new_artist_filter_split.h5'
-f = h5py.File(filename_test_feature, 'r')
-X_test = f['feature_all']
-
-filename_test_label = 'trainingData/label_test_set_all_syllableSeg_mfccBands2D_old+new_artist_filter_split.pickle.gz'
-with gzip.open(filename_test_label, 'rb') as f:
-    Y_test = cPickle.load(f)
-
-filename_scaler_oldnew_artist_filter_split_set = './cnnModels/scaler_syllable_mfccBands2D_old+new_artist_filter_split.pkl'
-scaler_oldnew_artist_filter_split_set = pickle.load(open(filename_scaler_oldnew_artist_filter_split_set, 'rb'))
-
-filename_jan_oldnew_artist_filter_split_model = 'keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_artist_filter_split.h5'
-filename_jan_deep_oldnew_artist_filter_split_model = 'keras.cnn_syllableSeg_jan_deep_class_weight_mfccBands_2D_all_artist_filter_split.h5'
-filename_jordi_oldnew_temporal_artist_filter_split_model = 'keras.cnn_syllableSeg_jordi_temporal_class_weight_with_conv_dense_mfccBands_2D_artist_filter_split.h5'
-filename_jordi_oldnew_timbral_artist_filter_split_model = 'keras.cnn_syllableSeg_jordi_timbral_class_weight_with_conv_dense_filter_mfccBands_2D_artist_filter_split_2_train.h5'
+# filename_test_feature = 'trainingData/feature_test_set_all_syllableSeg_mfccBands2D_old+new_artist_filter_split.h5'
+# f = h5py.File(filename_test_feature, 'r')
+# X_test = f['feature_all']
+#
+# filename_test_label = 'trainingData/label_test_set_all_syllableSeg_mfccBands2D_old+new_artist_filter_split.pickle.gz'
+# with gzip.open(filename_test_label, 'rb') as f:
+#     Y_test = cPickle.load(f)
+#
+# filename_scaler_oldnew_artist_filter_split_set = './cnnModels/scaler_syllable_mfccBands2D_old+new_artist_filter_split.pkl'
+# scaler_oldnew_artist_filter_split_set = pickle.load(open(filename_scaler_oldnew_artist_filter_split_set, 'rb'))
+#
+# filename_jan_oldnew_artist_filter_split_model = 'keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_artist_filter_split.h5'
+# filename_jan_deep_oldnew_artist_filter_split_model = 'keras.cnn_syllableSeg_jan_deep_class_weight_mfccBands_2D_all_artist_filter_split.h5'
+# filename_jordi_oldnew_temporal_artist_filter_split_model = 'keras.cnn_syllableSeg_jordi_temporal_class_weight_with_conv_dense_mfccBands_2D_artist_filter_split.h5'
+# filename_jordi_oldnew_timbral_artist_filter_split_model = 'keras.cnn_syllableSeg_jordi_timbral_class_weight_with_conv_dense_filter_mfccBands_2D_artist_filter_split_2_train.h5'
 
 # # artist filter split
 # # y_pred_jan_oldnew_set = getObs(filename_jan_oldnew_artist_filter_split_model, scaler_oldnew_artist_filter_split_set, X_test, model_flag='jan')
@@ -127,9 +134,9 @@ filename_jordi_oldnew_timbral_artist_filter_split_model = 'keras.cnn_syllableSeg
 # # savePredictionResults(y_pred_jan_oldnew_set, label='jan_artist_filter_split')
 #
 # y_pred_jan_deep_oldnew_set = getObs(filename_jan_deep_oldnew_artist_filter_split_model, scaler_oldnew_artist_filter_split_set, X_test, model_flag='jan')
-y_pred_jan_deep_oldnew_set = loadPredictionResults(label = 'jan_deep_artist_filter_split')
-print('jan deep oldnew set artist filter split results:')
-predictionResults(y_pred_jan_deep_oldnew_set, Y_test)
+# y_pred_jan_deep_oldnew_set = loadPredictionResults(label = 'jan_deep_artist_filter_split')
+# print('jan deep oldnew set artist filter split results:')
+# predictionResults(y_pred_jan_deep_oldnew_set, Y_test)
 # savePredictionResults(y_pred_jan_deep_oldnew_set, label='jan_deep_artist_filter_split')
 #
 # # y_pred_jordi_temporal_oldnew_set = getObs(filename_jordi_oldnew_temporal_artist_filter_split_model, scaler_oldnew_artist_filter_split_set, X_test, model_flag='jordi')
@@ -143,3 +150,9 @@ predictionResults(y_pred_jan_deep_oldnew_set, Y_test)
 # print('jordi timbral oldnew set artist filter split results:')
 # predictionResults(y_pred_jordi_timbral_oldnew_set, Y_test)
 # savePredictionResults(y_pred_jordi_timbral_oldnew_set, label='timbral_artist_filter_split_2_train')
+
+# y_pred_jordi_timbral_oldnew_set = loadPredictionResults(label = 'timbral_artist_filter_split_2_train')
+# y_pred_jordi_temporal_oldnew_set = loadPredictionResults(label = 'temporal_artist_filter_split')
+# y_pred_jordi_fusion_oldnew_set = late_fusion_calc(y_pred_jordi_temporal_oldnew_set, y_pred_jordi_timbral_oldnew_set, mth=2, coef=0.5)
+# print('jordi fusion oldnew set artist filter split results:')
+# predictionResults(y_pred_jordi_fusion_oldnew_set, Y_test)

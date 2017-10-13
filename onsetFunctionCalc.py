@@ -26,13 +26,14 @@ from src.trainTestSeparation import getTestTrainRecordingsMaleFemale, \
     getTestTrainRecordingsArtistAlbumFilter, \
     getTestTrainRecordingsArtist
 
-from peakPicking import peakPicking
+# from peakPicking import peakPicking
+from madmom.features.onsets import OnsetPeakPickingProcessor
 import viterbiDecoding
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
-cnnModel_name = 'jordi_temporal_old+new_artist_filter_split'
-cnnModel_name_2 = 'jordi_timbral_old+new_artist_filter_split_2_train'
+cnnModel_name = 'jordi_temporal_old+new_artist_split'
+cnnModel_name_2 = 'jordi_timbral_old+new_artist_split'
 
 print(full_path_keras_cnn_0)
 model_keras_cnn_0 = load_model(full_path_keras_cnn_0)
@@ -355,9 +356,15 @@ def onsetFunctionAllRecordings(wav_path,
                 filename_syll_lab = join(eval_results_path, artist_path, rn + '_' + str(i_line + 1) + '.syll.lab')
                 label = True
             else:
-                i_boundary = peakPicking(obs_i)
+                # i_boundary = peakPicking(obs_i)
+                arg_pp = {'threshold': 0.54,'smooth':0,'fps': 1./hopsize_t,'pre_max': hopsize_t,'post_max': hopsize_t}
+                # peak_picking = OnsetPeakPickingProcessor(threshold=threshold,smooth=smooth,fps=fps,pre_max=pre_max,post_max=post_max)
+                peak_picking = OnsetPeakPickingProcessor(**arg_pp)
+                i_boundary = peak_picking.process(obs_i)
+                i_boundary = np.append(i_boundary, (len(obs_i)-1)*hopsize_t )
+                i_boundary /=hopsize_t
                 label = False
-                filename_syll_lab = join(eval_results_path+'_peakPicking', artist_path, rn + '_' + str(i_line + 1) + '.syll.lab')
+                filename_syll_lab = join(eval_results_path+'_peakPickingMadmom', artist_path, rn + '_' + str(i_line + 1) + '.syll.lab')
 
             time_boundray_start = np.array(i_boundary[:-1])*hopsize_t
             time_boundray_end   = np.array(i_boundary[1:])*hopsize_t
@@ -452,7 +459,7 @@ def onsetFunctionAllRecordings(wav_path,
 
 if __name__ == '__main__':
 
-    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtistAlbumFilter()
+    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtist()
 
     # nacta2017
     onsetFunctionAllRecordings(wav_path=nacta2017_wav_path,
@@ -465,16 +472,16 @@ if __name__ == '__main__':
                                mth=mth_ODF,
                                late_fusion=fusion)
 
-    # # nacta
-    # onsetFunctionAllRecordings(wav_path=nacta_wav_path,
-    #                            textgrid_path=nacta_textgrid_path,
-    #                            score_path=nacta_score_pinyin_path,
-    #                            test_recordings=testNacta,
-    #                            feature_type='mfccBands2D',
-    #                            dmfcc=False,
-    #                            nbf=True,
-    #                            mth=mth_ODF,
-    #                            late_fusion=fusion)
+    # nacta
+    onsetFunctionAllRecordings(wav_path=nacta_wav_path,
+                               textgrid_path=nacta_textgrid_path,
+                               score_path=nacta_score_pinyin_path,
+                               test_recordings=testNacta,
+                               feature_type='mfccBands2D',
+                               dmfcc=False,
+                               nbf=True,
+                               mth=mth_ODF,
+                               late_fusion=fusion)
 
     # # Riyaz
     # testRiyaz, trainRiyaz = getTestTrainrecordingsRiyaz()
