@@ -88,7 +88,7 @@ def batch_eval(aCapella_root, dataset_path, annotation_path, segPhrase_path, seg
 
                 #
                 numDetectedBoundaries, numGroundtruthBoundaries, numCorrect, numOnsetCorrect, numOffsetCorrect, \
-                numInsertion, numDeletion, correct_list = evaluation2.boundaryEval(groundtruthBoundaries, detectedBoundaries, tolerance)
+                numInsertion, numDeletion, correct_list = evaluation2.boundaryEval(groundtruthBoundaries, detectedBoundaries, tolerance, label)
 
                 sumDetectedBoundaries       += numDetectedBoundaries
                 sumGroundtruthBoundaries    += numGroundtruthBoundaries
@@ -258,8 +258,8 @@ def evaluation_test_dataset(segSyllablePath, tolerance, label):
 ############################################
 
 if mth_ODF == 'jan':
-    eval_result_file_name       = './eval/results/jan_old_ismir_win_peakPicking/eval_result_jan_class_weight.csv'
-    segSyllable_path            = './eval/results/jan_old_ismir_win_peakPicking'
+    eval_result_file_name       = './eval/results/jan_deep_old_ismir_win_peakPicking/eval_result_jan_class_weight.csv'
+    segSyllable_path            = './eval/results/jan_deep_old_ismir_win_peakPicking'
 elif mth_ODF == 'jan_chan3':
     eval_result_file_name       = './eval/results/jan_cw_3_chans_win/eval_result_jan_class_weight.csv'
     segSyllable_path            = './eval/results/jan_cw_3_chans_win'
@@ -277,8 +277,8 @@ else:
             eval_result_file_name       = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply_layer2_20_win/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
             segSyllable_path            = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply_layer2_20_win'
         else:
-            eval_result_file_name       = './eval/results/jordi_fusion_old_ismir_win_peakPicking/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
-            segSyllable_path            = './eval/results/jordi_fusion_old_ismir_win_peakPicking'
+            eval_result_file_name       = './eval/results/jordi_fusion_old+new+ismir_split_win_peakPickingMadmom/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
+            segSyllable_path            = './eval/results/jordi_fusion_old+new+ismir_split_win_peakPickingMadmom'
     else:
         if filter_shape == 'temporal':
             if layer2 == 20:
@@ -286,8 +286,8 @@ else:
                 segSyllable_path            = './eval/results/jordi_cw_conv_dense_layer2_20_win'
             else:
                 # layer2 32 nodes
-                eval_result_file_name       = './eval/results/jordi_temporal_old_ismir_win_peakPicking/eval_result_jordi_class_weight_conv_dense_win.csv'
-                segSyllable_path            = './eval/results/jordi_temporal_old_ismir_win_peakPicking'
+                eval_result_file_name       = './eval/results/jordi_temporal_old+new+ismir_split_win_peakPickingMadmom/eval_result_jordi_class_weight_conv_dense_win.csv'
+                segSyllable_path            = './eval/results/jordi_temporal_old+new+ismir_split_win_peakPickingMadmom'
         else:
             # timbral filter shape
             if layer2 == 20:
@@ -295,8 +295,8 @@ else:
                 segSyllable_path            = './eval/results/jordi_cw_conv_dense_timbral_filter_layer2_20_win'
             else:
                 # layer2 32 nodes
-                eval_result_file_name       = './eval/results/jordi_timbral_old_ismir_win_peakPicking/eval_result_jordi_class_weight_conv_dense_timbral_filter_win.csv'
-                segSyllable_path            = './eval/results/jordi_timbral_old_ismir_win_peakPicking'
+                eval_result_file_name       = './eval/results/jordi_timbral_old+new+ismir_split_win_peakPickingMadmom/eval_result_jordi_class_weight_conv_dense_timbral_filter_win.csv'
+                segSyllable_path            = './eval/results/jordi_timbral_old+new+ismir_split_win_peakPickingMadmom'
 
 
 tols                = [0.025,0.05,0.1,0.15,0.2,0.25,0.3]

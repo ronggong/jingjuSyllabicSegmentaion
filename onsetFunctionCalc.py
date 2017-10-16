@@ -19,7 +19,7 @@ from src.textgridParser import textGrid2WordList, wordListsParseByLines
 from trainingSampleCollection import featureReshape
 from trainingSampleCollection import getMFCCBands2D
 from peakPicking import peakPicking
-
+from madmom.features.onsets import OnsetPeakPickingProcessor
 pyximport.install(reload_support=True,
                   setup_args={'include_dirs': np.get_include()})
 
@@ -27,8 +27,8 @@ from viterbiDecoding import viterbiSegmental2
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
-cnnModel_name = 'jordi_temporal_old_ismir'
-cnnModel_name_1 = 'jordi_timbral_old_ismir'
+# cnnModel_name = 'jordi_temporal_old+new+ismir_split'
+# cnnModel_name_1 = 'jordi_timbral_old+new+ismir_split'
 
 # print(full_path_keras_cnn_0)
 # model_keras_cnn_0 = load_model(full_path_keras_cnn_0)
@@ -265,7 +265,15 @@ def onsetFunctionAllRecordings(recordings,
                     label = True
 
                 else:
-                    i_boundary = peakPicking(obs_i)
+                    i_boundary = peakPicking(1.0-obs_i)
+
+                    # arg_pp = {'threshold': 0.54, 'smooth': 0, 'fps': 1. / hopsize_t, 'pre_max': hopsize_t,
+                    #           'post_max': hopsize_t}
+                    # # peak_picking = OnsetPeakPickingProcessor(threshold=threshold,smooth=smooth,fps=fps,pre_max=pre_max,post_max=post_max)
+                    # peak_picking = OnsetPeakPickingProcessor(**arg_pp)
+                    # i_boundary = peak_picking.process(obs_i)
+                    # i_boundary = np.append(i_boundary, (len(obs_i) - 1) * hopsize_t)
+                    # i_boundary /= hopsize_t
                     filename_syll_lab = join(eval_results_path + '_peakPicking', dataset_path,
                                              recording_name + '_' + str(i_obs + 1) + '.syll.lab')
                     label = False
