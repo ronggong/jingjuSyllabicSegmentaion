@@ -45,7 +45,11 @@ def lineWordCount(textgrid_file):
     dianDurationList = []
 
     entireLine      = textgridParser.textGrid2WordList(textgrid_file, whichTier='line')
+    # entireDianList  = textgridParser.textGrid2WordList(textgrid_file, whichTier='dianSilence')
+    entireWordList  = textgridParser.textGrid2WordList(textgrid_file, whichTier='pinyin')
+    # entireDianList  = textgridParser.textGrid2WordList(textgrid_file, whichTier='dian')
     entireDianList  = textgridParser.textGrid2WordList(textgrid_file, whichTier='dianSilence')
+    entirePhoList   = textgridParser.textGrid2WordList(textgrid_file, whichTier='details')
 
 
     if len(entireDianList):
