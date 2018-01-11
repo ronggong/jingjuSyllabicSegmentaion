@@ -20,7 +20,7 @@ def batchScorePinyinCheck():
     """
     testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtist()
 
-    for artist_path, rn in trainNacta2017:
+    for artist_path, rn in testNacta2017:
         score_file  = join(nacta2017_score_pinyin_path, artist_path, rn+'.csv')
 
         syllables, pinyins, syllable_durations, bpm = csvScorePinyinParser(score_file)

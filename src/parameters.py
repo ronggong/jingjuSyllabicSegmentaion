@@ -4,13 +4,13 @@
 mth_ODF         = 'jan'
 
 # layer2 node number: 20 or 32
-layer2          = 32
+layer2          = 20
 
 # late fusion: Bool
 fusion          = False
 
 # filter shape: 'temporal' or 'timbral' filter shape in Pons' CNN
-filter_shape    = 'timbral'
+filter_shape    = 'temporal'
 
 
 # other params
@@ -39,4 +39,20 @@ varin['plot'] = False
 
 varin['decoding'] = 'peakPicking'
 
-varin['obs'] = 'toload'
+varin['obs'] = 'tocal'
+
+varin['corrected_score_duration'] = False
+
+varin['dataset'] = 'ismir'
+
+varin['sample_weighting'] = 'simpleWeighting'
+
+varin['overlap'] = True
+
+varin['bidi'] = True
+
+# score synthesis parameters
+framesize_melodicSimilarity = 2048
+hopsize_melodicSimilarity = 1024
+synthesizeLength = 5 # in second
+sample_number_total = int(round(synthesizeLength * (fs / float(hopsize_melodicSimilarity))))

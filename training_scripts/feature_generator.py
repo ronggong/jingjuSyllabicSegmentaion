@@ -7,10 +7,19 @@ def shuffleFilenamesLabelsInUnison(filenames, labels, sample_weights):
     p=np.random.permutation(len(filenames))
     return filenames[p], labels[p], sample_weights[p]
 
-def generator(path_feature_data, indices, number_of_batches, file_size, input_shape, labels=None, sample_weights=None, shuffle=True, multi_inputs=False):
+def generator(path_feature_data,
+              indices,
+              number_of_batches,
+              file_size,
+              input_shape,
+              labels=None,
+              sample_weights=None,
+              shuffle=True,
+              multi_inputs=False,
+              channel=1):
 
     # print(len(filenames))
-
+    # print(path_feature_data)
     f = h5py.File(path_feature_data, 'r')
     indices_copy = np.array(indices[:], np.int64)
 
@@ -51,8 +60,12 @@ def generator(path_feature_data, indices, number_of_batches, file_size, input_sh
         # print(batch_indices)
         # print(index_sort)
         # print(batch_indices[index_sort])
-        X_batch_tensor = f['feature_all'][batch_indices[index_sort],:,:]
-        X_batch_tensor = np.expand_dims(X_batch_tensor, axis=1)
+        if channel == 1:
+            X_batch_tensor = f['feature_all'][batch_indices[index_sort],:,:]
+        else:
+            X_batch_tensor = f['feature_all'][batch_indices[index_sort], :, :, :]
+        if channel == 1:
+            X_batch_tensor = np.expand_dims(X_batch_tensor, axis=1)
 
 
         # for ii, fn in enumerate(filenames_copy[idx_start:idx_end]):

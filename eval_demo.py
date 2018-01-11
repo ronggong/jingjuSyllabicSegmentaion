@@ -10,14 +10,27 @@ import scoreParser
 # import evaluation
 import evaluation2
 from filePath import *
+from parameters import varin
 from src.trainTestSeparation import getTestTrainRecordingsMaleFemale, \
     getTestTrainrecordingsRiyaz, \
     getTestTrainRecordingsNactaISMIR, \
     getTestTrainRecordingsArtist, \
-    getTestTrainRecordingsArtistAlbumFilter
+    getTestTrainRecordingsArtistAlbumFilter, \
+    getTestRecordingsScoreDurCorrectionArtistAlbumFilter
 
 
-def batch_eval(root_path, annotation_path, segPhrase_path, segSyllable_path, score_path, groundtruth_path, eval_details_path, recordings, tolerance, method='obin', label=False):
+def batch_eval(root_path,
+               annotation_path,
+               segPhrase_path,
+               segSyllable_path,
+               score_path,
+               groundtruth_path,
+               eval_details_path,
+               recordings,
+               tolerance,
+               method='obin',
+               label=False,
+               decoding_method='viterbi'):
 
     sumDetectedBoundaries, sumGroundtruthPhrases, sumGroundtruthBoundaries, sumCorrect, sumOnsetCorrect, \
     sumOffsetCorrect, sumInsertion, sumDeletion = 0 ,0 ,0 ,0 ,0 ,0, 0, 0
@@ -29,7 +42,6 @@ def batch_eval(root_path, annotation_path, segPhrase_path, segSyllable_path, sco
             groundtruth_lab_file_head = os.path.join(groundtruth_path, artist_path)
         else:
             groundtruth_syllable_lab   = os.path.join(groundtruth_path, artist_path, recording_name+'.lab')
-
 
         # phrase_boundary_lab_file    = os.path.join(segPhrase_path, artist_path,  recording_name+'.lab')
         if method == 'obin':
@@ -86,7 +98,7 @@ def batch_eval(root_path, annotation_path, segPhrase_path, segSyllable_path, sco
                         for gtbs in groundtruthBoundaries:
                             text_file.write("{0} {1} {2}\n".format(gtbs[0],gtbs[1],gtbs[2]))
         else:
-            nestedUtteranceLists = [labParser.lab2WordList(groundtruth_syllable_lab, label=True)]
+            nestedUtteranceLists = [labParser.lab2WordList(groundtruth_syllable_lab, label=label)]
 
         # syllable boundaries groundtruth of each line
         # ignore eval details
@@ -117,14 +129,15 @@ def batch_eval(root_path, annotation_path, segPhrase_path, segSyllable_path, sco
                     continue
 
                 # read boundary detected lab into python list
-                detectedBoundaries          = labParser.lab2WordList(detected_syllable_lab, label=label)
+                lab_label = True if decoding_method == 'viterbi' else False
+                detectedBoundaries          = labParser.lab2WordList(detected_syllable_lab, label=lab_label)
 
                 # detectedBoundaries = [[d[0]*44100/16000.0, d[1]*44100/16000.0] for d in detectedBoundaries]
 
-                print(groundtruthBoundaries)
-                print(groundtruth_syllable_lab)
-                print(detectedBoundaries)
-                print(detected_syllable_lab)
+                # print(groundtruthBoundaries)
+                # print(groundtruth_syllable_lab)
+                # print(detectedBoundaries)
+                # print(detected_syllable_lab)
                 #
                 numDetectedBoundaries, numGroundtruthBoundaries, numCorrect, numOnsetCorrect, numOffsetCorrect, \
                 numInsertion, numDeletion, correct_list = evaluation2.boundaryEval(groundtruthBoundaries, detectedBoundaries, tolerance, label)
@@ -233,28 +246,35 @@ def evaluation_whole_dataset(segSyllable_path,tolerance):
 
     return sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumInsertion, sumDeletion
 
-def evaluation_test_dataset(segSyllablePath, tolerance, method, label):
+
+def evaluation_test_dataset(segSyllablePath, tolerance, method, label, decoding_method):
 
     sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumOffsetCorrect, \
     sumInsertion, sumDeletion = 0, 0, 0, 0, 0, 0, 0, 0
 
-    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtistAlbumFilter()
+    if varin['dataset'] == 'ismir':
+        testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsNactaISMIR()
+    else:
+        testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtistAlbumFilter()
 
-    DB, GB, GP, C, OnC, OffC, I, D = batch_eval(nacta2017_dataset_root_path, nacta2017_textgrid_path,nacta2017_segPhrase_path,
-                                                segSyllablePath, nacta2017_score_pinyin_path,
-                                                nacta2017_groundtruthlab_path, nacta2017_eval_details_path,
-                                                testNacta2017, tolerance, method, label)
+    # testNacta2017, testNacta = getTestRecordingsScoreDurCorrectionArtistAlbumFilter()
 
-    sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumOffsetCorrect, \
-    sumInsertion, sumDeletion = stat_Add(sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases,
-                                         sumCorrect,
-                                         sumOnsetCorrect, sumOffsetCorrect, sumInsertion, sumDeletion, DB, GB, GP, C,
-                                         OnC, OffC, I, D)
+    if varin['dataset'] != 'ismir':
+        DB, GB, GP, C, OnC, OffC, I, D = batch_eval(nacta2017_dataset_root_path, nacta2017_textgrid_path,nacta2017_segPhrase_path,
+                                                    segSyllablePath, nacta2017_score_pinyin_path,
+                                                    nacta2017_groundtruthlab_path, nacta2017_eval_details_path,
+                                                    testNacta2017, tolerance, method, label, decoding_method)
+
+        sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumOffsetCorrect, \
+        sumInsertion, sumDeletion = stat_Add(sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases,
+                                             sumCorrect,
+                                             sumOnsetCorrect, sumOffsetCorrect, sumInsertion, sumDeletion, DB, GB, GP, C,
+                                             OnC, OffC, I, D)
 
     DB, GB, GP, C, OnC, OffC, I, D = batch_eval(nacta_dataset_root_path, nacta_textgrid_path, nacta_segPhrase_path,
                                                 segSyllablePath, nacta_score_pinyin_path,
                                                 nacta_groundtruthlab_path, nacta_eval_details_path,
-                                                testNacta, tolerance, method, label)
+                                                testNacta, tolerance, method, label, decoding_method)
 
     sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumOffsetCorrect, \
     sumInsertion, sumDeletion = stat_Add(sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases,
@@ -267,7 +287,7 @@ def evaluation_test_dataset(segSyllablePath, tolerance, method, label):
                sumCorrect / float(sumGroundtruthBoundaries),
                sumInsertion / float(sumGroundtruthBoundaries), sumDeletion / float(sumGroundtruthBoundaries))
 
-    return sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumInsertion, sumDeletion
+    return sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumOnsetCorrect, sumInsertion, sumDeletion
 
 def evaluation_riyaz_test_dataset(segSyllablePath, tolerance, method, label):
 
@@ -294,62 +314,90 @@ def evaluation_riyaz_test_dataset(segSyllablePath, tolerance, method, label):
 
     return sumDetectedBoundaries, sumGroundtruthBoundaries, sumGroundtruthPhrases, sumCorrect, sumInsertion, sumDeletion
 
-############################################
-#       jan jordi class weight             #
-############################################
-if mth_ODF == 'jan':
-    eval_result_file_name       = './eval/results/jan_old+new_artist_filter_split_peakPickingMadmom/eval_result_jan_class_weight_label.csv'
-    segSyllable_path            = './eval/results/jan_old+new_artist_filter_split_peakPickingMadmom'
-elif mth_ODF == 'jan_chan3':
-    eval_result_file_name       = './eval/results/jan_cw_3_chans_win/eval_result_jan_class_weight.csv'
-    segSyllable_path            = './eval/results/jan_cw_3_chans_win'
-elif mth_ODF == 'jordi_horizontal_timbral':
-    if layer2 == 20:
-        eval_result_file_name       = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_layer2_20_win/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
-        segSyllable_path            = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_layer2_20_win'
-    else:
-        eval_result_file_name       = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_win/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
-        segSyllable_path            = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_win'
-else:
-    # mth_ODF == 'jordi'
-    if fusion:
-        if layer2 == 20:
-            eval_result_file_name       = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply_layer2_20_win/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
-            segSyllable_path            = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_late_fusion_multiply_layer2_20_win'
-        else:
-            eval_result_file_name       = './eval/results/jordi_fusion_old+new_artist_filter_split_2_train_peakPickingMadmom/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
-            segSyllable_path            = './eval/results/jordi_fusion_old+new_artist_filter_split_2_train_peakPickingMadmom'
-    else:
-        if filter_shape == 'temporal':
-            if layer2 == 20:
-                eval_result_file_name       = './eval/results/jordi_cw_conv_dense_layer2_20_win/eval_result_jordi_class_weight_conv_dense_win.csv'
-                segSyllable_path            = './eval/results/jordi_cw_conv_dense_layer2_20_win'
-            else:
-                # layer2 32 nodes
-                eval_result_file_name       = './eval/results/jordi_temporal_old+new_artist_filter_split_peakPickingMadmom/eval_result_jordi_class_weight_conv_dense_win_labeled.csv'
-                segSyllable_path            = './eval/results/jordi_temporal_old+new_artist_filter_split_peakPickingMadmom'
-        else:
-            # timbral filter shape
-            if layer2 == 20:
-                eval_result_file_name       = './eval/results/jordi_cw_conv_dense_timbral_filter_layer2_20_win/eval_result_jordi_class_weight_conv_dense_timbral_filter_win.csv'
-                segSyllable_path            = './eval/results/jordi_cw_conv_dense_timbral_filter_layer2_20_win'
-            else:
-                # layer2 32 nodes
-                eval_result_file_name       = './eval/results/jordi_timbral_old+new_artist_filter_split_2_train_peakPickingMadmom/eval_result_jordi_class_weight_conv_dense_timbral_filter_win_label.csv'
-                segSyllable_path            = './eval/results/jordi_timbral_old+new_artist_filter_split_2_train_peakPickingMadmom'
 
-print(eval_result_file_name)
-print(segSyllable_path)
-tols                = [0.025,0.05,0.1,0.15,0.2,0.25,0.3]
-with open(eval_result_file_name, 'wb') as testfile:
-    csv_writer = csv.writer(testfile)
-    for t in tols:
-        detected, ground_truth, ground_truth_phrases, correct, insertion, deletion = \
-            evaluation_test_dataset(segSyllable_path,tolerance=t, method='jan', label=False)
-        recall,precision,F1 = evaluation2.metrics(detected,ground_truth,correct)
-        print(detected, ground_truth, correct)
-        print(recall, precision, F1)
-        csv_writer.writerow([t,detected, ground_truth, ground_truth_phrases, recall,precision,F1])
+
+
+# print(eval_result_file_name)
+# print(segSyllable_path)
+def eval_write_2_txt(eval_result_file_name, segSyllable_path, label=True, decoding_method='viterbi'):
+    from src.utilFunctions import append_or_write
+    append_write = append_or_write(eval_result_file_name)
+    tols                = [0.025,0.05]
+    list_recall_onset, list_precision_onset, list_F1_onset = [], [], []
+    list_recall, list_precision, list_F1 = [], [], []
+
+    with open(eval_result_file_name, append_write) as testfile:
+        csv_writer = csv.writer(testfile)
+        for t in tols:
+            detected, ground_truth, ground_truth_phrases, correct, onsetCorrect, insertion, deletion = \
+                evaluation_test_dataset(segSyllable_path,
+                                        tolerance=t,
+                                        method='jan',
+                                        label=label,
+                                        decoding_method=decoding_method)
+
+            recall_onset,precision_onset,F1_onset = evaluation2.metrics(detected,ground_truth,onsetCorrect)
+            recall,precision,F1 = evaluation2.metrics(detected,ground_truth,correct)
+
+            # print(detected, ground_truth, correct)
+            # print(recall, precision, F1)
+            csv_writer.writerow([t,detected, ground_truth, ground_truth_phrases, recall_onset,precision_onset,F1_onset])
+
+            csv_writer.writerow([t,detected, ground_truth, ground_truth_phrases, recall,precision,F1])
+
+            list_recall_onset.append(recall_onset)
+            list_precision_onset.append(precision_onset)
+            list_F1_onset.append(F1_onset)
+            list_recall.append(recall)
+            list_precision.append(precision)
+            list_F1.append(F1)
+
+    return list_precision_onset, list_recall_onset, list_F1_onset, \
+            list_precision, list_recall, list_F1
+
+if __name__ == '__main__':
+    if mth_ODF == 'jan':
+        eval_result_file_name = './eval/results/jan_old+new_ismir_madmom_early_stopping_peakPickingMadmom/eval_result_jan_class_weight_label.csv'
+        segSyllable_path = './eval/results/jan_old+new_ismir_madmom_early_stopping_peakPickingMadmom'
+    elif mth_ODF == 'jan_chan3':
+        eval_result_file_name = './eval/results/jan_cw_3_chans_win/eval_result_jan_class_weight.csv'
+        segSyllable_path = './eval/results/jan_cw_3_chans_win'
+    elif mth_ODF == 'jordi_horizontal_timbral':
+        if layer2 == 20:
+            eval_result_file_name = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_layer2_20_win/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
+            segSyllable_path = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_layer2_20_win'
+        else:
+            eval_result_file_name = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_win/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
+            segSyllable_path = './eval/results/jordi_cw_conv_dense_horizontal_timbral_filter_win'
+    else:
+        # mth_ODF == 'jordi'
+        if fusion:
+            if layer2 == 20:
+                eval_result_file_name = './eval/results/jordi_fusion_ismir_madmom_peakPickingMadmom/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
+                segSyllable_path = './eval/results/jordi_fusion_ismir_madmom_peakPickingMadmom'
+            else:
+                eval_result_file_name = './eval/results/jordi_fusion_old+new_artist_filter_split_2_train_peakPickingMadmom/eval_result_jordi_class_weight_conv_dense_horizontal_timbral_filter_win.csv'
+                segSyllable_path = './eval/results/jordi_fusion_old+new_artist_filter_split_2_train_peakPickingMadmom'
+        else:
+            if filter_shape == 'temporal':
+                if layer2 == 20:
+                    eval_result_file_name = './eval/results/jordi_temporal_ismir_madmom_early_stopping/eval_result_jordi_class_weight_conv_dense_win.csv'
+                    segSyllable_path = './eval/results/jordi_temporal_ismir_madmom_early_stopping'
+                else:
+                    # layer2 32 nodes
+                    eval_result_file_name = './eval/results/jordi_temporal_old+new_artist_filter_split_peakPickingMadmom/eval_result_jordi_class_weight_conv_dense_win_labeled.csv'
+                    segSyllable_path = './eval/results/jordi_temporal_old+new_artist_filter_split_peakPickingMadmom'
+            else:
+                # timbral filter shape
+                if layer2 == 20:
+                    eval_result_file_name = './eval/results/jordi_timbral_ismir_madmom_early_stopping/eval_result_jordi_class_weight_conv_dense_timbral_filter_win.csv'
+                    segSyllable_path = './eval/results/jordi_timbral_ismir_madmom_early_stopping'
+                else:
+                    # layer2 32 nodes
+                    eval_result_file_name = './eval/results/jordi_timbral_old+new_artist_filter_split_2_train_peakPickingMadmom/eval_result_jordi_class_weight_conv_dense_timbral_filter_win_label.csv'
+                    segSyllable_path = './eval/results/jordi_timbral_old+new_artist_filter_split_2_train_peakPickingMadmom'
+
+    eval_write_2_txt(eval_result_file_name, segSyllable_path)
 
 # not used
 

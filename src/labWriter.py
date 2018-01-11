@@ -7,6 +7,22 @@ from zhon.hanzi import punctuation as puncChinese
 import os
 from labParser import lab2WordList
 
+def onsetLabWriter(onsetList, outputFilename):
+    '''
+    Write the boundary list into .lab
+    :param boundaryList:
+    :param outputFilename:
+    :return:
+    '''
+
+    directory,_ = os.path.split(outputFilename)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    with open(outputFilename, "w") as lab_file:
+        for onset in onsetList:
+            lab_file.write("{0:.4f}\n".format(onset))
+
 def boundaryLabWriter(boundaryList, outputFilename, label=False):
     '''
     Write the boundary list into .lab

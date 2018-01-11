@@ -41,6 +41,11 @@ def csvScorePinyinParser(scoreFilename):
                 bpm.append(row[0])
     return syllables, pinyins, syllable_durations, bpm
 
+def removePunctuation(char):
+    if len(re.findall(ur'[\u4e00-\u9fff]+', char.decode("utf8"))):
+        char = re.sub(ur"[%s]+" % puncChinese, "", char.decode("utf8"))
+    return char
+
 def generatePinyin(scoreFilename):
 
     syllables           = []
@@ -57,8 +62,7 @@ def generatePinyin(scoreFilename):
                     row_pinyin = []
                     for r in row[1:]:
                         if len(r):
-                            if len(re.findall(ur'[\u4e00-\u9fff]+', r.decode("utf8"))):
-                                r = re.sub(ur"[%s]+" % puncChinese, "", r.decode("utf8"))
+                            r = removePunctuation(r)
                             row_pinyin.append(pinyin.get(r, format="strip", delimiter=" "))
                         else:
                             row_pinyin.append('')
@@ -99,6 +103,13 @@ def writeCsv(scoreFilename, syllables, syllable_durations, bpm):
         writerowCsv(syllables,syllable_durations,bpm,writer,None)
         export.close()
 
+def writeCsvPinyinFromData(scoreFilenamePinyin, syllables, pinyins, syllable_durations, bpm):
+    if len(syllables):
+        export=open(scoreFilenamePinyin, "wb")
+        writer=csv.writer(export, delimiter=',')
+        writerowCsv(syllables,syllable_durations,bpm,writer,pinyins)
+        export.close()
+
 def writeCsvPinyin(scoreFilename, scoreFilenamePinyin):
     '''
     use this function to add pinyin to scoreFilename
@@ -107,8 +118,4 @@ def writeCsvPinyin(scoreFilename, scoreFilenamePinyin):
     :return:
     '''
     syllables,pinyins,syllable_durations,bpm = generatePinyin(scoreFilename)
-    if len(syllables):
-        export=open(scoreFilenamePinyin, "wb")
-        writer=csv.writer(export, delimiter=',')
-        writerowCsv(syllables,syllable_durations,bpm,writer,pinyins)
-        export.close()
+    writeCsvPinyinFromData(scoreFilenamePinyin, syllables, pinyins, syllable_durations, bpm)

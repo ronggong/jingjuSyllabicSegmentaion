@@ -79,7 +79,11 @@ def boundaryEval(groundtruthBoundaries, detectedBoundaries, tolerance, label):
                     correctlist[idx] = 1  # found landmark for boundary idx
 
             if abs(db[0]-gtb[0])<onsetTh:
-                onsetCorrectlist[idx] = 1
+                if label:
+                    if db[2] == gtb[2]:
+                        onsetCorrectlist[idx] = 1
+                else:
+                    onsetCorrectlist[idx] = 1
             if abs(db[1]-gtb[1])<offsetTh:
                 offsetCorrectlist[idx] = 1
 
@@ -90,6 +94,36 @@ def boundaryEval(groundtruthBoundaries, detectedBoundaries, tolerance, label):
     numDeletion         = numGroundtruthBoundaries - numCorrect
 
     return numDetectedBoundaries, numGroundtruthBoundaries, numCorrect, numOnsetCorrect, numOffsetCorrect, numInsertion, numDeletion, correctlist
+
+def onsetEval(groundtruthOnsets, detectedOnsets, tolerance):
+    '''
+    :param groundtruthBoundaries:   col syllable start time in second,
+    :param detectedBoundaries:      same structure as groundtruthBoundaries
+    :param tolerance:               tolerance of evaluation
+    :return:                        number of detected syllables,
+                                    ground truth syllables,
+                                    correct boundaries,
+                                    insertions,
+                                    deletions
+    '''
+
+    numDetectedOnsets       = len(detectedOnsets)
+    numGroundtruthOnsets    = len(groundtruthOnsets)
+
+    correctlist                 = [0]*numDetectedOnsets
+
+    for gto in groundtruthOnsets:
+        for idx, do in enumerate(detectedOnsets):
+            onsetTh     = tolerance                                          # onset threshold
+            # if abs(db[0]-gtb[0])<onsetTh and abs(db[1]-gtb[1])<offsetTh and db[2] == gtb[2]:
+            if abs(do-gto)<onsetTh:
+                correctlist[idx] = 1  # found landmark for boundary idx
+
+    numCorrect          = sum(correctlist)
+    numInsertion        = numDetectedOnsets - numCorrect
+    numDeletion         = numGroundtruthOnsets - numCorrect
+
+    return numDetectedOnsets, numGroundtruthOnsets, numCorrect, numInsertion, numDeletion, correctlist
 
 def metrics(numDetected, numGroundtruth, numCorrect):
     recall = (numCorrect/float(numGroundtruth))*100

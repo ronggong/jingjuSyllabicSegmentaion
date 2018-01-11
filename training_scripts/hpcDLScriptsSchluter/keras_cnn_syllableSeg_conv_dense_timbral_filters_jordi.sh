@@ -3,9 +3,11 @@
 # change python version
 #module load cuda/8.0
 #module load theano/0.8.2
+#module load python/2.7.5
+#module load essentia/2.1_python-2.7.5
 
 # two variables you need to set
-device=gpu0  # the device to be used. set it to "cpu" if you don't have GPUs
+device=gpu1  # the device to be used. set it to "cpu" if you don't have GPUs
 
 # export environment variables
 #
@@ -17,7 +19,7 @@ export LD_LIBRARY_PATH=/soft/cuda/cudnn/cuda/lib64:$LD_LIBRARY_PATH
 export CPATH=/soft/cuda/cudnn/cuda/include:$CPATH
 export LIBRARY_PATH=/soft/cuda/cudnn/cuda/lib64:$LD_LIBRARY_PATH
 
-source activate /homedtic/rgong/keras_env
+source activate keras_env
 
 
 #$ -N sseg_tim
@@ -29,16 +31,15 @@ source activate /homedtic/rgong/keras_env
 #$ -o /homedtic/rgong/cnnSyllableSeg/out/schluter_timbral.$JOB_ID.out
 #$ -e /homedtic/rgong/cnnSyllableSeg/error/schluter_timbral.$JOB_ID.err
 
-#printf "Removing local scratch directories if exist...\n"
-#if [ -d /scratch/rgongcnnSyllableSeg_timbral ]; then
-#        rm -Rf /scratch/rgongcnnSyllableSeg_timbral
-#fi
+printf "Removing local scratch directories if exist...\n"
+if [ -d /scratch/rgongcnnSyllableSeg_timbral ]; then
+        rm -Rf /scratch/rgongcnnSyllableSeg_timbral
+fi
 
 # Second, replicate the structure of the experiment's folder:
 # -----------------------------------------------------------
-#mkdir /scratch/rgongcnnSyllableSeg_timbral
-#mkdir /scratch/rgongcnnSyllableSeg_timbral/syllableSeg
-
+mkdir /scratch/rgongcnnSyllableSeg_timbral
+mkdir /scratch/rgongcnnSyllableSeg_timbral/syllableSeg
 
 #printf "Copying feature files into scratch directory...\n"
 # Third, copy the experiment's data:
@@ -50,12 +51,12 @@ source activate /homedtic/rgong/keras_env
 #printf "Finish copying feature files into scratch directory...\n"
 #printf $((end-start))
 
-python /homedtic/rgong/cnnSyllableSeg/jingjuSyllabicSegmentaion/training_scripts/hpcDLScriptsSchluter/keras_cnn_syllableSeg_conv_dense_timbral_filters_jordi.py
+python /homedtic/rgong/cnnSyllableSeg/jingjuSyllabicSegmentation/training_scripts/hpcDLScriptsSchluter/keras_cnn_syllableSeg_conv_dense_timbral_filters_jordi.py
 
 # Clean the crap:
 # ---------------
-#printf "Removing local scratch directories...\n"
-#if [ -d /scratch/rgongcnnSyllableSeg_timbral ]; then
-#        rm -Rf /scratch/rgongcnnSyllableSeg_timbral
-#fi
+printf "Removing local scratch directories...\n"
+if [ -d /scratch/rgongcnnSyllableSeg_timbral ]; then
+        rm -Rf /scratch/rgongcnnSyllableSeg_timbral
+fi
 printf "Job done. Ending at `date`\n"

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 import pickle
-from os import makedirs, walk, listdir
-from os.path import isfile, exists, dirname, join
+from os import makedirs
+from os.path import isfile, exists
 
 import essentia.standard as ess
 import numpy as np
+import pyximport
 from keras.models import load_model
 
-import pyximport
 pyximport.install(reload_support=True,
                   setup_args={'include_dirs': np.get_include()})
 
@@ -15,13 +15,11 @@ from src.filePath import *
 from src.labWriter import boundaryLabWriter
 from src.labParser import lab2WordList
 from src.parameters import *
-from src.scoreManip import phonemeDurationForLine
-from src.scoreParser import generatePinyin, csvDurationScoreParser
+from src.scoreParser import csvDurationScoreParser
 from src.pitchCalculation import pitchCalculation
-from src.textgridParser import textGrid2WordList, wordListsParseByLines
-from trainingSampleCollection import featureReshape
-from trainingSampleCollection import getMFCCBands2D
-from trainingSampleCollection import getTestTrainrecordingsRiyaz
+from src.utilFunctions import featureReshape
+from datasetCollection.trainingSampleCollection import getMFCCBands2D
+from datasetCollection.trainingSampleCollection import getTestTrainrecordingsRiyaz
 
 from peakPicking import peakPicking
 import viterbiDecoding
@@ -116,7 +114,8 @@ def onsetFunctionAllRecordings(wav_path,
                                nbf=True,
                                mth='jordi',
                                late_fusion=True,
-                               lab=False):
+                               lab=False,
+                               decoding_method='viterbi'):
     """
     ODF and viter decoding
     :param recordings:
@@ -221,7 +220,7 @@ def onsetFunctionAllRecordings(wav_path,
 
             # print(duration_score)
 
-            if varin['decoding'] == 'viterbi':
+            if decoding_method == 'viterbi':
                 # segmental decoding
                 obs_i[0] = 1.0
                 obs_i[-1] = 1.0
@@ -332,4 +331,5 @@ if __name__ == '__main__':
                                nbf=True,
                                mth=mth_ODF,
                                late_fusion=fusion,
-                               lab=True)
+                               lab=True,
+                               decoding_method='viterbi')

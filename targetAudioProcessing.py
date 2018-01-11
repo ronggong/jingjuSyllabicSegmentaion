@@ -26,18 +26,14 @@
 
 # this file is reserved for other usage
 
-import essentia.standard as ess
-from essentia.streaming import *
-from src.parameters import *
-from src.filePath import *
-from sklearn import preprocessing
-from trainingSampleCollection import getFeature,getMFCCBands1D,getMFCCBands2D,featureReshape
-import numpy as np
 import pickle
-from os import path
-from src.pinyinMap import *
-from src.phonemeMap import *
-import matplotlib.pyplot as plt
+
+import essentia.standard as ess
+import numpy as np
+
+from src.filePath import *
+from src.parameters import *
+from src.utilFunctions import featureReshape
 
 
 def pitchProcessing_audio(audio):

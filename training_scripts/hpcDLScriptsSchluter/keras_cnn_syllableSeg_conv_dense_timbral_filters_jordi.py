@@ -1,13 +1,17 @@
 
 # from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
 import sys, os
+import time
+import shutil
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from data_preparation import load_data
 from data_preparation_schluter import getTrainingFilenames, concatenateFeatureLabelSampleweights, saveFeatureLabelSampleweights
 from models import jordi_model, model_train
 
-from src.filePathSchulter import *
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src')))
+
+from filePathSchulter import *
 
 nlen = 21
 input_dim = (80, nlen)
@@ -53,19 +57,28 @@ if __name__ == '__main__':
     for ii in range(8):
         test_cv_filename = join(schluter_cv_path, '8-fold_cv_random_'+str(ii)+'.fold')
         train_fns = getTrainingFilenames(schluter_annotations_path, test_cv_filename)
-        feature_all, label_all, sample_weights_all = concatenateFeatureLabelSampleweights(train_fns, schluter_feature_data_path)
+        feature_all, label_all, sample_weights_all, scaler = concatenateFeatureLabelSampleweights(train_fns, schluter_feature_data_path)
 
         filename_train_validation_set = join(schluter_feature_data_path, 'temp', 'feature_all_timbral_temp.h5')
         filename_labels_train_validation_set = join(schluter_feature_data_path, 'temp', 'labels_train_set_all_timbral_temp.pickle.gz')
         filename_sample_weights = join(schluter_feature_data_path, 'temp', 'sample_weights_all_timbral_temp.pickle.gz')
+        filename_scaler = join(schluter_feature_data_path, 'temp', 'scaler_timbral_'+str(ii)+'.pickle.gz')
 
-        saveFeatureLabelSampleweights(feature_all, label_all, sample_weights_all,
-                                      filename_train_validation_set, filename_labels_train_validation_set, filename_sample_weights)
+        saveFeatureLabelSampleweights(feature_all, label_all, sample_weights_all, scaler,
+                                      filename_train_validation_set, filename_labels_train_validation_set, filename_sample_weights, filename_scaler)
+
+        # copy feature to scratch
+        timestamp1 = time.time()
+        filename_train_validation_set_scratch = join('/scratch/rgongcnnSyllableSeg_timbral/syllableSeg/',
+                                                     'feature_all_timbral_temp.h5')
+        shutil.copy2(filename_train_validation_set, filename_train_validation_set_scratch)
+        timestamp2 = time.time()
+        print("Copying to scratch took %.2f seconds" % (timestamp2 - timestamp1))
 
         file_path_model = '/homedtic/rgong/cnnSyllableSeg/out/schulter_timbral_cv_'+str(ii)+'.h5'
-        file_path_log = './homedtic/rgong/cnnSyllableSeg/out/log/schulter_timbral_cv_'+str(ii)+'.csv'
+        file_path_log = '/homedtic/rgong/cnnSyllableSeg/out/log/schulter_timbral_cv_'+str(ii)+'.csv'
 
-        train_model(filename_train_validation_set=filename_train_validation_set,
+        train_model(filename_train_validation_set=filename_train_validation_set_scratch,
                     filename_labels_train_validation_set=filename_labels_train_validation_set,
                     filename_sample_weights=filename_sample_weights,
                     filter_density_1=1, filter_density_2=1,

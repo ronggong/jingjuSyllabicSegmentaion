@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 import pickle
-from os import makedirs, walk, listdir
-from os.path import isfile, exists, dirname, join
+from os import makedirs
+from os.path import isfile, exists
 
 import essentia.standard as ess
 import numpy as np
+import pyximport
 from keras.models import load_model
 
-import pyximport
 pyximport.install(reload_support=True,
                   setup_args={'include_dirs': np.get_include()})
 
@@ -15,160 +15,45 @@ from src.filePath import *
 from src.labWriter import boundaryLabWriter
 from src.labParser import lab2WordList
 from src.parameters import *
-from src.scoreManip import phonemeDurationForLine
-from src.scoreParser import generatePinyin, csvDurationScoreParser, csvScorePinyinParser
+from src.scoreParser import csvDurationScoreParser, csvScorePinyinParser
 from src.textgridParser import textGrid2WordList, wordListsParseByLines
-from trainingSampleCollection import featureReshape
-from trainingSampleCollection import getMFCCBands2D
-from src.trainTestSeparation import getTestTrainRecordingsMaleFemale, \
-    getTestTrainrecordingsRiyaz, \
-    getTestTrainRecordingsNactaISMIR, \
-    getTestTrainRecordingsArtistAlbumFilter, \
-    getTestTrainRecordingsArtist
+from src.utilFunctions import featureReshape, getOnsetFunction, late_fusion_calc
+from datasetCollection.trainingSampleCollection import featureExtraction
+from src.trainTestSeparation import getTestTrainRecordingsNactaISMIR, \
+    getTestRecordingsScoreDurCorrectionArtistAlbumFilter
 
 # from peakPicking import peakPicking
 from madmom.features.onsets import OnsetPeakPickingProcessor
+from datasetCollection.trainingSampleCollection import getMFCCBands2DMadmom
 import viterbiDecoding
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
-cnnModel_name = 'jordi_temporal_old+new_artist_split'
-cnnModel_name_2 = 'jordi_timbral_old+new_artist_split'
+# cnnModel_name = 'jordi_temporal_ismir_madmom'
+# cnnModel_name_2 = 'jordi_timbral_ismir_madmom'
 
-print(full_path_keras_cnn_0)
-model_keras_cnn_0 = load_model(full_path_keras_cnn_0)
+# print(full_path_keras_cnn_0)
+# model_keras_cnn_0 = load_model(full_path_keras_cnn_0)
+# model_keras_cnn_1 = load_model(full_path_keras_cnn_1)
 
-def getOnsetFunction(observations, model, method='jan'):
-    """
-    Load CNN model to calculate ODF
-    :param observations:
-    :return:
-    """
-
-    ##-- call pdnn to calculate the observation from the features
-    # if method=='jordi':
-    #     observations = [observations, observations, observations, observations, observations, observations]
-    # elif method=='jordi_horizontal_timbral':
-    #     observations = [observations, observations, observations, observations, observations, observations,
-    #                     observations, observations, observations, observations, observations, observations]
-    if method == 'jordi':
-        obs = model.predict(observations, batch_size=128, verbose=1)
-    else:
-        obs = model.predict_proba(observations, batch_size=128)
-    return obs
-
-
-def featureExtraction(audio_monoloader, scaler, framesize_t, hopsize_t, fs, dmfcc=False, nbf=False, feature_type='mfccBands2D'):
-    """
-    extract mfcc features
-    :param audio_monoloader:
-    :param scaler:
-    :param dmfcc:
-    :param nbf:
-    :param feature_type:
-    :return:
-    """
-    if feature_type == 'mfccBands2D':
-        mfcc = getMFCCBands2D(audio_monoloader, framesize_t, hopsize_t, fs, nbf=nbf, nlen=varin['nlen'])
-        mfcc = np.log(100000 * mfcc + 1)
-
-        mfcc = np.array(mfcc, dtype='float32')
-        mfcc_scaled = scaler.transform(mfcc)
-        mfcc_reshaped = featureReshape(mfcc_scaled)
-    else:
-        print(feature_type + ' is not exist.')
-        raise
-    return mfcc, mfcc_reshaped
-
-
-def trackOnsetPosByPath(path, idx_syllable_start_state):
-    idx_onset = []
-    for ii in range(len(path)-1):
-        if path[ii+1] != path[ii] and path[ii+1] in idx_syllable_start_state:
-            idx_onset.append(ii)
-    return idx_onset
-
-def late_fusion_calc(obs_0, obs_1, mth=0, coef=0.5):
-    """
-    Late fusion methods
-    :param obs_0:
-    :param obs_1:
-    :param mth: 0-addition 1-addition with linear norm 2-exponential weighting mulitplication with linear norm
-    3-multiplication 4- multiplication with linear norm
-    :param coef: weighting coef for multiplication
-    :return:
-    """
-    assert len(obs_0) == len(obs_1)
-
-    obs_out = []
-
-    if mth==1 or mth==2 or mth==4:
-        from sklearn.preprocessing import MinMaxScaler
-        min_max_scaler = MinMaxScaler()
-        obs_0 = obs_0.reshape((len(obs_0),1))
-        obs_1 = obs_1.reshape((len(obs_1),1))
-        # print(obs_0.shape, obs_1.shape)
-        obs_0 = min_max_scaler.fit_transform(obs_0)
-        obs_1 = min_max_scaler.fit_transform(obs_1)
-
-    if mth == 0 or mth == 1:
-        # addition
-        obs_out = np.add(obs_0, obs_1)/2
-    elif mth == 2:
-        # multiplication with exponential weighting
-        obs_out = np.multiply(np.power(obs_0, coef), np.power(obs_1, 1-coef))
-    elif mth == 3 or mth == 4:
-        # multiplication
-        obs_out = np.multiply(obs_0, obs_1)
-
-    return obs_out
-
-def late_fusion_calc_3(obs_0, obs_1, obs_2, mth=2, coef=0.33333333):
-    """
-    Late fusion methods
-    :param obs_0:
-    :param obs_1:
-    :param mth: 0-addition 1-addition with linear norm 2-exponential weighting mulitplication with linear norm
-    3-multiplication 4- multiplication with linear norm
-    :param coef: weighting coef for multiplication
-    :return:
-    """
-    assert len(obs_0) == len(obs_1)
-
-    obs_out = []
-
-    if mth==2:
-        from sklearn.preprocessing import MinMaxScaler
-        min_max_scaler = MinMaxScaler()
-        obs_0 = obs_0.reshape((len(obs_0),1))
-        obs_1 = obs_1.reshape((len(obs_1),1))
-        obs_2 = obs_2.reshape((len(obs_2),1))
-
-        # print(obs_0.shape, obs_1.shape)
-        obs_0 = min_max_scaler.fit_transform(obs_0)
-        obs_1 = min_max_scaler.fit_transform(obs_1)
-        obs_2 = min_max_scaler.fit_transform(obs_2)
-
-
-    if mth == 2:
-        # multiplication with exponential weighting
-        obs_out = np.multiply(np.power(obs_0, coef), np.power(obs_1, coef))
-        obs_out = np.multiply(obs_out, np.power(obs_2, 1-coef))
-    else:
-        raise ValueError
-
-    return obs_out
 
 def onsetFunctionAllRecordings(wav_path,
                                textgrid_path,
                                score_path,
+                               scaler,
                                test_recordings,
+                               model_keras_cnn_0,
+                                cnnModel_name,
+                               eval_results_path,
                                feature_type='mfcc',
                                dmfcc=False,
                                nbf=True,
                                mth='jordi',
                                late_fusion=True,
-                               lab=False):
+                               lab=False,
+                               threshold=0.54,
+                               obs_cal=True,
+                               decoding_method='viterbi'):
     """
     ODF and viterbi decoding
     :param recordings:
@@ -182,7 +67,6 @@ def onsetFunctionAllRecordings(wav_path,
     :return:
     """
 
-    scaler = pickle.load(open(full_path_mfccBands_2D_scaler_onset, 'rb'))
 
     # kerasModel = _LRHMM.kerasModel(full_path_keras_cnn_am)
 
@@ -203,6 +87,7 @@ def onsetFunctionAllRecordings(wav_path,
         # rn = rn.split('.')[0]
 
         score_file                  = join(score_path, artist_path, rn+'.csv')
+        print(score_file)
 
         if not isfile(score_file):
             print 'Score not found: ' + score_file
@@ -232,24 +117,29 @@ def onsetFunctionAllRecordings(wav_path,
         # print(pinyins)
         # print(syllable_durations)
 
-        if varin['obs'] == 'tocal':
+        if obs_cal == 'tocal':
             # load audio
             fs = 44100
-            if not lab:
-                audio_monoloader               = ess.MonoLoader(downmix = 'left', filename = wav_file, sampleRate = fs)()
-            else:
-                audio, fs, nc, md5, br, codec = ess.AudioLoader(filename=wav_file)()
-                audio_monoloader = audio[:, 0]  # take the left channel
-
             if mth == 'jordi' or mth == 'jan':
-                mfcc, mfcc_reshaped = featureExtraction(audio_monoloader,
-                                                              scaler,
-                                                              framesize_t,
-                                                                hopsize_t,
-                                                                fs,
-                                                              dmfcc=dmfcc,
-                                                              nbf=nbf,
-                                                              feature_type='mfccBands2D')
+                if feature_type != 'madmom':
+                    if not lab:
+                        audio_monoloader = ess.MonoLoader(downmix='left', filename=wav_file, sampleRate=fs)()
+                    else:
+                        audio, fs, nc, md5, br, codec = ess.AudioLoader(filename=wav_file)()
+                        audio_monoloader = audio[:, 0]  # take the left channel
+                    mfcc, mfcc_reshaped = featureExtraction(audio_monoloader,
+                                                                  scaler,
+                                                                  framesize_t,
+                                                                    hopsize_t,
+                                                                    fs,
+                                                                  dmfcc=dmfcc,
+                                                                  nbf=nbf,
+                                                                  feature_type='mfccBands2D')
+                else:
+                    mfcc = getMFCCBands2DMadmom(wav_file, fs, hopsize_t, channel=1)
+                    mfcc_scaled = scaler.transform(mfcc)
+                    mfcc_reshaped = featureReshape(mfcc_scaled, nlen=7)
+
 
         # print lineList
         i_line = -1
@@ -280,7 +170,7 @@ def onsetFunctionAllRecordings(wav_path,
             obs_path = join('./obs', cnnModel_name, artist_path)
             obs_filename = rn + '_' + str(i_line + 1) + '.pkl'
 
-            if varin['obs'] == 'tocal':
+            if obs_cal == 'tocal':
                 if mth == 'jordi' or mth == 'jan':
                     mfcc_line          = mfcc[frame_start:frame_end]
                     mfcc_reshaped_line = mfcc_reshaped[frame_start:frame_end]
@@ -292,12 +182,6 @@ def onsetFunctionAllRecordings(wav_path,
                 # obs_i   = obs[:,1]
 
                 obs_i = obs[:,0]
-
-
-                hann = np.hanning(5)
-                hann /= np.sum(hann)
-
-                obs_i = np.convolve(hann, obs_i, mode='same')
 
                 # save onset curve
                 print('save onset curve ... ...')
@@ -311,14 +195,15 @@ def onsetFunctionAllRecordings(wav_path,
             else:
                 obs_i = pickle.load(open(join(obs_path, obs_filename), 'r'))
 
+
             if late_fusion:
-                if varin['obs'] == 'tocal':
+                if obs_cal == 'tocal':
                     # fuse second observation
                     obs_2 = getOnsetFunction(observations=mfcc_reshaped_line,
                                              model=full_path_keras_cnn_1,
                                              method=mth)
                     obs_2_i = obs_2[:, 0]
-                    obs_2_i = np.convolve(hann, obs_2_i, mode='same')
+                    # obs_2_i = np.convolve(hann, obs_2_i, mode='same')
                 else:
                     obs_path_2 = join('./obs', cnnModel_name_2, artist_path)
                     obs_filename = rn + '_' + str(i_line + 1) + '.pkl'
@@ -348,23 +233,35 @@ def onsetFunctionAllRecordings(wav_path,
 
             # print(duration_score)
 
-            if varin['decoding'] == 'viterbi':
+            hann = np.hanning(5)
+            hann /= np.sum(hann)
+
+            obs_i = np.convolve(hann, obs_i, mode='same')
+
+            if decoding_method == 'viterbi':
                 # segmental decoding
                 obs_i[0] = 1.0
                 obs_i[-1] = 1.0
                 i_boundary = viterbiDecoding.viterbiSegmental2(obs_i, duration_score, varin)
-                filename_syll_lab = join(eval_results_path, artist_path, rn + '_' + str(i_line + 1) + '.syll.lab')
+
+                if varin['corrected_score_duration']:
+                    eval_results_decoding_path = eval_results_path + '_corrected_score_duration'
+                else:
+                    eval_results_decoding_path = eval_results_path
+
+                filename_syll_lab = join(eval_results_decoding_path, artist_path, rn + '_' + str(i_line + 1) + '.syll.lab')
                 label = True
             else:
                 # i_boundary = peakPicking(obs_i)
-                arg_pp = {'threshold': 0.54,'smooth':0,'fps': 1./hopsize_t,'pre_max': hopsize_t,'post_max': hopsize_t}
+                arg_pp = {'threshold': threshold,'smooth':0,'fps': 1./hopsize_t,'pre_max': hopsize_t,'post_max': hopsize_t}
                 # peak_picking = OnsetPeakPickingProcessor(threshold=threshold,smooth=smooth,fps=fps,pre_max=pre_max,post_max=post_max)
                 peak_picking = OnsetPeakPickingProcessor(**arg_pp)
                 i_boundary = peak_picking.process(obs_i)
                 i_boundary = np.append(i_boundary, (len(obs_i)-1)*hopsize_t )
                 i_boundary /=hopsize_t
                 label = False
-                filename_syll_lab = join(eval_results_path+'_peakPickingMadmom', artist_path, rn + '_' + str(i_line + 1) + '.syll.lab')
+                eval_results_decoding_path = eval_results_path+'_peakPickingMadmom'
+                filename_syll_lab = join(eval_results_decoding_path, artist_path, rn + '_' + str(i_line + 1) + '.syll.lab')
 
             time_boundray_start = np.array(i_boundary[:-1])*hopsize_t
             time_boundray_end   = np.array(i_boundary[1:])*hopsize_t
@@ -373,18 +270,20 @@ def onsetFunctionAllRecordings(wav_path,
 
             eval_results_data_path = dirname(filename_syll_lab)
 
+            print(eval_results_data_path)
+
             if not exists(eval_results_data_path):
                 makedirs(eval_results_data_path)
 
             # write boundary lab file
             if not lab:
-                if varin['decoding'] == 'viterbi':
+                if decoding_method == 'viterbi':
                     boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist(), filter(None,pinyins[i_line]))
                 else:
                     boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist())
 
             else:
-                if varin['decoding'] == 'viterbi':
+                if decoding_method == 'viterbi':
                     boundary_list = zip(time_boundray_start.tolist(), time_boundray_end.tolist(), syllables[i_line])
                     label = True
 
@@ -402,13 +301,13 @@ def onsetFunctionAllRecordings(wav_path,
 
             if varin['plot']:
                 print(lineList)
-                # nestedUL = nestedUtteranceLists[i_line][1]
-                # print(nestedUL)
-                # groundtruth_onset = [l[0]-lineList[0][0][0] for l in nestedUL]
+                nestedUL = nestedUtteranceLists[i_line][1]
+                print(nestedUL)
+                groundtruth_onset = [l[0]-nestedUL[0][0] for l in nestedUL]
 
-                nestedUL = lineList[0]
-                groundtruth_onset = [l[0]-line[0] for l in nestedUL]
-                groundtruth_syllables = [l[2] for l in nestedUL]
+                # nestedUL = lineList[0]
+                # groundtruth_onset = [l[0]-line[0] for l in nestedUL]
+                # groundtruth_syllables = [l[2] for l in nestedUL]
 
                 # plot Error analysis figures
                 plt.figure(figsize=(16, 6))
@@ -455,33 +354,332 @@ def onsetFunctionAllRecordings(wav_path,
                 # plt.tight_layout()
 
                 plt.show()
+    return eval_results_decoding_path
 
 
 if __name__ == '__main__':
 
-    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtist()
+    from eval_demo import eval_write_2_txt
 
-    # nacta2017
-    onsetFunctionAllRecordings(wav_path=nacta2017_wav_path,
-                               textgrid_path=nacta2017_textgrid_path,
-                               score_path=nacta2017_score_pinyin_path,
-                               test_recordings=testNacta2017,
-                               feature_type='mfccBands2D',
-                               dmfcc=False,
-                               nbf=True,
-                               mth=mth_ODF,
-                               late_fusion=fusion)
+    if varin['dataset'] == 'ismir':
+        testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsNactaISMIR()
+    else:
+        testNacta2017, testNacta = getTestRecordingsScoreDurCorrectionArtistAlbumFilter()
 
-    # nacta
-    onsetFunctionAllRecordings(wav_path=nacta_wav_path,
-                               textgrid_path=nacta_textgrid_path,
-                               score_path=nacta_score_pinyin_path,
-                               test_recordings=testNacta,
-                               feature_type='mfccBands2D',
-                               dmfcc=False,
-                               nbf=True,
-                               mth=mth_ODF,
-                               late_fusion=fusion)
+    scaler = pickle.load(open(full_path_mfccBands_2D_scaler_onset, 'rb'))
+
+    def peakPickingSubroutine(th, obs_cal):
+        from src.utilFunctions import append_or_write
+        import csv
+
+        eval_result_file_name = join(jingju_results_path,
+                                     varin['sample_weighting'],
+                                     cnnModel_name + '_peakPicking_threshold_results.txt')
+
+        list_recall_onset_25, list_precision_onset_25, list_F1_onset_25 = [], [], []
+        list_recall_onset_5, list_precision_onset_5, list_F1_onset_5 = [], [], []
+        list_recall_25, list_precision_25, list_F1_25 = [], [], []
+        list_recall_5, list_precision_5, list_F1_5 = [], [], []
+
+        for ii in range(5):
+
+            if obs_cal:
+                model_keras_cnn_0 = load_model(full_path_keras_cnn_0 + str(ii) + '.h5')
+            else:
+                model_keras_cnn_0 = None
+
+            if varin['dataset'] != 'ismir':
+                # nacta2017
+                onsetFunctionAllRecordings(wav_path=nacta2017_wav_path,
+                                           textgrid_path=nacta2017_textgrid_path,
+                                           score_path=nacta2017_score_pinyin_path,
+                                           test_recordings=testNacta2017,
+                                           model_keras_cnn_0=model_keras_cnn_0,
+                                           cnnModel_name=cnnModel_name + str(ii),
+                                           eval_results_path=eval_results_path + str(ii),
+                                           scaler=scaler,
+                                           feature_type='madmom',
+                                           dmfcc=False,
+                                           nbf=True,
+                                           mth=mth_ODF,
+                                           late_fusion=fusion,
+                                           threshold=th,
+                                           obs_cal=obs_cal,
+                                           decoding_method='peakPicking')
+
+            eval_results_decoding_path = onsetFunctionAllRecordings(wav_path=nacta_wav_path,
+                                                                    textgrid_path=nacta_textgrid_path,
+                                                                    score_path=nacta_score_pinyin_path,
+                                                                    test_recordings=testNacta,
+                                                                    model_keras_cnn_0=model_keras_cnn_0,
+                                                                    cnnModel_name=cnnModel_name + str(ii),
+                                                                    eval_results_path=eval_results_path + str(ii),
+                                                                    scaler=scaler,
+                                                                    feature_type='madmom',
+                                                                    dmfcc=False,
+                                                                    nbf=True,
+                                                                    mth=mth_ODF,
+                                                                    late_fusion=fusion,
+                                                                    threshold=th,
+                                                                    obs_cal=obs_cal,
+                                                                    decoding_method='peakPicking')
+
+            append_write = append_or_write(eval_result_file_name)
+            with open(eval_result_file_name, append_write) as testfile:
+                csv_writer = csv.writer(testfile)
+                csv_writer.writerow([th])
+
+            # eval_results_decoding_path = cnnModel_name + str(ii) + '_peakPickingMadmom'
+            precision_onset, recall_onset, F1_onset, \
+            precision, recall, F1, \
+                = eval_write_2_txt(eval_result_file_name,
+                                   eval_results_decoding_path,
+                                   label=False,
+                                   decoding_method='peakPicking')
+
+            list_precision_onset_25.append(precision_onset[0])
+            list_precision_onset_5.append(precision_onset[1])
+            list_recall_onset_25.append(recall_onset[0])
+            list_recall_onset_5.append(recall_onset[1])
+            list_F1_onset_25.append(F1_onset[0])
+            list_F1_onset_5.append(F1_onset[1])
+            list_precision_25.append(precision[0])
+            list_precision_5.append(precision[1])
+            list_recall_25.append(recall[0])
+            list_recall_5.append(recall[1])
+            list_F1_25.append(F1[0])
+            list_F1_5.append(F1[1])
+
+        return list_precision_onset_25, list_recall_onset_25, list_F1_onset_25, list_precision_25, list_recall_25, list_F1_25, \
+               list_precision_onset_5, list_recall_onset_5, list_F1_onset_5, list_precision_5, list_recall_5, list_F1_5
+
+
+    def viterbiSubroutine(eval_label, obs_cal):
+
+        list_recall_onset_25, list_precision_onset_25, list_F1_onset_25 = [], [], []
+        list_recall_onset_5, list_precision_onset_5, list_F1_onset_5 = [], [], []
+        list_recall_25, list_precision_25, list_F1_25 = [], [], []
+        list_recall_5, list_precision_5, list_F1_5 = [], [], []
+        for ii in range(5):
+
+            if obs_cal == 'tocal':
+
+                model_keras_cnn_0 = load_model(full_path_keras_cnn_0 + str(ii) + '.h5')
+
+                print(full_path_keras_cnn_0)
+
+                if varin['dataset'] != 'ismir':
+                    # nacta2017
+                    onsetFunctionAllRecordings(wav_path=nacta2017_wav_path,
+                                               textgrid_path=nacta2017_textgrid_path,
+                                               score_path=nacta2017_score_unified_path,
+                                               test_recordings=testNacta2017,
+                                               model_keras_cnn_0=model_keras_cnn_0,
+                                               cnnModel_name=cnnModel_name + str(ii),
+                                               eval_results_path=eval_results_path + str(ii),
+                                               scaler=scaler,
+                                               feature_type='madmom',
+                                               dmfcc=False,
+                                               nbf=True,
+                                               mth=mth_ODF,
+                                               late_fusion=fusion,
+                                               obs_cal=obs_cal,
+                                               decoding_method='viterbi')
+
+                # nacta
+                eval_results_decoding_path = onsetFunctionAllRecordings(wav_path=nacta_wav_path,
+                                                                        textgrid_path=nacta_textgrid_path,
+                                                                        score_path=nacta_score_unified_path,
+                                                                        test_recordings=testNacta,
+                                                                        model_keras_cnn_0=model_keras_cnn_0,
+                                                                        cnnModel_name=cnnModel_name + str(ii),
+                                                                        eval_results_path=eval_results_path + str(ii),
+                                                                        scaler=scaler,
+                                                                        feature_type='madmom',
+                                                                        dmfcc=False,
+                                                                        nbf=True,
+                                                                        mth=mth_ODF,
+                                                                        late_fusion=fusion,
+                                                                        obs_cal=obs_cal,
+                                                                        decoding_method='viterbi')
+            else:
+                eval_results_decoding_path = eval_results_path + str(ii)
+
+            precision_onset, recall_onset, F1_onset, \
+            precision, recall, F1, \
+                = eval_write_2_txt(eval_result_file_name=join(eval_results_decoding_path, 'results.csv'),
+                                   segSyllable_path=eval_results_decoding_path,
+                                   label=eval_label,
+                                   decoding_method='viterbi')
+
+            list_precision_onset_25.append(precision_onset[0])
+            list_precision_onset_5.append(precision_onset[1])
+            list_recall_onset_25.append(recall_onset[0])
+            list_recall_onset_5.append(recall_onset[1])
+            list_F1_onset_25.append(F1_onset[0])
+            list_F1_onset_5.append(F1_onset[1])
+            list_precision_25.append(precision[0])
+            list_precision_5.append(precision[1])
+            list_recall_25.append(recall[0])
+            list_recall_5.append(recall[1])
+            list_F1_25.append(F1[0])
+            list_F1_5.append(F1[1])
+
+        return list_precision_onset_25, list_recall_onset_25, list_F1_onset_25, list_precision_25, list_recall_25, list_F1_25, \
+               list_precision_onset_5, list_recall_onset_5, list_F1_onset_5, list_precision_5, list_recall_5, list_F1_5
+
+
+    def writeResults2Txt(filename,
+                         eval_label_str,
+                         decoding_method,
+                        list_precision_onset_25,
+                         list_recall_onset_25,
+                         list_F1_onset_25,
+                         list_precision_25,
+                         list_recall_25,
+                         list_F1_25,
+                        list_precision_onset_5,
+                         list_recall_onset_5,
+                         list_F1_onset_5,
+                         list_precision_5,
+                         list_recall_5,
+                         list_F1_5):
+        """
+        :param filename:
+        :param eval_label_str: eval label or not
+        :param decoding_method: viterbi or peakPicking
+        :param list_precision_onset_25:
+        :param list_recall_onset_25:
+        :param list_F1_onset_25:
+        :param list_precision_25:
+        :param list_recall_25:
+        :param list_F1_25:
+        :param list_precision_onset_5:
+        :param list_recall_onset_5:
+        :param list_F1_onset_5:
+        :param list_precision_5:
+        :param list_recall_5:
+        :param list_F1_5:
+        :return:
+        """
+
+        with open(filename, 'w') as f:
+            f.write(decoding_method)
+            f.write('\n')
+            f.write(eval_label_str)
+            f.write('\n')
+            f.write(str(np.mean(list_precision_onset_25))+' '+str(np.std(list_precision_onset_25)))
+            f.write('\n')
+            f.write(str(np.mean(list_recall_onset_25))+' '+str(np.std(list_recall_onset_25)))
+            f.write('\n')
+            f.write(str(np.mean(list_F1_onset_25))+' '+str(np.std(list_F1_onset_25)))
+            f.write('\n')
+
+            f.write(str(np.mean(list_precision_25))+' '+str(np.std(list_precision_25)))
+            f.write('\n')
+            f.write(str(np.mean(list_recall_25))+' '+str(np.std(list_recall_25)))
+            f.write('\n')
+            f.write(str(np.mean(list_F1_25))+' '+str(np.std(list_F1_25)))
+            f.write('\n')
+
+            f.write(str(np.mean(list_precision_onset_5)) + ' ' + str(np.std(list_precision_onset_5)))
+            f.write('\n')
+            f.write(str(np.mean(list_recall_onset_5)) + ' ' + str(np.std(list_recall_onset_5)))
+            f.write('\n')
+            f.write(str(np.mean(list_F1_onset_5)) + ' ' + str(np.std(list_F1_onset_5)))
+            f.write('\n')
+
+            f.write(str(np.mean(list_precision_5)) + ' ' + str(np.std(list_precision_5)))
+            f.write('\n')
+            f.write(str(np.mean(list_recall_5)) + ' ' + str(np.std(list_recall_5)))
+            f.write('\n')
+            f.write(str(np.mean(list_F1_5)) + ' ' + str(np.std(list_F1_5)))
+
+
+    def viterbiLabelEval(eval_label, obs_cal):
+
+        list_precision_onset_25, list_recall_onset_25, list_F1_onset_25, list_precision_25, list_recall_25, list_F1_25, \
+        list_precision_onset_5, list_recall_onset_5, list_F1_onset_5, list_precision_5, list_recall_5, list_F1_5 = \
+            viterbiSubroutine(eval_label, obs_cal)
+
+        postfix_statistic_sig = 'label' if eval_label else 'nolabel'
+        pickle.dump(list_F1_onset_25,
+                    open(join('./statisticalSignificance/data/jingju', varin['sample_weighting'],
+                              cnnModel_name + '_' + 'viterbi' + '_' + postfix_statistic_sig + '.pkl'), 'w'))
+
+        writeResults2Txt(join(jingju_results_path, varin['sample_weighting'], cnnModel_name + '_viterbi' + '_' + postfix_statistic_sig + '.txt'),
+                         postfix_statistic_sig,
+                         'viterbi',
+                         list_precision_onset_25,
+                         list_recall_onset_25,
+                         list_F1_onset_25,
+                         list_precision_25,
+                         list_recall_25,
+                         list_F1_25,
+                         list_precision_onset_5,
+                         list_recall_onset_5,
+                         list_F1_onset_5,
+                         list_precision_5,
+                         list_recall_5,
+                         list_F1_5)
+
+    ##-- viterbi evaluation
+
+    obs_cal = 'tocal'
+
+    viterbiLabelEval(eval_label=True, obs_cal=obs_cal)
+
+    obs_cal = 'toload'
+
+    viterbiLabelEval(eval_label=False, obs_cal=obs_cal)
+
+    ##-- peak picking evaluation
+    # scan the best threshold
+    best_F1_onset_25, best_th = 0, 0
+    for th in range(1, 9):
+        th *= 0.1
+
+        _,_,list_F1_onset_25,_,_,_,_,_,_,_,_,_= peakPickingSubroutine(th, obs_cal)
+
+        if np.mean(list_F1_onset_25) > best_F1_onset_25:
+            best_th = th
+            best_F1_onset_25 = np.mean(list_F1_onset_25)
+
+    # finer scan the best threshold
+    for th in range(int((best_th - 0.1) * 100), int((best_th + 0.1) * 100)):
+        th *= 0.01
+
+        _,_,list_F1_onset_25,_,_,_,_,_,_,_,_,_= peakPickingSubroutine(th, obs_cal)
+
+        if np.mean(list_F1_onset_25) > best_F1_onset_25:
+            best_th = th
+            best_F1_onset_25 = np.mean(list_F1_onset_25)
+
+    # get the statistics of the best th
+    list_precision_onset_25, list_recall_onset_25, list_F1_onset_25, list_precision_25, list_recall_25, list_F1_25, \
+    list_precision_onset_5, list_recall_onset_5, list_F1_onset_5, list_precision_5, list_recall_5, list_F1_5 = \
+        peakPickingSubroutine(best_th, obs_cal)
+
+    print('best_th', best_th)
+
+    pickle.dump(list_F1_onset_25,
+                open(join('./statisticalSignificance/data/jingju', varin['sample_weighting'], cnnModel_name + '_peakPickingMadmom.pkl'), 'w'))
+
+    writeResults2Txt(join(jingju_results_path, varin['sample_weighting'], cnnModel_name + '_peakPickingMadmom' + '.txt'),
+                     str(best_th),
+                     'peakPicking',
+                     list_precision_onset_25,
+                     list_recall_onset_25,
+                     list_F1_onset_25,
+                     list_precision_25,
+                     list_recall_25,
+                     list_F1_25,
+                     list_precision_onset_5,
+                     list_recall_onset_5,
+                     list_F1_onset_5,
+                     list_precision_5,
+                     list_recall_5,
+                     list_F1_5)
 
     # # Riyaz
     # testRiyaz, trainRiyaz = getTestTrainrecordingsRiyaz()
