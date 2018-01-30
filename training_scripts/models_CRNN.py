@@ -34,15 +34,15 @@ def jan_original(filter_density,
 
     model_1.add(TimeDistributed(Flatten()))
 
-    model_1.add(TimeDistributed(Dense(units=128, activation=dense_activation)))
+    # model_1.add(TimeDistributed(Dense(units=128, activation=dense_activation)))
 
     if bidi:
         if training:
             from keras.layers import CuDNNLSTM
-            model_1.add(Bidirectional(CuDNNLSTM(64, stateful=stateful, return_sequences=True)))
+            model_1.add(Bidirectional(CuDNNLSTM(30, stateful=stateful, return_sequences=True)))
         else:
             from keras.layers import LSTM
-            model_1.add(Bidirectional(LSTM(64, stateful=stateful, return_sequences=True)))
+            model_1.add(Bidirectional(LSTM(30, stateful=stateful, return_sequences=True)))
     else:
         if training:
             from keras.layers import CuDNNLSTM
@@ -51,7 +51,7 @@ def jan_original(filter_density,
             from keras.layers import LSTM
             model_1.add(LSTM(60, stateful=stateful, return_sequences=True))
 
-    model_1.add(TimeDistributed(Dense(units=256, activation=dense_activation)))
+    # model_1.add(TimeDistributed(Dense(units=256, activation=dense_activation)))
 
     if dropout:
         model_1.add(Dropout(dropout))

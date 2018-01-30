@@ -383,7 +383,7 @@ if __name__ == '__main__':
 
         for ii in range(5):
 
-            if obs_cal:
+            if obs_cal=='tocal':
                 model_keras_cnn_0 = load_model(full_path_keras_cnn_0 + str(ii) + '.h5')
             else:
                 model_keras_cnn_0 = None

@@ -2,11 +2,12 @@ import sys, os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from data_preparation_jingju_phrase import getTrainingFilenames
+from data_preparation_schluter import getTrainingFilenames
 from data_preparation_CRNN import featureLabelSampleWeightsLoad, featureLabelSampleWeightsPad
 from data_preparation_CRNN import createInputTensor
 from data_preparation_CRNN import writeValLossCsv
 from models_CRNN import jan_original
+from sklearn.metrics import log_loss
 from sklearn.model_selection import ShuffleSplit
 import pickle
 import numpy as np
@@ -17,7 +18,7 @@ from keras import backend as K
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src')))
 
-from filePathJingju import *
+from filePathSchulter import *
 
 def loss_cal(fns, data_path, scaler, model):
     """
@@ -69,39 +70,23 @@ def loss_cal(fns, data_path, scaler, model):
 
     return loss
 
-def syllableSeg_jan_madmom_original_basecode(ii, dataset_str = 'ismir', bidi=False):
+def syllableSeg_jan_madmom_original_basecode(ii, bidi=False):
 
     bidi_str = '_bidi' if bidi else ''
-    file_path_model = '/homedtic/rgong/cnnSyllableSeg/out/' + \
-                      dataset_str + \
-                      '_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase_overlap'+ \
-                      bidi_str +'_'+str(len_seq)+ str(ii) + '.h5'
-    file_path_log = '/homedtic/rgong/cnnSyllableSeg/out/log/' + \
-                    dataset_str + \
-                    '_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase_overlap' + \
-                    bidi_str +'_'+str(len_seq)+ str(ii) + '.csv'
 
-    if dataset_str == 'ismir':
-        jingju_feature_data_scratch_path = '/scratch/rgongcnnSyllableSeg_jan_phrase_jingju_overlap_ismir'
-    else:
-        jingju_feature_data_scratch_path = '/scratch/rgongcnnSyllableSeg_jan_phrase_jingju_overlap_artist_filter'
+    file_path_model = '/homedtic/rgong/cnnSyllableSeg/out/schulter_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase_overlap' + bidi_str +'_'+str(len_seq)+str(ii) + '.h5'
+    file_path_log = '/homedtic/rgong/cnnSyllableSeg/out/log/schulter_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase_overlap' + bidi_str +'_'+str(len_seq)+str(ii) + '.csv'
 
-    # file_path_model = '../../temp/'+dataset_str+'_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase_overlap' + str(
+    schluter_feature_data_scratch_path = '/homedtic/rgong/cnnSyllableSeg/schluter/feature_madmom_simpleSampleWeighting_phrase/'
+
+    # file_path_model = '../../temp/schulter_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase' + str(
     #     ii) + '.h5'
-    # file_path_log = '../../temp/'+dataset_str+'_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase_overlap' + str(
+    # file_path_log = '../../temp/schulter_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase' + str(
     #     ii) + '.csv'
-    #
-    # if dataset_str == 'ismir':
-    #     jingju_feature_data_scratch_path = ismir_feature_data_path
-    # else:
-    #     jingju_feature_data_scratch_path = artist_filter_feature_data_path
+    # schluter_feature_data_scratch_path = schluter_feature_data_path_madmom_simpleSampleWeighting_phrase
 
-    if dataset_str == 'ismir':
-        scaler = pickle.load(open(scaler_ismir_phrase_model_path, 'r'))
-    else:
-        scaler = pickle.load(open(scaler_artist_filter_phrase_model_path, 'r'))
-
-    train_validation_fns = getTrainingFilenames(jingju_feature_data_scratch_path)
+    test_cv_filename = os.path.join(schluter_cv_path, '8-fold_cv_random_'+str(ii)+'.fold')
+    train_validation_fns = getTrainingFilenames(schluter_annotations_path, test_cv_filename)
 
     # split the training set to train and validation sets
     train_fns, validation_fns = None, None
@@ -110,21 +95,17 @@ def syllableSeg_jan_madmom_original_basecode(ii, dataset_str = 'ismir', bidi=Fal
         train_fns = [train_validation_fns[ti] for ti in train_idx]
         validation_fns = [train_validation_fns[vi] for vi in validation_idx]
 
-    nb_epochs = 500
-    best_val_loss = 1.0 # initialize the val_loss
-    counter = 0
-    patience = 15   # early stopping patience
-    overlap = 10 # overlap frames
+    scaler = pickle.load(open(scaler_schluter_phrase_model_path, 'r'))
 
     input_shape = (batch_size, len_seq, 1, 80, 15)
 
     # initialize the model
     model = jan_original(filter_density=1,
-                       dropout=0.5,
-                       input_shape=input_shape,
-                       batchNorm=False,
-                       dense_activation='sigmoid',
-                       channel=1,
+                         dropout=0.5,
+                         input_shape=input_shape,
+                         batchNorm=False,
+                         dense_activation='sigmoid',
+                         channel=1,
                          stateful=False,
                          bidi=bidi)
 
@@ -140,6 +121,12 @@ def syllableSeg_jan_madmom_original_basecode(ii, dataset_str = 'ismir', bidi=Fal
                              stateful=False,
                              bidi=bidi)
 
+    nb_epochs = 500
+    best_val_loss = 1.0 # initialize the val_loss
+    counter = 0
+    patience = 15   # early stopping patience
+    overlap = 10 # overlap frames
+
     for ii_epoch in range(nb_epochs):
 
         batch_counter = 0
@@ -152,7 +139,7 @@ def syllableSeg_jan_madmom_original_basecode(ii, dataset_str = 'ismir', bidi=Fal
         # training
         for tfn in train_fns:
 
-            mfcc_line, label, sample_weights = featureLabelSampleWeightsLoad(jingju_feature_data_scratch_path,
+            mfcc_line, label, sample_weights = featureLabelSampleWeightsLoad(schluter_feature_data_scratch_path,
                                                                              tfn,
                                                                              scaler)
 
@@ -174,20 +161,20 @@ def syllableSeg_jan_madmom_original_basecode(ii, dataset_str = 'ismir', bidi=Fal
                 sample_weights_tensor[batch_counter, :] = sample_weights_seg
 
                 if batch_counter >= batch_size - 1:
-                    train_loss_batch, train_acc_batch = model.train_on_batch(mfcc_line_tensor,
+                    train_loss, train_acc = model.train_on_batch(mfcc_line_tensor,
                                                                    label_tensor,
                                                                    sample_weight=sample_weights_tensor)
                     batch_counter = 0
                 else:
                     batch_counter += 1
 
+        # get weights for val
         weights_trained = model.get_weights()
         model_val.set_weights(weights_trained)
 
         # calculate losses
-        train_loss = loss_cal(train_fns, jingju_feature_data_scratch_path, scaler, model_val)
-        val_loss = loss_cal(validation_fns, jingju_feature_data_scratch_path, scaler, model_val)
-
+        train_loss = loss_cal(train_fns, schluter_feature_data_scratch_path, scaler, model_val)
+        val_loss = loss_cal(validation_fns, schluter_feature_data_scratch_path, scaler, model_val)
 
         # # validation non-overlap
         # y_pred_val_all = np.array([], dtype='float32')
@@ -195,7 +182,7 @@ def syllableSeg_jan_madmom_original_basecode(ii, dataset_str = 'ismir', bidi=Fal
         #
         # for vfn in validation_fns:
         #
-        #     mfcc_line, label, sample_weights = featureLabelSampleWeightsLoad(jingju_feature_data_scratch_path,
+        #     mfcc_line, label, sample_weights = featureLabelSampleWeightsLoad(schluter_feature_data_scratch_path,
         #                                                                      vfn,
         #                                                                      scaler)
         #
@@ -222,10 +209,7 @@ def syllableSeg_jan_madmom_original_basecode(ii, dataset_str = 'ismir', bidi=Fal
         #         y_pred_val_all = np.append(y_pred_val_all, y_pred)
         #         label_val_all = np.append(label_val_all, label_tensor)
         #
-        # y_true = K.variable(label_val_all)
-        # y_pred = K.variable(y_pred_val_all)
-        #
-        # val_loss = K.eval(binary_crossentropy(y_true, y_pred))
+        # val_loss = log_loss(label_val_all, y_pred_val_all)
 
         # save the best model
         if val_loss < best_val_loss:
@@ -245,4 +229,4 @@ def syllableSeg_jan_madmom_original_basecode(ii, dataset_str = 'ismir', bidi=Fal
         random.shuffle(train_fns)
 
 if __name__ == '__main__':
-    syllableSeg_jan_madmom_original_basecode(0, 'ismir', bidi=True)
+    syllableSeg_jan_madmom_original_basecode(0, True)

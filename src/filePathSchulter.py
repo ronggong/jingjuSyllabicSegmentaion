@@ -1,8 +1,8 @@
 from os.path import join, dirname
 
-schluter_dataset_root_path     = '/Users/gong/Documents/MTG document/dataset/onsets'
+# schluter_dataset_root_path     = '/Users/gong/Documents/MTG document/dataset/onsets'
 
-# schluter_dataset_root_path = '/homedtic/rgong/cnnSyllableSeg/schluter'
+schluter_dataset_root_path = '/homedtic/rgong/cnnSyllableSeg/schluter'
 
 schluter_audio_path = join(schluter_dataset_root_path, 'audio')
 schluter_cv_path = join(schluter_dataset_root_path, 'splits')
@@ -31,4 +31,4 @@ eval_results_path = join(root_path, 'eval', 'results')
 schluter_results_path = join(root_path, 'eval', 'schluter', 'results')
 
 batch_size = 64
-len_seq = 400  # sub-sequence length
+len_seq = 100  # sub-sequence length

@@ -48,7 +48,7 @@ def viterbiSegmental2(P, sd, param_s):
     i_bound = np.where(P > value_eps)[0]
     N = len(i_bound)
     T = len(sd)
-    
+
     # log - likelihood
     delta   = np.zeros((N, T), dtype=np.double)
     psi     = np.zeros((N, T), dtype=np.double)
@@ -68,7 +68,7 @@ def viterbiSegmental2(P, sd, param_s):
     # % % % % % % % % % % % % % % % % % %
     # % Initialisation %
     # % % % % % % % % % % % % % % % % % %
-    
+
     # % not a possible transition from > 0 time to 1
     cdelta[0, 0]     = -np.inf
     cpsi[:,0]        = 0
@@ -81,7 +81,7 @@ def viterbiSegmental2(P, sd, param_s):
             cdelta[jj, 0] = clogPs[d] + clogP[i_bound[jj]]
 
     clogPs = None
-    
+
     # % % % % % % % % % % % % % % % % % %
     # % Recursion %
     # % % % % % % % % % % % % % % % % % %
@@ -110,7 +110,7 @@ def viterbiSegmental2(P, sd, param_s):
             M_delta             = delta_current[I_delta]
             cdelta[jj, t]        = M_delta + clogP[i_bound[jj]]
             cpsi[jj, t]          = I_delta
-    
+
     # % duration probability
     Ps, tmin, tmax  = FdurationProba2(sd[T-1], param_s)
     Ps[Ps == 0]     = value_eps

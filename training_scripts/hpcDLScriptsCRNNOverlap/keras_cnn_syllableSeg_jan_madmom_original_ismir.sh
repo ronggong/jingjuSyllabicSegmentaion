@@ -17,9 +17,9 @@ export PATH=/homedtic/rgong/anaconda2/bin:$PATH
 
 source activate keras_env
 
-#$ -N jan_po_i_bi
+#$ -N jan_ismir_100
 #$ -q default.q
-#$ -l h=node10
+#$ -l h=node07
 
 # Output/Error Text
 # ----------------
@@ -47,7 +47,7 @@ printf "Finish copying feature files into scratch directory...\n"
 printf $((end-start))
 printf "\n"
 
-python /homedtic/rgong/cnnSyllableSeg/jingjuSyllabicSegmentation/training_scripts/hpcDLScriptsCRNNOverlap/keras_cnn_syllableSeg_jan_madmom_original_ismir.py 0 5 0
+python /homedtic/rgong/cnnSyllableSeg/jingjuSyllabicSegmentation/training_scripts/hpcDLScriptsCRNNOverlap/keras_cnn_syllableSeg_jan_madmom_original_ismir.py 0 5 1
 
 # Clean the crap:
 # ---------------

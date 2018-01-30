@@ -17,7 +17,7 @@ export PATH=/homedtic/rgong/anaconda2/bin:$PATH
 
 source activate keras_env
 
-#$ -N jan_art_bidi
+#$ -N jan_art_100
 #$ -q default.q
 #$ -l h=node07
 

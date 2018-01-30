@@ -6,9 +6,10 @@ from filePath import *
 sys.path.append(os.path.realpath('./src/'))
 
 import textgridParser
-import scoreParser
+# import scoreParser
 from src.phonemeMap import nonvoicedconsonants
-from src.trainTestSeparation import getTestTrainRecordingsNacta2017Artist
+# from src.trainTestSeparation import getTestTrainRecordingsNacta2017Artist
+from src.trainTestSeparation import getTestTrainRecordingsArtistAlbumFilter
 
 def wordDuration(nestedWordLists):
     '''
@@ -46,10 +47,10 @@ def lineWordCount(textgrid_file):
 
     entireLine      = textgridParser.textGrid2WordList(textgrid_file, whichTier='line')
     # entireDianList  = textgridParser.textGrid2WordList(textgrid_file, whichTier='dianSilence')
-    entireWordList  = textgridParser.textGrid2WordList(textgrid_file, whichTier='pinyin')
+    # entireWordList  = textgridParser.textGrid2WordList(textgrid_file, whichTier='pinyin')
     # entireDianList  = textgridParser.textGrid2WordList(textgrid_file, whichTier='dian')
     entireDianList  = textgridParser.textGrid2WordList(textgrid_file, whichTier='dianSilence')
-    entirePhoList   = textgridParser.textGrid2WordList(textgrid_file, whichTier='details')
+    # entirePhoList   = textgridParser.textGrid2WordList(textgrid_file, whichTier='details')
 
 
     if len(entireDianList):
@@ -65,83 +66,121 @@ def lineWordCount(textgrid_file):
     return numLines, numDians, dianDurationList
 
 
-# ----------------------------------------------------------------------
-# generate the file paths
-filePaths       = []                                              # entire file paths
-maleFilePaths   = []                                          # male singers file paths
-femaleFilePaths = []                                        # female singers file paths
+def sylPhnStatistics():
+    # ----------------------------------------------------------------------
+    # generate the file paths
+    filePaths       = []                                              # entire file paths
+    maleFilePaths   = []                                          # male singers file paths
+    femaleFilePaths = []                                        # female singers file paths
 
-testNacta2017, trainNacta2017 = getTestTrainRecordingsNacta2017Artist()
+    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtistAlbumFilter()
 
-overallNacta2017 = trainNacta2017 + testNacta2017
+    overallNacta2017 = trainNacta2017 + testNacta2017
 
-laosheng_artists = ['20170327LiaoJiaNi', '20170418TianHao', '20170519LongTianMing', '20170519XuJingWei']
+    laosheng_artists = ['20170327LiaoJiaNi', '20170418TianHao', '20170519LongTianMing', '20170519XuJingWei']
 
-dan_artists = ['20170408SongRuoXuan', '20170418TianHao', '20170424SunYuZhu', '20170425SunYuZhu', '20170506LiuHaiLin', ]
-
-
-# for artist_path in dan_artists:
-#     textgrid_artist_path = join(nacta2017_textgrid_path, artist_path)
-#     recording_names = [f for f in os.listdir(textgrid_artist_path) if os.path.isfile(join(textgrid_artist_path, f))]
-#     for rn in recording_names:
-#         rn = rn.split('.')[0]
-#         textgrid_file = join(nacta2017_textgrid_path, artist_path, rn + '.TextGrid')
-#         femaleFilePaths.append(textgrid_file)
-#
-# for artist_path in laosheng_artists:
-#     textgrid_artist_path = join(nacta2017_textgrid_path, artist_path)
-#     recording_names = [f for f in os.listdir(textgrid_artist_path) if
-#                        os.path.isfile(join(textgrid_artist_path, f))]
-#     for rn in recording_names:
-#         rn = rn.split('.')[0]
-#         textgrid_file = join(nacta2017_textgrid_path, artist_path, rn + '.TextGrid')
-#         maleFilePaths.append(textgrid_file)
-
-for recording in overallNacta2017:
-    if recording[0] in dan_artists:
-        textgrid_file = join(nacta2017_textgrid_path, recording[0], recording[1] + '.Textgrid')
-        femaleFilePaths.append(textgrid_file)
-    elif recording[0] in laosheng_artists:
-        textgrid_file = join(nacta2017_textgrid_path, recording[0], recording[1] + '.Textgrid')
-        maleFilePaths.append(textgrid_file)
-
-# ----------------------------------------------------------------------
-# total number of lines, words, dian for male and female singers
-# mean, std of duration
-nlSumMale, ndSumMale         = 0,0
-nlSumFemale, ndSumFemale    = 0,0
-ddlMale                     = []
-ddlFemale                  = []
-
-for ii, tgfile in enumerate(maleFilePaths):
-
-    print(tgfile)
-    nl, nd, ddl    = lineWordCount(tgfile)
-    nlSumMale               += nl
-    ndSumMale               += nd
-    ddlMale                 += ddl
+    dan_artists = ['20170408SongRuoXuan', '20170418TianHao', '20170424SunYuZhu', '20170425SunYuZhu', '20170506LiuHaiLin', ]
 
 
-for ii, tgfile in enumerate(femaleFilePaths):
+    # for artist_path in dan_artists:
+    #     textgrid_artist_path = join(nacta2017_textgrid_path, artist_path)
+    #     recording_names = [f for f in os.listdir(textgrid_artist_path) if os.path.isfile(join(textgrid_artist_path, f))]
+    #     for rn in recording_names:
+    #         rn = rn.split('.')[0]
+    #         textgrid_file = join(nacta2017_textgrid_path, artist_path, rn + '.TextGrid')
+    #         femaleFilePaths.append(textgrid_file)
+    #
+    # for artist_path in laosheng_artists:
+    #     textgrid_artist_path = join(nacta2017_textgrid_path, artist_path)
+    #     recording_names = [f for f in os.listdir(textgrid_artist_path) if
+    #                        os.path.isfile(join(textgrid_artist_path, f))]
+    #     for rn in recording_names:
+    #         rn = rn.split('.')[0]
+    #         textgrid_file = join(nacta2017_textgrid_path, artist_path, rn + '.TextGrid')
+    #         maleFilePaths.append(textgrid_file)
 
-    nl, nd, ddl   = lineWordCount(tgfile)
-    nlSumFemale             += nl
-    ndSumFemale             += nd
-    ddlFemale               += ddl
+    for recording in overallNacta2017:
+        if recording[0] in dan_artists:
+            textgrid_file = join(nacta2017_textgrid_path, recording[0], recording[1] + '.Textgrid')
+            femaleFilePaths.append(textgrid_file)
+        elif recording[0] in laosheng_artists:
+            textgrid_file = join(nacta2017_textgrid_path, recording[0], recording[1] + '.Textgrid')
+            maleFilePaths.append(textgrid_file)
+
+    # ----------------------------------------------------------------------
+    # total number of lines, words, dian for male and female singers
+    # mean, std of duration
+    nlSumMale, ndSumMale         = 0,0
+    nlSumFemale, ndSumFemale    = 0,0
+    ddlMale                     = []
+    ddlFemale                  = []
+
+    for ii, tgfile in enumerate(maleFilePaths):
+
+        print(tgfile)
+        nl, nd, ddl    = lineWordCount(tgfile)
+        nlSumMale               += nl
+        ndSumMale               += nd
+        ddlMale                 += ddl
 
 
-ddlTotal = ddlMale + ddlFemale
+    for ii, tgfile in enumerate(femaleFilePaths):
+
+        nl, nd, ddl   = lineWordCount(tgfile)
+        nlSumFemale             += nl
+        ndSumFemale             += nd
+        ddlFemale               += ddl
 
 
-print "number of recordings: {0}".format(len(overallNacta2017))
-print 'Male total number of lines: {0}, dian {1}'.format(nlSumMale, ndSumMale)
-print 'Female total number of lines: {0}, dian {1}'.format(nlSumFemale,ndSumFemale)
-print 'Total number of lines: {0}, dian {1}'.format(nlSumFemale+nlSumMale, ndSumFemale+ndSumMale)
+    ddlTotal = ddlMale + ddlFemale
 
-print 'Male average syllable duration: {0}, std {1}, min {2}, max {3}'.format(np.mean(ddlMale),np.std(ddlMale),
-                                                                            np.min(ddlMale),np.max(ddlMale))
-print 'Female average syllable duration: {0}, std {1}, min {2}, max {3}'.format(np.mean(ddlFemale),np.std(ddlFemale),
-                                                                               np.min(ddlFemale),np.max(ddlFemale))
-print 'Total average syllable duration: {0}, std {1}, min {2}, max {3}'.format(np.mean(ddlTotal),np.std(ddlTotal),
-                                                                             np.min(ddlTotal),np.max(ddlTotal))
 
+    print "number of recordings: {0}".format(len(overallNacta2017))
+    print 'Male total number of lines: {0}, dian {1}'.format(nlSumMale, ndSumMale)
+    print 'Female total number of lines: {0}, dian {1}'.format(nlSumFemale,ndSumFemale)
+    print 'Total number of lines: {0}, dian {1}'.format(nlSumFemale+nlSumMale, ndSumFemale+ndSumMale)
+
+    print 'Male average syllable duration: {0}, std {1}, min {2}, max {3}'.format(np.mean(ddlMale),np.std(ddlMale),
+                                                                                np.min(ddlMale),np.max(ddlMale))
+    print 'Female average syllable duration: {0}, std {1}, min {2}, max {3}'.format(np.mean(ddlFemale),np.std(ddlFemale),
+                                                                                   np.min(ddlFemale),np.max(ddlFemale))
+    print 'Total average syllable duration: {0}, std {1}, min {2}, max {3}'.format(np.mean(ddlTotal),np.std(ddlTotal),
+                                                                                 np.min(ddlTotal),np.max(ddlTotal))
+
+
+def sylLength():
+    """
+    Return dian silence duration list
+    :return:
+    """
+    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtistAlbumFilter()
+
+    overallTrainFns = trainNacta2017 + trainNacta
+
+    overallTrainDianSilenceLengthList = []
+    for artist, fn in overallTrainFns:
+        if '2017' in artist:
+            textgrid_fn = join(nacta2017_textgrid_path, artist, fn + '.TextGrid')
+        else:
+            textgrid_fn = join(nacta_textgrid_path, artist, fn + '.TextGrid')
+
+        _, _, dianSilenceLength = lineWordCount(textgrid_fn)
+        overallTrainDianSilenceLengthList += dianSilenceLength
+
+    return overallTrainDianSilenceLengthList
+
+
+if __name__ == '__main__':
+    overallTrainDianSilenceLengthList = sylLength()
+
+    # import matplotlib.pyplot as plt
+    #
+    # plt.hist(overallTrainDianSilenceLengthList, bins='auto')
+    # plt.xlabel('time (s)')
+    # plt.ylabel('occurence syllables')
+    #
+    # plt.show()
+
+    print('66.5 percentile', np.percentile(overallTrainDianSilenceLengthList, 66.5))
+    print('85 percentile', np.percentile(overallTrainDianSilenceLengthList, 85))
+    print('93.5 percentile', np.percentile(overallTrainDianSilenceLengthList, 93.5))

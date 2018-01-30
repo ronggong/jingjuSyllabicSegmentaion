@@ -109,7 +109,7 @@ def createInputTensor(mfcc_line_pad, label_pad, sample_weights_pad, len_seq, ii)
     return mfcc_line_tensor, label_tensor, sample_weights_tensor
 
 
-def writeValLossCsv(file_path_log, ii_epoch, val_loss):
+def writeValLossCsv(file_path_log, ii_epoch, val_loss, train_loss=None):
     """
     write epoch number and validation loss to csv file
     :param file_path_log:
@@ -120,4 +120,7 @@ def writeValLossCsv(file_path_log, ii_epoch, val_loss):
     append_write = append_or_write(file_path_log)
     with open(file_path_log, append_write) as csv_file:
         writer = csv.writer(csv_file, delimiter=',')
-        writer.writerow([ii_epoch, val_loss])
+        if train_loss is not None:
+            writer.writerow([ii_epoch, train_loss, val_loss])
+        else:
+            writer.writerow([ii_epoch, val_loss])

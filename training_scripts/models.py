@@ -5,7 +5,7 @@ import numpy as np
 from keras.callbacks import Callback
 from keras import backend as K
 from keras.callbacks import EarlyStopping, CSVLogger, LearningRateScheduler, ModelCheckpoint
-from keras.layers import Conv2D, MaxPooling2D, Input, ZeroPadding2D
+from keras.layers import Conv2D, MaxPooling2D, Input, ZeroPadding2D, GlobalAveragePooling2D
 from keras.layers import Dropout, Dense, Flatten, ELU, BatchNormalization
 from keras.layers.merge import concatenate
 from keras.models import Sequential, Model
@@ -58,7 +58,7 @@ def jan(filter_density, dropout, input_shape, batchNorm=False):
     return model_1
 
 
-def jan_original(filter_density, dropout, input_shape, batchNorm=False, dense_activation='relu', channel=1):
+def jan_original(filter_density, dropout, input_shape, batchNorm=False, dense_activation='relu', channel=1, dense=True):
     if channel == 1:
         reshape_dim = (1, input_shape[0], input_shape[1])
         channel_order = 'channels_first'
@@ -85,11 +85,12 @@ def jan_original(filter_density, dropout, input_shape, batchNorm=False, dense_ac
 
     model_1.add(Flatten())
 
-    model_1.add(Dense(units=256, activation=dense_activation))
-    # model_1.add(ELU())
+    if dense:
+        model_1.add(Dense(units=256, activation=dense_activation))
+        # model_1.add(BatchNormalization(axis=-1))
 
-    if dropout:
-        model_1.add(Dropout(dropout))
+        if dropout:
+            model_1.add(Dropout(dropout))
 
     model_1.add(Dense(1, activation='sigmoid'))
     # model_1.add(Activation("softmax"))
@@ -151,6 +152,213 @@ def jan_deep(filter_density, dropout, input_shape):
     model_1.compile(loss='binary_crossentropy',
                   optimizer= optimizer,
                   metrics=['accuracy'])
+
+    print(model_1.summary())
+
+    return model_1
+
+def jan_original_deep_old(filter_density, dropout, input_shape, batchNorm=False, dense_activation='relu', channel=1):
+    """
+    this model overfits too much
+    :param filter_density:
+    :param dropout:
+    :param input_shape:
+    :param batchNorm:
+    :param dense_activation:
+    :param channel:
+    :return:
+    """
+    if channel == 1:
+        reshape_dim = (1, input_shape[0], input_shape[1])
+        channel_order = 'channels_first'
+    else:
+        reshape_dim = input_shape
+        channel_order = 'channels_last'
+
+    padding = "same"
+
+    model_1 = Sequential()
+
+    if batchNorm:
+        model_1.add(BatchNormalization(axis=1, input_shape=reshape_dim))
+
+    model_1.add(Conv2D(int(10 * filter_density), (3, 7), padding="valid",
+                       input_shape=reshape_dim,
+                       data_format=channel_order, activation='relu'))
+    model_1.add(MaxPooling2D(pool_size=(3, 1), padding='valid', data_format=channel_order))
+
+    model_1.add(Conv2D(int(20 * filter_density), (3, 3), padding="valid",
+                       data_format=channel_order, activation='relu'))
+    model_1.add(MaxPooling2D(pool_size=(3, 1), padding='valid', data_format=channel_order))
+
+    if dropout:
+        model_1.add(Dropout(dropout))
+
+    # replacement of the dense layer
+    model_1.add(Conv2D(int(40 * filter_density), (3, 3), padding=padding,
+                       data_format=channel_order, activation='relu'))
+    model_1.add(BatchNormalization(axis=1))
+
+    model_1.add(Conv2D(int(40 * filter_density), (3, 3), padding=padding,
+                       data_format=channel_order, activation='relu'))
+    model_1.add(BatchNormalization(axis=1))
+
+    model_1.add(Conv2D(int(40 * filter_density), (3, 3), padding=padding,
+                       data_format=channel_order, activation='relu'))
+    model_1.add(BatchNormalization(axis=1))
+    # model_1.add(MaxPooling2D(pool_size=(2, 1), padding='valid', data_format=channel_order))
+
+    model_1.add(Conv2D(int(80 * filter_density), (3, 3), padding=padding,
+                       data_format=channel_order, activation='relu'))
+    model_1.add(BatchNormalization(axis=1))
+
+    model_1.add(Conv2D(int(80 * filter_density), (3, 3), padding=padding,
+                       data_format=channel_order, activation='relu'))
+    model_1.add(BatchNormalization(axis=1))
+
+    model_1.add(Conv2D(int(80 * filter_density), (3, 3), padding=padding,
+                       data_format=channel_order, activation='relu'))
+    model_1.add(BatchNormalization(axis=1))
+
+    model_1.add(Conv2D(int(135 * filter_density), (3, 3), padding=padding,
+                       data_format=channel_order, activation='relu'))
+    model_1.add(BatchNormalization(axis=1))
+
+    # model_1.add(GlobalAveragePooling2D(data_format=channel_order))
+    # model_1.add(MaxPooling2D(pool_size=(2, 2), padding='valid', data_format=channel_order))
+
+    model_1.add(Flatten())
+
+    if dropout:
+        model_1.add(Dropout(dropout))
+
+    model_1.add(Dense(1, activation='sigmoid'))
+
+    # optimizer = SGD(lr=0.05, momentum=0.45, decay=0.0, nesterov=False)
+    optimizer = Adam()
+
+    model_1.compile(loss='binary_crossentropy',
+                    optimizer=optimizer,
+                    metrics=['accuracy'])
+
+    print(model_1.summary())
+
+    return model_1
+
+
+def jan_original_less_deep(filter_density, dropout, input_shape, batchNorm=False, dense_activation='relu', channel=1):
+    if channel == 1:
+        reshape_dim = (1, input_shape[0], input_shape[1])
+        channel_order = 'channels_first'
+    else:
+        reshape_dim = input_shape
+        channel_order = 'channels_last'
+
+    padding = "same"
+
+    model_1 = Sequential()
+
+    if batchNorm:
+        model_1.add(BatchNormalization(axis=1, input_shape=reshape_dim))
+
+    model_1.add(Conv2D(int(10 * filter_density), (3, 7), padding="valid",
+                       input_shape=reshape_dim,
+                       data_format=channel_order, activation='relu'))
+    model_1.add(MaxPooling2D(pool_size=(3, 1), padding='valid', data_format=channel_order))
+
+    model_1.add(Conv2D(int(20 * filter_density), (3, 3), padding="valid",
+                       data_format=channel_order, activation='relu'))
+    model_1.add(MaxPooling2D(pool_size=(3, 1), padding='valid', data_format=channel_order))
+
+    if dropout:
+        model_1.add(Dropout(dropout))
+
+    # replacement of the dense layer
+    model_1.add(Conv2D(int(60 * filter_density), (3, 3), padding=padding,
+                       data_format=channel_order, activation='relu'))
+    model_1.add(BatchNormalization(axis=1))
+
+    model_1.add(Conv2D(int(60 * filter_density), (3, 3), padding=padding,
+                       data_format=channel_order, activation='relu'))
+    model_1.add(BatchNormalization(axis=1))
+
+    model_1.add(Conv2D(int(60 * filter_density), (3, 3), padding=padding,
+                       data_format=channel_order, activation='relu'))
+    model_1.add(BatchNormalization(axis=1))
+
+    model_1.add(Flatten())
+
+    if dropout:
+        model_1.add(Dropout(dropout))
+
+    model_1.add(Dense(1, activation='sigmoid'))
+
+    # optimizer = SGD(lr=0.05, momentum=0.45, decay=0.0, nesterov=False)
+    optimizer = Adam()
+
+    model_1.compile(loss='binary_crossentropy',
+                    optimizer=optimizer,
+                    metrics=['accuracy'])
+
+    print(model_1.summary())
+
+    return model_1
+
+
+def jan_original_deep(filter_density, dropout, input_shape, batchNorm=False, dense_activation='relu', channel=1):
+    if channel == 1:
+        reshape_dim = (1, input_shape[0], input_shape[1])
+        channel_order = 'channels_first'
+    else:
+        reshape_dim = input_shape
+        channel_order = 'channels_last'
+
+    # padding = "same"
+
+    model_1 = Sequential()
+
+    if batchNorm:
+        model_1.add(BatchNormalization(axis=1, input_shape=reshape_dim))
+
+    # increase the capacity of the front end
+    model_1.add(Conv2D(int(64 * filter_density), (3, 7), padding="valid",
+                       input_shape=reshape_dim,
+                       data_format=channel_order, activation='relu'))
+    model_1.add(BatchNormalization(axis=1))
+    model_1.add(MaxPooling2D(pool_size=(3, 1), padding='valid', data_format=channel_order))
+
+    model_1.add(Conv2D(int(128 * filter_density), (3, 3), padding="valid",
+                       data_format=channel_order, activation='relu'))
+    model_1.add(BatchNormalization(axis=1))
+    model_1.add(MaxPooling2D(pool_size=(3, 1), padding='valid', data_format=channel_order))
+
+    # if dropout:
+    #     model_1.add(Dropout(dropout))
+
+    # replacement of the dense layer, reduce the capacity of the backend
+    # model_1.add(Conv2D(int(64 * filter_density), (3, 3), padding=padding,
+    #                    data_format=channel_order, activation='relu'))
+    # model_1.add(BatchNormalization(axis=1))
+
+    # model_1.add(Conv2D(int(64 * filter_density), (3, 3), padding=padding,
+    #                    data_format=channel_order, activation='relu'))
+    # model_1.add(BatchNormalization(axis=1))
+
+    model_1.add(GlobalAveragePooling2D(data_format=channel_order))
+
+    # model_1.add(Flatten())
+    #
+    # if dropout:
+    #     model_1.add(Dropout(dropout))
+
+    model_1.add(Dense(1, activation='sigmoid'))
+
+    # optimizer = SGD(lr=0.05, momentum=0.45, decay=0.0, nesterov=False)
+    optimizer = Adam()
+
+    model_1.compile(loss='binary_crossentropy',
+                    optimizer=optimizer,
+                    metrics=['accuracy'])
 
     print(model_1.summary())
 
@@ -597,23 +805,23 @@ def model_train(model_0, batch_size, patience, input_shape,
     remove(basename(file_path_model))
 
 
-class MomentumScheduler(Callback):
-    '''Momentum scheduler.
-    # Arguments
-        schedule: a function that takes an epoch index as input
-            (integer, indexed from 0) and returns a new
-            momentum as output (float).
-    '''
-    def __init__(self, schedule):
-        super(MomentumScheduler, self).__init__()
-        self.schedule = schedule
-
-    def on_epoch_begin(self, epoch, logs={}):
-        assert hasattr(self.model.optimizer, 'momentum'), \
-            'Optimizer must have a "momentum" attribute.'
-        mmtm = self.schedule(epoch)
-        assert type(mmtm) == float, 'The output of the "schedule" function should be float.'
-        K.set_value(self.model.optimizer.momentum, mmtm)
+# class MomentumScheduler(Callback):
+#     '''Momentum scheduler.
+#     # Arguments
+#         schedule: a function that takes an epoch index as input
+#             (integer, indexed from 0) and returns a new
+#             momentum as output (float).
+#     '''
+#     def __init__(self, schedule):
+#         super(MomentumScheduler, self).__init__()
+#         self.schedule = schedule
+#
+#     def on_epoch_begin(self, epoch, logs={}):
+#         assert hasattr(self.model.optimizer, 'momentum'), \
+#             'Optimizer must have a "momentum" attribute.'
+#         mmtm = self.schedule(epoch)
+#         assert type(mmtm) == float, 'The output of the "schedule" function should be float.'
+#         K.set_value(self.model.optimizer.momentum, mmtm)
 
 
 def momentumIncrease(epoch):
@@ -763,14 +971,25 @@ def model_switcher(model_name,
                    filter_density,
                    dropout,
                    input_shape,
-                   channel):
+                   channel,
+                   deep,
+                   dense):
     if model_name == 'jan_original':
-        model_0 = jan_original(filter_density=filter_density,
-                               dropout=dropout,
-                               input_shape=input_shape,
-                               batchNorm=False,
-                               dense_activation='sigmoid',
-                               channel=channel)
+        if deep:
+            model_0 = jan_original_deep(filter_density=filter_density,
+                                        dropout=dropout,
+                                        input_shape=input_shape,
+                                        batchNorm=False,
+                                        dense_activation='relu',
+                                        channel=channel)
+        else:
+            model_0 = jan_original(filter_density=filter_density,
+                                   dropout=dropout,
+                                   input_shape=input_shape,
+                                   batchNorm=False,
+                                   dense_activation='sigmoid',
+                                   channel=channel,
+                                   dense=dense)
     elif model_name == 'jordi_timbral_schluter':
         model_0 = jordi_model_schluter(filter_density_1=1,
                                        filter_density_2=filter_density,
@@ -827,15 +1046,17 @@ def train_model(filename_train_validation_set,
                          channel)
 
 def train_model_validation(filename_train_validation_set,
-                            filename_labels_train_validation_set,
-                            filename_sample_weights,
-                            filter_density,
-                            dropout,
-                            input_shape,
-                            file_path_model,
-                            filename_log,
-                            model_name = 'jan_original',
-                            channel=1):
+                           filename_labels_train_validation_set,
+                           filename_sample_weights,
+                           filter_density,
+                           dropout,
+                           input_shape,
+                           file_path_model,
+                           filename_log,
+                           model_name = 'jan_original',
+                           deep=False,
+                           dense=False,
+                           channel=1):
     """
     train model with validation
     """
@@ -846,7 +1067,7 @@ def train_model_validation(filename_train_validation_set,
         load_data(filename_labels_train_validation_set,
                   filename_sample_weights)
 
-    model_0 = model_switcher(model_name,filter_density,dropout,input_shape,channel)
+    model_0 = model_switcher(model_name,filter_density,dropout,input_shape,channel,deep,dense)
 
     # print(model_0.summary())
 

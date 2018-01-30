@@ -7,29 +7,29 @@
 #module load essentia/2.1_python-2.7.5
 
 # two variables you need to set
-device=gpu1  # the device to be used. set it to "cpu" if you don't have GPUs
+#device=gpu0  # the device to be used. set it to "cpu" if you don't have GPUs
 
 # export environment variables
 #
 export PATH=/homedtic/rgong/anaconda2/bin:$PATH
-export THEANO_FLAGS=mode=FAST_RUN,device=$device,floatX=float32,lib.cnmem=0.95
-export PATH=/usr/local/cuda/bin/:$PATH
-export LD_LIBRARY_PATH=/usr/local/cuda/lib64/:$LD_LIBRARY_PATH
-export LD_LIBRARY_PATH=/soft/cuda/cudnn/cuda/lib64:$LD_LIBRARY_PATH
-export CPATH=/soft/cuda/cudnn/cuda/include:$CPATH
-export LIBRARY_PATH=/soft/cuda/cudnn/cuda/lib64:$LD_LIBRARY_PATH
+#export THEANO_FLAGS=mode=FAST_RUN,device=$device,floatX=float32,lib.cnmem=0.95
+#export PATH=/usr/local/cuda/bin/:$PATH
+#export LD_LIBRARY_PATH=/usr/local/cuda/lib64/:$LD_LIBRARY_PATH
+#export LD_LIBRARY_PATH=/soft/cuda/cudnn/cuda/lib64:$LD_LIBRARY_PATH
+#export CPATH=/soft/cuda/cudnn/cuda/include:$CPATH
+#export LIBRARY_PATH=/soft/cuda/cudnn/cuda/lib64:$LD_LIBRARY_PATH
 
 source activate keras_env
 
 
-#$ -N sseg_jan
+#$ -N sch_jan_ld
 #$ -q default.q
 #$ -l h=node07
 
 # Output/Error Text
 # ----------------
-#$ -o /homedtic/rgong/cnnSyllableSeg/out/schluter_jan_madmom_early_stopping.$JOB_ID.out
-#$ -e /homedtic/rgong/cnnSyllableSeg/error/schluter_jan_madmom_early_stopping.$JOB_ID.err
+#$ -o /homedtic/rgong/cnnSyllableSeg/out/schluter_jan_ld.$JOB_ID.out
+#$ -e /homedtic/rgong/cnnSyllableSeg/error/schluter_jan_ld.$JOB_ID.err
 
 printf "Removing local scratch directories if exist...\n"
 if [ -d /scratch/rgongcnnSyllableSeg_part1_jan ]; then
@@ -51,7 +51,7 @@ mkdir /scratch/rgongcnnSyllableSeg_part1_jan/syllableSeg
 #printf "Finish copying feature files into scratch directory...\n"
 #printf $((end-start))
 
-python /homedtic/rgong/cnnSyllableSeg/jingjuSyllabicSegmentation/training_scripts/hpcDLScriptsSchluter/keras_cnn_syllableSeg_jan_madmom_original.py 1 4 8
+python /homedtic/rgong/cnnSyllableSeg/jingjuSyllabicSegmentation/training_scripts/hpcDLScriptsSchluter/keras_cnn_syllableSeg_jan_madmom_original_deep.py 1 0 8 deep
 
 # Clean the crap:
 # ---------------

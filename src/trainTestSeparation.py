@@ -810,7 +810,7 @@ if __name__ == '__main__':
     # print getRecordingNames('TRAIN')
 
     # testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsMaleFemale()
-    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtistAblumFilter()
+    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtistAlbumFilter()
 
     print(testNacta2017)
     print(testNacta)

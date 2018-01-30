@@ -1,6 +1,6 @@
 import sys, os
 
-os.environ["CUDA_VISIBLE_DEVICES"] = str(0)
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 

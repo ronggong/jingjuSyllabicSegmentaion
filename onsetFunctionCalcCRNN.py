@@ -360,10 +360,9 @@ if __name__ == '__main__':
 
         for ii in range(5):
 
-            if obs_cal:
-                stateful = False if varin['overlap'] else True
+            stateful = False if varin['overlap'] else True
+            if obs_cal=='tocal':
                 input_shape = (1, len_seq, 1, 80, 15)
-
                 # initialize the model
                 model_keras_cnn_0 = jan_original(filter_density=1,
                                                  dropout=0.5,

@@ -43,7 +43,7 @@ varin['obs'] = 'tocal'
 
 varin['corrected_score_duration'] = False
 
-varin['dataset'] = 'ismir'
+varin['dataset'] = 'artist_filter'
 
 varin['sample_weighting'] = 'simpleWeighting'
 

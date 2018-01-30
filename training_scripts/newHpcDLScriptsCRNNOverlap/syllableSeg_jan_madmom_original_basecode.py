@@ -82,9 +82,9 @@ def syllableSeg_jan_madmom_original_basecode(ii, dataset_str = 'ismir', bidi=Fal
                     bidi_str +'_'+str(len_seq)+ str(ii) + '.csv'
 
     if dataset_str == 'ismir':
-        jingju_feature_data_scratch_path = '/scratch/rgongcnnSyllableSeg_jan_phrase_jingju_overlap_ismir'
+        jingju_feature_data_scratch_path = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/ismir/'
     else:
-        jingju_feature_data_scratch_path = '/scratch/rgongcnnSyllableSeg_jan_phrase_jingju_overlap_artist_filter'
+        jingju_feature_data_scratch_path = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/artist_filter/'
 
     # file_path_model = '../../temp/'+dataset_str+'_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase_overlap' + str(
     #     ii) + '.h5'

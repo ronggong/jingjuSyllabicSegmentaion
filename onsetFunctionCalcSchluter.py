@@ -305,19 +305,34 @@ def writeResults2TxtSchluter(filename,
 
 def schluterEvalSubroutine(nfolds, filter_shape_0, weighting_str, pp_threshold, obs_cal):
 
-    overlap_str = '_overlap' if overlap else ''
-    phrase_str = '_phrase' if phrase_eval else ''
+    # overlap_str = '_overlap' if overlap else ''
+    # phrase_str = '_phrase' if phrase_eval else ''
+    # bidi_str = '_bidi' if bidi else ''
+    # relu_str = '_relu' if relu else ''
+    # deep_str = '_less_deep' if deep else ''
+    # no_dense_str = '_no_dense' if no_dense else ''
 
     for ii in range(nfolds):
-        if not phrase_eval:
-            model_name_str = 'schulter_' + filter_shape_0 + '_madmom_' + weighting_str + '_early_stopping_adam_jan_params'
+        if not phrase_eval: # not CRNN
+            model_name_str = 'schulter_' + \
+                             filter_shape_0 + \
+                             '_madmom_' + \
+                             weighting_str + \
+                             '_early_stopping_adam_cv' + \
+                             relu_str + \
+                             deep_str + \
+                             no_dense_str + '_'
+
             scaler_name_0 = 'scaler_' + filter_shape_0 + '_madmom_' + weighting_str + '_early_stopping_' + str(
                 ii) + '.pickle.gz'
-        else:
-            model_name_str = 'schulter_' + filter_shape_0 + '_madmom_' + weighting_str + '_early_stopping_adam_cv_phrase' + overlap_str
+
+        else: # CRNN
+            model_name_str = 'schulter_' + filter_shape_0 + '_madmom_' + weighting_str + '_early_stopping_adam_cv_phrase' + overlap_str + bidi_str
             scaler_name_0 = 'scaler_syllable_mfccBands2D_schluter_madmom_phrase.pkl'
 
         model_name_0 = model_name_str + str(ii)
+
+        print(model_name_0)
 
         model_name_1 = ''
         scaler_name_1 = ''
@@ -328,7 +343,7 @@ def schluterEvalSubroutine(nfolds, filter_shape_0, weighting_str, pp_threshold, 
 
         # try:
             # model_keras_cnn_0 = '/Users/gong/Documents/pycharmProjects/jingjuSyllabicSegmentaion/cnnModels/schluter/simpleWeighting/schulter_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase_overlap0.h5'
-        if obs_cal!='tocal':
+        if obs_cal != 'tocal':
             model_keras_cnn_0 = None
             stateful = None
         else:
@@ -346,7 +361,8 @@ def schluterEvalSubroutine(nfolds, filter_shape_0, weighting_str, pp_threshold, 
                                                  dense_activation='sigmoid',
                                                  channel=1,
                                                  stateful=stateful,
-                                                 training=False)
+                                                 training=False,
+                                                 bidi=bidi)
                 # load weights
                 model_keras_cnn_0.load_weights(join(schluter_cnn_model_path, model_name_0 + '.h5'))
             # except:
@@ -420,7 +436,11 @@ def schluterEvalSubroutine(nfolds, filter_shape_0, weighting_str, pp_threshold, 
                     'schluter' + '_' +
                     filter_shape_0 +
                     phrase_str +
-                    overlap_str + '_'+
+                    overlap_str +
+                    bidi_str +
+                    relu_str +
+                    deep_str +
+                    no_dense_str + '_' +
                     'threshold.txt')
     append_write = append_or_write(log_path)
     writeResults2TxtSchluter(log_path, append_write, pp_threshold, recall_precision_f1_overall)
@@ -432,26 +452,35 @@ if __name__ == '__main__':
 
     phrase_eval = False
 
-    filter_shape_0 = 'jordi_temporal_schluter'
+    filter_shape_0 = 'jan'
 
     nfolds = 8
 
     overlap = False
 
+    bidi = False
+
+    relu = False
+
+    deep = True
+
+    no_dense = False
+
     overlap_str = '_overlap' if overlap else ''
     phrase_str = '_phrase' if phrase_eval else ''
+    bidi_str = '_bidi' if bidi else ''
+    relu_str = '_relu' if relu else ''
+    deep_str = '_less_deep' if deep else ''
+    no_dense_str = '_no_dense' if no_dense else ''
 
-    if weighting == 'simpleWeighting':
-        weighting_str = 'simpleSampleWeighting'
-    else:
-        weighting_str = 'positiveThreeSampleWeighting'
+    weighting_str = 'simpleSampleWeighting' if weighting == 'simpleWeighting' else 'positiveThreeSampleWeighting'
 
     best_F1, best_th = 0, 0
 
     # first get observation and save
     pp_threshold = 0.1
     _, recall_precision_f1_overall \
-        = schluterEvalSubroutine(nfolds, filter_shape_0, weighting_str, pp_threshold, obs_cal='toload')
+        = schluterEvalSubroutine(nfolds, filter_shape_0, weighting_str, pp_threshold, obs_cal='tocal')
 
     if recall_precision_f1_overall[2] > best_F1:
         best_F1 = recall_precision_f1_overall[2]
@@ -485,7 +514,14 @@ if __name__ == '__main__':
     # write recall precision f1 overall results
     writeResults2TxtSchluter(join(schluter_results_path,
                                   weighting,
-                                  'schluter'+'_'+filter_shape_0+phrase_str+overlap_str+'.txt'),
+                                  'schluter'+'_'+
+                                  filter_shape_0+
+                                  phrase_str+
+                                  overlap_str+
+                                  bidi_str+
+                                  relu_str+
+                                  deep_str+
+                                  no_dense_str+'.txt'),
                              'w',
                              best_th,
                              best_recall_precision_f1_overall)
@@ -495,4 +531,11 @@ if __name__ == '__main__':
                 open(join('./statisticalSignificance/data',
                           'schluter',
                           weighting,
-                          'schluter'+'_'+filter_shape_0+phrase_str+overlap_str+'.pkl'), 'w'))
+                          'schluter'+'_'+
+                          filter_shape_0+
+                          phrase_str+
+                          overlap_str+
+                          bidi_str+
+                          relu_str+
+                          deep_str+
+                          no_dense_str+'.pkl'), 'w'))

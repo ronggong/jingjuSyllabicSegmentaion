@@ -7,24 +7,24 @@
 #module load essentia/2.1_python-2.7.5
 
 # two variables you need to set
-device=gpu0  # the device to be used. set it to "cpu" if you don't have GPUs
+#device=gpu0  # the device to be used. set it to "cpu" if you don't have GPUs
 
 # export environment variables
 #
 export PATH=/homedtic/rgong/anaconda2/bin:$PATH
-export THEANO_FLAGS=mode=FAST_RUN,device=$device,floatX=float32,lib.cnmem=0.95
-export PATH=/usr/local/cuda/bin/:$PATH
-export LD_LIBRARY_PATH=/usr/local/cuda/lib64/:$LD_LIBRARY_PATH
-export LD_LIBRARY_PATH=/soft/cuda/cudnn/cuda/lib64:$LD_LIBRARY_PATH
-export CPATH=/soft/cuda/cudnn/cuda/include:$CPATH
-export LIBRARY_PATH=/soft/cuda/cudnn/cuda/lib64:$LD_LIBRARY_PATH
+#export THEANO_FLAGS=mode=FAST_RUN,device=$device,floatX=float32,lib.cnmem=0.95
+#export PATH=/usr/local/cuda/bin/:$PATH
+#export LD_LIBRARY_PATH=/usr/local/cuda/lib64/:$LD_LIBRARY_PATH
+#export LD_LIBRARY_PATH=/soft/cuda/cudnn/cuda/lib64:$LD_LIBRARY_PATH
+#export CPATH=/soft/cuda/cudnn/cuda/include:$CPATH
+#export LIBRARY_PATH=/soft/cuda/cudnn/cuda/lib64:$LD_LIBRARY_PATH
 
 source activate keras_env
 
 
-#$ -N sseg_jan
+#$ -N sch_no_dense
 #$ -q default.q
-#$ -l h=node07
+#$ -l h=node05
 
 # Output/Error Text
 # ----------------
@@ -51,7 +51,7 @@ mkdir /scratch/rgongcnnSyllableSeg_part0_jan/syllableSeg
 #printf "Finish copying feature files into scratch directory...\n"
 #printf $((end-start))
 
-python /homedtic/rgong/cnnSyllableSeg/jingjuSyllabicSegmentation/training_scripts/hpcDLScriptsSchluter/keras_cnn_syllableSeg_jan_madmom_original.py 0 0 4
+python /homedtic/rgong/cnnSyllableSeg/jingjuSyllabicSegmentation/training_scripts/hpcDLScriptsSchluter/keras_cnn_syllableSeg_jan_madmom_original.py 0 0 8
 
 # Clean the crap:
 # ---------------

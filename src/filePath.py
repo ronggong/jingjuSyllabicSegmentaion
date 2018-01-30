@@ -56,11 +56,31 @@ cnnModels_path  = join(root_path, 'cnnModels', 'jingju')
 
 if mth_ODF == 'jan':
     if varin['dataset'] == 'ismir':
-        filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_ismir_madmom_early_stopping'
-        cnnModel_name         = 'jan_old+new_ismir_madmom_early_stopping'
+        # filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_ismir_madmom_early_stopping'
+        # cnnModel_name         = 'jan_old+new_ismir_madmom_early_stopping'
+        # filename_keras_cnn_0 = 'keras.cnn_syllableSeg_jan_ismir_madmom_early_stopping_deep'
+        # cnnModel_name = 'jan_ismir_madmom_early_stopping_deep'
+        # filename_keras_cnn_0 = 'keras.cnn_syllableSeg_jan_ismir_batchNorm'
+        # cnnModel_name = 'jan_ismir_batchNorm'
+        # filename_keras_cnn_0 = 'keras.cnn_syllableSeg_jan_ismir_madmom_early_stopping_relu'
+        # cnnModel_name = 'jan_ismir_madmom_early_stopping_relu'
+        # filename_keras_cnn_0 = 'keras.cnn_syllableSeg_jan_ismir_madmom_early_stopping_no_dense'
+        # cnnModel_name = 'jan_ismir_madmom_early_stopping_no_dense'
+        filename_keras_cnn_0 = 'keras.cnn_syllableSeg_jan_ismir_less_deep'
+        cnnModel_name = 'jan_ismir_less_deep'
     else:
-        filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_artist_filter_madmom_early_stopping'
-        cnnModel_name         = 'jan_old+new_artist_filter_madmom_early_stopping'
+        # filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_artist_filter_madmom_early_stopping'
+        # cnnModel_name         = 'jan_old+new_artist_filter_madmom_early_stopping'
+        # filename_keras_cnn_0 = 'keras.cnn_syllableSeg_jan_artist_filter_madmom_early_stopping_relu'
+        # cnnModel_name = 'jan_artist_filter_madmom_early_stopping_relu'
+        # filename_keras_cnn_0 = 'keras.cnn_syllableSeg_jan_artist_filter_madmom_early_stopping_deep'
+        # cnnModel_name = 'jan_artist_filter_madmom_early_stopping_deep'
+        # filename_keras_cnn_0 = 'keras.cnn_syllableSeg_jan_artist_filter_madmom_early_stopping_no_dense'
+        # cnnModel_name = 'jan_artist_filter_madmom_early_stopping_no_dense'
+        # filename_keras_cnn_0 = 'keras.cnn_syllableSeg_jan_artist_filter_less_deep'
+        # cnnModel_name = 'jan_artist_filter_less_deep'
+        filename_keras_cnn_0 = 'keras.cnn_syllableSeg_jan_artist_filter_deep_strong_front'
+        cnnModel_name = 'jan_artist_filter_deep_strong_front'
 
 elif mth_ODF == 'jan_chan3':
     filename_keras_cnn_0  = 'keras.cnn_syllableSeg_jan_class_weight_3_chans_mfccBands_2D_all_optim.h5'
@@ -144,7 +164,6 @@ full_path_keras_cnn_0                   = join(cnnModels_path, varin['sample_wei
 if fusion and mth_ODF == 'jordi':
     full_path_keras_cnn_1                   = join(cnnModels_path, filename_keras_cnn_1)
     # full_path_keras_cnn_2                   = join(cnnModels_path, filename_keras_cnn_2)
-
 
 eval_results_path = join(root_path, 'eval', 'results', cnnModel_name)
 
