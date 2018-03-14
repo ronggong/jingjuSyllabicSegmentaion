@@ -2,13 +2,13 @@ from os import remove
 from os.path import basename
 
 import numpy as np
-from keras.callbacks import Callback
+# from keras.callbacks import Callback
 from keras import backend as K
 from keras.callbacks import EarlyStopping, CSVLogger, LearningRateScheduler, ModelCheckpoint
 from keras.layers import Conv2D, MaxPooling2D, Input, ZeroPadding2D, GlobalAveragePooling2D
 from keras.layers import Dropout, Dense, Flatten, ELU, BatchNormalization
 from keras.layers.merge import concatenate
-from keras.models import Sequential, Model
+from keras.models import Sequential, Model, load_model
 from keras.optimizers import Adam
 from keras.regularizers import l2
 
@@ -246,7 +246,8 @@ def jan_original_deep_old(filter_density, dropout, input_shape, batchNorm=False,
     return model_1
 
 
-def jan_original_less_deep(filter_density, dropout, input_shape, batchNorm=False, dense_activation='relu', channel=1):
+def jan_original_deep(filter_density, dropout, input_shape, batchNorm=False, dense_activation='relu', channel=1):
+    "less deep architecture"
     if channel == 1:
         reshape_dim = (1, input_shape[0], input_shape[1])
         channel_order = 'channels_first'
@@ -293,7 +294,6 @@ def jan_original_less_deep(filter_density, dropout, input_shape, batchNorm=False
 
     model_1.add(Dense(1, activation='sigmoid'))
 
-    # optimizer = SGD(lr=0.05, momentum=0.45, decay=0.0, nesterov=False)
     optimizer = Adam()
 
     model_1.compile(loss='binary_crossentropy',
@@ -305,7 +305,104 @@ def jan_original_less_deep(filter_density, dropout, input_shape, batchNorm=False
     return model_1
 
 
-def jan_original_deep(filter_density, dropout, input_shape, batchNorm=False, dense_activation='relu', channel=1):
+def jan_original_deep_pretrained(model_pretrained,
+                                 filter_density,
+                                 dropout,
+                                 input_shape,
+                                 batchNorm=False,
+                                 dense_activation='relu',
+                                 channel=1):
+    "less deep architecture"
+    if channel == 1:
+        reshape_dim = (1, input_shape[0], input_shape[1])
+        channel_order = 'channels_first'
+    else:
+        reshape_dim = input_shape
+        channel_order = 'channels_last'
+
+    padding = "same"
+
+    # print(model_pretrained.summary())
+
+    # convert to functional model
+    model_pretrained_func = model_pretrained.model
+
+    # freeze pretrained model
+    for layer in model_pretrained_func.layers:
+        layer.trainable = False
+
+    input = Input(shape=reshape_dim, name='input_new_1')
+
+    x = Conv2D(int(10 * filter_density), (3, 7), padding="valid",
+                   data_format=channel_order,
+                    activation='relu',
+                    name='conv_1')(input)
+    x = MaxPooling2D(pool_size=(3, 1),
+                     padding='valid',
+                     data_format=channel_order,
+                     name='maxp_1')(x)
+
+    x = Conv2D(int(20 * filter_density), (3, 3),
+               padding="valid",
+                data_format=channel_order,
+               activation='relu',
+               name='conv_2')(x)
+    x = MaxPooling2D(pool_size=(3, 1),
+                     padding='valid',
+                     data_format=channel_order,
+                     name='maxp_2')(x)
+
+    if dropout:
+        x = Dropout(dropout, name='drop_1')(x)
+
+    # feature extraction shallow
+    # x = concatenate([x, model_pretrained_func.get_layer('dropout_1').output], axis=1)
+
+    # replacement of the dense layer
+    x = Conv2D(int(54 * filter_density), (3, 3), # feature extraction 54, deep=58
+               padding=padding,
+                data_format=channel_order,
+               activation='relu',
+               name='conv_3')(x)
+    x = BatchNormalization(axis=1, name='bn_3')(x)
+
+    x = Conv2D(int(56 * filter_density), (3, 3), # feature extraction 56, deep=58
+               padding=padding,
+                data_format=channel_order,
+               activation='relu',
+               name='conv_4')(x)
+    x = BatchNormalization(axis=1, name='bn_4')(x)
+
+    x = Conv2D(int(56 * filter_density), (3, 3), # feature extraction 56, deep=60
+               padding=padding,
+                data_format=channel_order,
+               activation='relu',
+               name='conv_5')(x)
+    x = BatchNormalization(axis=1, name='bn_5')(x)
+
+    x = Flatten(name='flatten_new_1')(x)
+
+    if dropout:
+        x = Dropout(dropout, name='drop_2')(x)
+
+    x = concatenate([x, model_pretrained_func.get_layer('dropout_2').output])
+
+    outputs = Dense(1, activation='sigmoid', name='dense_new_1')(x)
+
+    model_1 = Model(inputs=[input, model_pretrained_func.input], outputs=outputs)
+
+    optimizer = Adam()
+
+    model_1.compile(loss='binary_crossentropy',
+                    optimizer=optimizer,
+                    metrics=['accuracy'])
+
+    print(model_1.summary())
+
+    return model_1
+
+
+def jan_original_strong_front(filter_density, dropout, input_shape, batchNorm=False, dense_activation='relu', channel=1):
     if channel == 1:
         reshape_dim = (1, input_shape[0], input_shape[1])
         channel_order = 'channels_first'
@@ -908,7 +1005,8 @@ def model_train_validation(model_0,
                            class_weights,
                             file_path_model,
                            filename_log,
-                           channel):
+                           channel,
+                           multi_inputs=False):
 
     """
     train the model with validation early stopping and retrain the model with whole training dataset
@@ -947,7 +1045,7 @@ def model_train_validation(model_0,
                                 input_shape=input_shape,
                                 labels=Y_train,
                                 sample_weights=sample_weights_train,
-                                multi_inputs=False,
+                                multi_inputs=multi_inputs,
                                 channel=channel)
     generator_val = generator(path_feature_data=path_feature_data,
                               indices=indices_validation,
@@ -956,7 +1054,7 @@ def model_train_validation(model_0,
                               input_shape=input_shape,
                               labels=Y_validation,
                               sample_weights=sample_weights_validation,
-                              multi_inputs=False,
+                              multi_inputs=multi_inputs,
                               channel=channel)
 
     model_0.fit_generator(generator=generator_train,
@@ -973,7 +1071,8 @@ def model_switcher(model_name,
                    input_shape,
                    channel,
                    deep,
-                   dense):
+                   dense,
+                   model_pretrained=None):
     if model_name == 'jan_original':
         if deep:
             model_0 = jan_original_deep(filter_density=filter_density,
@@ -990,6 +1089,15 @@ def model_switcher(model_name,
                                    dense_activation='sigmoid',
                                    channel=channel,
                                    dense=dense)
+    elif model_name == 'jan_original_pretrained':
+        if deep:
+            model_0 = jan_original_deep_pretrained(model_pretrained=model_pretrained,
+                                                    filter_density=filter_density,
+                                                    dropout=dropout,
+                                                    input_shape=input_shape,
+                                                    batchNorm=False,
+                                                    dense_activation='relu',
+                                                    channel=channel)
     elif model_name == 'jordi_timbral_schluter':
         model_0 = jordi_model_schluter(filter_density_1=1,
                                        filter_density_2=filter_density,
@@ -1055,7 +1163,7 @@ def train_model_validation(filename_train_validation_set,
                            filename_log,
                            model_name = 'jan_original',
                            deep=False,
-                           dense=False,
+                           dense=True,
                            channel=1):
     """
     train model with validation
@@ -1087,3 +1195,63 @@ def train_model_validation(filename_train_validation_set,
                             file_path_model,
                            filename_log,
                            channel)
+
+
+def finetune_model_validation(filename_train_validation_set,
+                               filename_labels_train_validation_set,
+                               filename_sample_weights,
+                               filter_density,
+                               dropout,
+                               input_shape,
+                               file_path_model,
+                               filename_log,
+                              model_name,
+                              path_model,
+                               deep=False,
+                               dense=True,
+                               channel=1):
+    """
+    train model with validation
+    """
+
+    filenames_train, Y_train, sample_weights_train, \
+    filenames_validation, Y_validation, sample_weights_validation, \
+    filenames_features, Y_train_validation, sample_weights, class_weights = \
+        load_data(filename_labels_train_validation_set,
+                  filename_sample_weights)
+
+    # load pretrained model
+    model_pretrained = load_model(filepath=path_model)
+
+    model = model_switcher(model_name=model_name,
+                          filter_density=filter_density,
+                          dropout=dropout,
+                          input_shape=input_shape,
+                          channel=channel,
+                          deep=deep,
+                          dense=dense,
+                          model_pretrained=model_pretrained)
+
+    # set a low learning rate to tune
+    # K.set_value(model.optimizer.lr, 1e-5)
+
+    # print(model_pretrained.summary())
+
+    batch_size = 256
+    patience = 15
+
+    # print(model_0.count_params())
+
+    model_train_validation(model,
+                           batch_size,
+                           patience,
+                           input_shape,
+                            filename_train_validation_set,
+                            filenames_train, Y_train, sample_weights_train,
+                            filenames_validation, Y_validation, sample_weights_validation,
+                            class_weights,
+                            file_path_model,
+                           filename_log,
+                           channel,
+                           multi_inputs=True)
+

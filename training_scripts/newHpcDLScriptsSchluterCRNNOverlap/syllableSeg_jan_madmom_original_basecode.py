@@ -7,7 +7,6 @@ from data_preparation_CRNN import featureLabelSampleWeightsLoad, featureLabelSam
 from data_preparation_CRNN import createInputTensor
 from data_preparation_CRNN import writeValLossCsv
 from models_CRNN import jan_original
-from sklearn.metrics import log_loss
 from sklearn.model_selection import ShuffleSplit
 import pickle
 import numpy as np
@@ -76,8 +75,7 @@ def syllableSeg_jan_madmom_original_basecode(ii, bidi=False):
 
     file_path_model = '/homedtic/rgong/cnnSyllableSeg/out/schulter_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase_overlap' + bidi_str +'_'+str(len_seq)+str(ii) + '.h5'
     file_path_log = '/homedtic/rgong/cnnSyllableSeg/out/log/schulter_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase_overlap' + bidi_str +'_'+str(len_seq)+str(ii) + '.csv'
-
-    schluter_feature_data_scratch_path = '/homedtic/rgong/cnnSyllableSeg/schluter/feature_madmom_simpleSampleWeighting_phrase/'
+    schluter_feature_data_scratch_path = '/datasets/MTG/projects/compmusic/jingju_datasets/schluter/feature_madmom_simpleSampleWeighting_phrase'
 
     # file_path_model = '../../temp/schulter_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase' + str(
     #     ii) + '.h5'

@@ -16,16 +16,16 @@ if __name__ == '__main__':
     # filename_labels_train_validation_set = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/labels_train_set_all_syllableSeg_mfccBands2D_old+new_ismir_madmom.pickle.gz'
     # filename_sample_weights = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/sample_weights_syllableSeg_mfccBands2D_old+new_ismir_madmom.pickle.gz'
 
-    filename_train_validation_set = '/scratch/rgongcnnSyllableSeg_jordi_temporal_madmom_original/syllableSeg/feature_all_artist_filter_madmom.h5'
-    filename_labels_train_validation_set = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/labels_train_set_all_syllableSeg_mfccBands2D_old+new_artist_filter_madmom.pickle.gz'
-    filename_sample_weights = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/sample_weights_syllableSeg_mfccBands2D_old+new_artist_filter_madmom.pickle.gz'
+    # filename_train_validation_set = '/scratch/rgongcnnSyllableSeg_jordi_temporal_madmom_original/syllableSeg/feature_all_artist_filter_madmom.h5'
+    # filename_labels_train_validation_set = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/labels_train_set_all_syllableSeg_mfccBands2D_old+new_artist_filter_madmom.pickle.gz'
+    # filename_sample_weights = '/homedtic/rgong/cnnSyllableSeg/syllableSeg/sample_weights_syllableSeg_mfccBands2D_old+new_artist_filter_madmom.pickle.gz'
 
     # file_path_model = '../../temp/keras.cnn_syllableSeg_jordi_temporal_mfccBands_2D_all_artist_filter_madmom.h5'
     # file_path_log = '../../temp/keras.cnn_syllableSeg_jordi_temporal_mfccBands_2D_all_artist_filter_madmom.csv'
     #
-    # filename_train_validation_set = '/Users/gong/Documents/MTG document/dataset/syllableSeg/feature_all_artist_filter_madmom.h5'
-    # filename_labels_train_validation_set = '../../trainingData/labels_train_set_all_syllableSeg_mfccBands2D_old+new_artist_filter_madmom.pickle.gz'
-    # filename_sample_weights = '../../trainingData/sample_weights_syllableSeg_mfccBands2D_old+new_artist_filter_madmom.pickle.gz'
+    filename_train_validation_set = '/Users/gong/Documents/MTG document/dataset/syllableSeg/feature_all_artist_filter_madmom.h5'
+    filename_labels_train_validation_set = '../../trainingData/labels_train_set_all_syllableSeg_mfccBands2D_old+new_artist_filter_madmom.pickle.gz'
+    filename_sample_weights = '../../trainingData/sample_weights_syllableSeg_mfccBands2D_old+new_artist_filter_madmom.pickle.gz'
 
     for running_time in range(5):
         # train the final model

@@ -22,6 +22,24 @@ def featureReshape(feature, nlen=10):
         feature_reshaped[ii,:,:] = feature_frame
     return feature_reshaped
 
+
+def featureDereshape(feature, nlen=10):
+    """
+    de reshape the feature
+    :param feature:
+    :param nlen:
+    :return:
+    """
+    n_sample = feature.shape[0]
+    n_row = 80
+    n_col = nlen * 2 + 1
+
+    feature_dereshape = np.zeros((n_sample, n_row*n_col), dtype='float32')
+    for ii in range(n_sample):
+        for jj in range(n_col):
+            feature_dereshape[ii][n_row*jj:n_row*(jj+1)] = feature[ii][:,jj]
+    return feature_dereshape
+
 def getRecordings(wav_path):
     recordings      = []
     for root, subFolders, files in os.walk(wav_path):
@@ -32,23 +50,23 @@ def getRecordings(wav_path):
 
     return recordings
 
-def getOnsetFunction(observations, model, method='jan'):
+def getOnsetFunction(observations, model, method):
     """
     Load CNN model to calculate ODF
     :param observations:
     :return:
     """
 
-    ##-- call pdnn to calculate the observation from the features
-    # if method=='jordi':
-    #     observations = [observations, observations, observations, observations, observations, observations]
-    # elif method=='jordi_horizontal_timbral':
+    if 'jordi' in method:
+        observations = [observations, observations, observations, observations, observations, observations]
+
+    obs = model.predict(observations, batch_size=128, verbose=2)
+
     #     observations = [observations, observations, observations, observations, observations, observations,
     #                     observations, observations, observations, observations, observations, observations]
-    if method == 'jordi':
-        obs = model.predict(observations, batch_size=128, verbose=2)
-    else:
-        obs = model.predict(observations, batch_size=128, verbose=2)
+    # if 'feature_extraction' in method:
+    # obs = model.predict([observations, observations], batch_size=128, verbose=2)
+    # else:
     return obs
 
 def trackOnsetPosByPath(path, idx_syllable_start_state):
@@ -129,6 +147,7 @@ def late_fusion_calc_3(obs_0, obs_1, obs_2, mth=2, coef=0.33333333):
 
     return obs_out
 
+
 def append_or_write(eval_result_file_name):
     if os.path.exists(eval_result_file_name):
         append_write = 'a'  # append if already exists
@@ -136,9 +155,11 @@ def append_or_write(eval_result_file_name):
         append_write = 'w'  # make a new file if not
     return append_write
 
+
 def hz2cents(pitchInHz, tonic=261.626):
     cents = 1200*np.log2(1.0*pitchInHz/tonic)
     return cents
+
 
 def pitchtrackInterp(pitchInCents, sample_number_total):
     """
@@ -152,7 +173,8 @@ def pitchtrackInterp(pitchInCents, sample_number_total):
     pitchInCents_interp = np.interp(xvals, x, pitchInCents)
     return pitchInCents_interp.tolist()
 
-def stringDist(str0,str1):
+
+def stringDist(str0, str1):
     '''
     utf-8 format string
     :param str0:
@@ -165,3 +187,11 @@ def stringDist(str0,str1):
     dis = len(intersection)/float(max(len(str0), len(str1)))
 
     return dis
+
+
+def smooth_obs(obs):
+    """using moving average hanning window for smoothing"""
+    hann = np.hanning(5)
+    hann /= np.sum(hann)
+    obs = np.convolve(hann, obs, mode='same')
+    return obs

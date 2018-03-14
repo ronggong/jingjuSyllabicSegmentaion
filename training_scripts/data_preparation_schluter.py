@@ -7,6 +7,7 @@ from filePathSchulter import *
 from parameters import *
 from utilFunctions import getRecordings
 from utilFunctions import featureReshape
+from utilFunctions import featureDereshape
 from sklearn import preprocessing
 import gzip, cPickle
 from os.path import isfile
@@ -25,7 +26,12 @@ def getTrainingFilenames(annotation_path, cv_filename):
     train_fns = [x for x in annotation_fns if x not in test_fns]
     return train_fns
 
-def concatenateFeatureLabelSampleweights(train_fns, schluter_feature_data_path, n_pattern=21, nlen=10, scaling=True, channel=1):
+def concatenateFeatureLabelSampleweights(train_fns,
+                                         schluter_feature_data_path,
+                                         n_pattern=21,
+                                         nlen=10,
+                                         scaling=True,
+                                         channel=1):
     """
     concatenate feature label and sample weights
     :param train_fns:
@@ -104,6 +110,54 @@ def concatenateFeatureLabelSampleweights(train_fns, schluter_feature_data_path, 
         feature_all = np.stack(feature_all_conc, axis=3)
 
     return feature_all, label_all, sample_weights_all, scaler
+
+
+def concatenateFeatureLabelSampleweightsJingju(feature_schluter,
+                                               label_schluter,
+                                               sample_weights_schluter,
+                                               filename_jingju_features,
+                                               filename_jingju_labels,
+                                               filename_jingju_sample_weights,
+                                               nlen=7,
+                                               scaling=True):
+    """
+    Concatenate schluter and jingju dataset
+    :param feature_schluter:
+    :param label_schluter:
+    :param sample_weights_schluter:
+    :param filename_jingju_features:
+    :param filename_jingju_labels:
+    :param filename_jingju_sample_weights:
+    :param scaling:
+    :return:
+    """
+    # load jingju feature, labels and sample weights
+    feature_jingju = h5py.File(filename_jingju_features, 'r')
+
+    with gzip.open(filename_jingju_labels, 'rb') as f:
+        label_jingju = cPickle.load(f)
+
+    with gzip.open(filename_jingju_sample_weights, 'rb') as f:
+        sample_weights_jingju = cPickle.load(f)
+
+    # concatenate with schluter dataset
+    feature_all = np.vstack((feature_schluter, feature_jingju['feature_all']))
+    label_all = np.concatenate((label_schluter, label_jingju))
+    sample_weights_all = np.concatenate((sample_weights_schluter, sample_weights_jingju))
+
+    feature_all = featureDereshape(feature_all, nlen=nlen)
+
+    if scaling:
+        scaler = preprocessing.StandardScaler()
+        scaler.fit(feature_all)
+        feature_all = scaler.transform(feature_all)
+    else:
+        scaler = None
+
+    feature_all = featureReshape(feature_all, nlen=nlen)
+
+    return feature_all, label_all, sample_weights_all, scaler
+
 
 def saveFeatureLabelSampleweights(feature_all, label_all, sample_weights, scaler,
                                   feature_fn, label_fn, sample_weights_fn, scaler_fn):

@@ -2,99 +2,155 @@ from scipy.stats import ttest_ind
 import pickle
 import os
 
+"""
+Jan relu dense
+Jan no dense
+temporal sigmoid dense
+Jan deep no dense (much slow than jan sigmoid or relu)
+Jan less deep
+Jan (Bidirectional LSTM 400 length, 93.5 percentile)
+Jan (Bidi LSTM 200 length 85 percentile)
+Jan (Bidi LSTM 100 length 66.5 percentile)
+"""
+
 # schluter
-recall_precision_f1_a = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jan.pkl'), 'r'))
-recall_precision_f1_b = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jordi_temporal_schluter.pkl'), 'r'))
+recall_precision_f1_jan = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jan.pkl'), 'r'))
 
-f1_schluter_jan = [rpf[2] for rpf in recall_precision_f1_a]
-f1_schluter_temporal = [rpf[2] for rpf in recall_precision_f1_b]
+recall_precision_f1_no_dense = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jan_no_dense.pkl'), 'r'))
+recall_precision_f1_relu = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jan_relu.pkl'), 'r'))
+recall_precision_f1_temporal = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jordi_temporal_schluter.pkl'), 'r'))
+recall_precision_f1_deep = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jan_deep.pkl'), 'r'))
+recall_precision_f1_less_deep = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jan_less_deep.pkl'), 'r'))
+recall_precision_f1_bidi_400 = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jan_phrase_overlap_bidi.pkl'), 'r'))
+recall_precision_f1_bidi_200 = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jan_phrase_overlap_bidi_200.pkl'), 'r'))
+recall_precision_f1_bidi_100 = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jan_phrase_overlap_bidi_100.pkl'), 'r'))
 
-# # ismir
-f1_ismir_jan_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jan_old+new_ismir_madmom_early_stopping_peakPickingMadmom.pkl'), 'r'))
-f1_ismir_jan_v_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jan_old+new_ismir_madmom_early_stopping_viterbi_nolabel.pkl'), 'r'))
-f1_ismir_jan_v_l = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jan_old+new_ismir_madmom_early_stopping_viterbi_label.pkl'), 'r'))
+f1_schluter_jan = [rpf[2] for rpf in recall_precision_f1_jan]
 
-f1_ismir_temporal_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jordi_temporal_ismir_madmom_early_stopping_jan_params_peakPickingMadmom.pkl'), 'r'))
-f1_ismir_temporal_v_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jordi_temporal_ismir_madmom_early_stopping_jan_params_viterbi_nolabel.pkl'), 'r'))
-f1_ismir_temporal_v_l = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jordi_temporal_ismir_madmom_early_stopping_jan_params_viterbi_label.pkl'), 'r'))
-
-# artist album filter
-# f1_a = pickle.load(open(os.path.join('./data/', 'jan_old+new_artist_filter_madmom_early_stopping_peakPickingMadmom.pkl'), 'r'))
-# f1_a = pickle.load(open(os.path.join('./data/', 'jan_old+new_artist_filter_madmom_early_stopping_viterbi_nolabel.pkl'), 'r'))
-# f1_a = pickle.load(open(os.path.join('./data/', 'jordi_temporal_artist_filter_madmom_early_stopping_jan_params_peakPickingMadmom.pkl'), 'r'))
-# f1_b = pickle.load(open(os.path.join('./data/', 'jordi_temporal_artist_filter_madmom_early_stopping_jan_params_viterbi_nolabel.pkl'), 'r'))
-
-# viterbi label ismir
-
-# viterbi label artist filter
-# f1_a = pickle.load(open(os.path.join('./data/', 'jan_old+new_artist_filter_madmom_early_stopping_viterbi.pkl'), 'r'))
-# f1_b = pickle.load(open(os.path.join('./data/', 'jordi_temporal_artist_filter_madmom_early_stopping_more_params_viterbi.pkl'), 'r'))
-
-_, p = ttest_ind(f1_schluter_jan, f1_schluter_temporal, equal_var=False)
-
-print('schluter jan temporal')
-print(p)
-
-def pValueAll(f1_jan_pp, f1_temporal_pp,
-              f1_jan_v_nl, f1_temporal_v_nl,
-              f1_jan_v_l, f1_temporal_v_l):
-
-    _, p_jan_pp_temporal_pp = ttest_ind(f1_jan_pp, f1_temporal_pp, equal_var=False)
-
-    _, p_jan_pp_jan_v_nl = ttest_ind(f1_jan_pp, f1_jan_v_nl, equal_var=False)
-
-    _, p_jan_v_nl_temporal_v_nl = ttest_ind(f1_jan_v_nl, f1_temporal_v_nl, equal_var=False)
-
-    _, p_temporal_pp_temporal_v_nl = ttest_ind(f1_temporal_pp, f1_temporal_v_nl, equal_var=False)
-
-    _, p_jan_v_l_temporal_v_l = ttest_ind(f1_jan_v_l, f1_temporal_v_l, equal_var=False)
-
-    return p_jan_pp_temporal_pp, \
-           p_jan_pp_jan_v_nl, \
-           p_jan_v_nl_temporal_v_nl, \
-           p_temporal_pp_temporal_v_nl, \
-           p_jan_v_l_temporal_v_l
+f1_schluter_no_dense = [rpf[2] for rpf in recall_precision_f1_no_dense]
+f1_schluter_relu = [rpf[2] for rpf in recall_precision_f1_relu]
+f1_schluter_temporal = [rpf[2] for rpf in recall_precision_f1_temporal]
+f1_schluter_deep = [rpf[2] for rpf in recall_precision_f1_deep]
+f1_schluter_less_deep = [rpf[2] for rpf in recall_precision_f1_less_deep]
+f1_schluter_bidi_400 = [rpf[2] for rpf in recall_precision_f1_bidi_400]
+f1_schluter_bidi_200 = [rpf[2] for rpf in recall_precision_f1_bidi_200]
+f1_schluter_bidi_100 = [rpf[2] for rpf in recall_precision_f1_bidi_100]
 
 
-def writePvalue2Txt(filename,
-                    p_jan_pp_temporal_pp,
-                    p_jan_pp_jan_v_nl,
-                    p_jan_v_nl_temporal_v_nl,
-                    p_temporal_pp_temporal_v_nl,
-                    p_jan_v_l_temporal_v_l):
-    with open(filename, 'w') as f:
-        f.write('jan pp vs temporal pp')
-        f.write('\n')
-        f.write(str(p_jan_pp_temporal_pp))
-        f.write('\n')
-        f.write('jan pp vs jan viterbi nl')
-        f.write('\n')
-        f.write(str(p_jan_pp_jan_v_nl))
-        f.write('\n')
-        f.write('jan viterbi nl vs temporal viterbi nl')
-        f.write('\n')
-        f.write(str(p_jan_v_nl_temporal_v_nl))
-        f.write('\n')
-        f.write('temporal pp vs temporal viterbi nl')
-        f.write('\n')
-        f.write(str(p_temporal_pp_temporal_v_nl))
-        f.write('\n')
-        f.write('jan viterbi l vs temporal viterbi l')
-        f.write('\n')
-        f.write(str(p_jan_v_l_temporal_v_l))
+# # artist_filter peak picking
+f1_artist_filter_jan_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jan_old+new_artist_filter_madmom_early_stopping_peakPickingMadmom.pkl'), 'r'))
+
+f1_artist_filter_no_dense_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jan_artist_filter_madmom_early_stopping_no_dense_peakPickingMadmom.pkl'), 'r'))
+f1_artist_filter_relu_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jan_artist_filter_madmom_early_stopping_relu_peakPickingMadmom.pkl'), 'r'))
+f1_artist_filter_temporal_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jordi_temporal_artist_filter_madmom_early_stopping_more_params_peakPickingMadmom.pkl'), 'r'))
+f1_artist_filter_deep_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jan_artist_filter_madmom_early_stopping_deep_peakPickingMadmom.pkl'), 'r'))
+f1_artist_filter_less_deep_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jan_artist_filter_less_deep_peakPickingMadmom.pkl'), 'r'))
+f1_artist_filter_bidi_400_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'artist_filter_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase_overlap_bidi_peakPickingMadmom.pkl'), 'r'))
+f1_artist_filter_bidi_200_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'artist_filter_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase_overlap_bidi_200_peakPickingMadmom.pkl'), 'r'))
+f1_artist_filter_bidi_100_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'artist_filter_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase_overlap_bidi_100_peakPickingMadmom.pkl'), 'r'))
+
+# # artist_filter viterbi no label
+f1_artist_filter_jan_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jan_old+new_artist_filter_madmom_early_stopping_viterbi_nolabel.pkl'), 'r'))
+
+f1_artist_filter_no_dense_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jan_artist_filter_madmom_early_stopping_no_dense_viterbi_nolabel.pkl'), 'r'))
+f1_artist_filter_relu_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jan_artist_filter_madmom_early_stopping_relu_viterbi_nolabel.pkl'), 'r'))
+f1_artist_filter_temporal_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jordi_temporal_artist_filter_madmom_early_stopping_more_params_viterbi_nolabel.pkl'), 'r'))
+f1_artist_filter_deep_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jan_artist_filter_madmom_early_stopping_deep_viterbi_nolabel.pkl'), 'r'))
+f1_artist_filter_less_deep_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jan_artist_filter_less_deep_viterbi_nolabel.pkl'), 'r'))
+f1_artist_filter_bidi_400_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'artist_filter_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase_overlap_bidi_viterbi_nolabel.pkl'), 'r'))
+f1_artist_filter_bidi_200_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'artist_filter_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase_overlap_bidi_200_viterbi_nolabel.pkl'), 'r'))
+f1_artist_filter_bidi_100_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'artist_filter_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase_overlap_bidi_100_viterbi_nolabel.pkl'), 'r'))
 
 
-p_jan_pp_temporal_pp, \
-p_jan_pp_jan_v_nl, \
-p_jan_v_nl_temporal_v_nl, \
-p_temporal_pp_temporal_v_nl, \
-p_jan_v_l_temporal_v_l = pValueAll(f1_ismir_jan_pp, f1_ismir_temporal_pp,
-                                  f1_ismir_jan_v_nl, f1_ismir_temporal_v_nl,
-                                  f1_ismir_jan_v_l, f1_ismir_temporal_v_l)
+
+def pValueAll(f1_jan, f1_no_dense, f1_relu, f1_temporal, f1_deep, f1_less_deep, f1_bidi_400, f1_bidi_200, f1_bidi_100):
+
+    _, p_jan_no_dense = ttest_ind(f1_jan, f1_no_dense, equal_var=False)
+
+    _, p_jan_relu = ttest_ind(f1_jan, f1_relu, equal_var=False)
+
+    _, p_jan_temporal = ttest_ind(f1_jan, f1_temporal, equal_var=False)
+
+    _, p_jan_deep = ttest_ind(f1_jan, f1_deep, equal_var=False)
+
+    _, p_jan_less_deep = ttest_ind(f1_jan, f1_less_deep, equal_var=False)
+
+    _, p_jan_bidi_400 = ttest_ind(f1_jan, f1_bidi_400, equal_var=False)
+
+    _, p_jan_bidi_200 = ttest_ind(f1_jan, f1_bidi_200, equal_var=False)
+
+    _, p_jan_bidi_100 = ttest_ind(f1_jan, f1_bidi_100, equal_var=False)
 
 
-writePvalue2Txt('ismir.txt', p_jan_pp_temporal_pp,
-                        p_jan_pp_jan_v_nl,
-                        p_jan_v_nl_temporal_v_nl,
-                        p_temporal_pp_temporal_v_nl,
-                        p_jan_v_l_temporal_v_l)
+    return p_jan_no_dense, p_jan_relu, p_jan_temporal, p_jan_deep, \
+           p_jan_less_deep, p_jan_bidi_400, p_jan_bidi_200, p_jan_bidi_100
+
+def stat_schluter():
+    p_jan_no_dense, p_jan_relu, p_jan_temporal, p_jan_deep, \
+    p_jan_less_deep, p_jan_bidi_400, p_jan_bidi_200, p_jan_bidi_100 = \
+        pValueAll(f1_jan=f1_schluter_jan,
+              f1_no_dense=f1_schluter_no_dense,
+              f1_relu=f1_schluter_relu,
+              f1_temporal=f1_schluter_temporal,
+              f1_deep=f1_schluter_deep,
+              f1_less_deep=f1_schluter_less_deep,
+              f1_bidi_400=f1_schluter_bidi_400,
+              f1_bidi_200=f1_schluter_bidi_200,
+              f1_bidi_100=f1_schluter_bidi_100)
+
+    print p_jan_no_dense
+    print p_jan_relu
+    print p_jan_temporal
+    print p_jan_deep
+    print p_jan_less_deep
+    print p_jan_bidi_400
+    print p_jan_bidi_200
+    print p_jan_bidi_100
+
+def stat_artist_pp():
+    p_jan_no_dense, p_jan_relu, p_jan_temporal, p_jan_deep, \
+    p_jan_less_deep, p_jan_bidi_400, p_jan_bidi_200, p_jan_bidi_100 = \
+        pValueAll(f1_jan=f1_artist_filter_jan_pp,
+                  f1_no_dense=f1_artist_filter_no_dense_pp,
+                  f1_relu=f1_artist_filter_relu_pp,
+                  f1_temporal=f1_artist_filter_temporal_pp,
+                  f1_deep=f1_artist_filter_deep_pp,
+                  f1_less_deep=f1_artist_filter_less_deep_pp,
+                  f1_bidi_400=f1_artist_filter_bidi_400_pp,
+                  f1_bidi_200=f1_artist_filter_bidi_200_pp,
+                  f1_bidi_100=f1_artist_filter_bidi_100_pp)
+
+    print p_jan_no_dense
+    print p_jan_relu
+    print p_jan_temporal
+    print p_jan_deep
+    print p_jan_less_deep
+    print p_jan_bidi_400
+    print p_jan_bidi_200
+    print p_jan_bidi_100
+
+
+def stat_artist_nl():
+    p_jan_no_dense, p_jan_relu, p_jan_temporal, p_jan_deep, \
+    p_jan_less_deep, p_jan_bidi_400, p_jan_bidi_200, p_jan_bidi_100 = \
+        pValueAll(f1_jan=f1_artist_filter_jan_nl,
+                  f1_no_dense=f1_artist_filter_no_dense_nl,
+                  f1_relu=f1_artist_filter_relu_nl,
+                  f1_temporal=f1_artist_filter_temporal_nl,
+                  f1_deep=f1_artist_filter_deep_nl,
+                  f1_less_deep=f1_artist_filter_less_deep_nl,
+                  f1_bidi_400=f1_artist_filter_bidi_400_nl,
+                  f1_bidi_200=f1_artist_filter_bidi_200_nl,
+                  f1_bidi_100=f1_artist_filter_bidi_100_nl)
+
+    print p_jan_no_dense
+    print p_jan_relu
+    print p_jan_temporal
+    print p_jan_deep
+    print p_jan_less_deep
+    print p_jan_bidi_400
+    print p_jan_bidi_200
+    print p_jan_bidi_100
+
+if __name__ == '__main__':
+    stat_artist_nl()

@@ -5,7 +5,7 @@ from scipy.optimize import curve_fit
 from scipy.stats import gamma,expon
 import numpy as np
 from src.parameters import *
-from src.filePath import *
+from src.file_path_jingju import *
 from src.phonemeMap import dic_pho_map
 import json
 import os

@@ -27,7 +27,7 @@
 import os
 from itertools import combinations
 from operator import itemgetter
-from filePath import *
+from file_path_jingju import *
 import numpy as np
 import textgridParser
 import scoreParser
@@ -442,18 +442,31 @@ def getTestTrainRecordingsArtistAlbumFilter():
                      ['20170327LiaoJiaNi', 'lsxp-Xi_ri_li-Zhu_lian_zhai-nacta'], # yes
                      ['20170327LiaoJiaNi', 'lsxp-Yi_ma_li-Wu_jia_po-nacta']] # yes
 
-    trainNacta = [['danAll', 'dafeh-Bi_yun_tian-Xi_xiang_ji01-qm'], ['danAll', 'danbz-Bei_jiu_chan-Chun_gui_men01-qm'],
-     ['danAll', 'danbz-Kan_dai_wang-Ba_wang_bie_ji01-qm'], ['danAll', 'daspd-Hai_dao_bing-Gui_fei_zui_jiu02-qm'],
-     ['danAll', 'daxp-Chun_qiu_ting-Suo_lin_nang01-qm'], ['danAll', 'daxp-Jiao_Zhang_sheng-Hong_niang01-qm'],
-     ['danAll', 'daxp-Jiao_Zhang_sheng-Hong_niang04-qm'], ['danAll', 'daxp-Meng_ting_de-Mu_Gui_ying_gua_shuai02-qm'],
-     ['danAll', 'daxp-Meng_ting_de-Mu_Gui_ying_gua_shuai04-qm'], ['danAll', 'daxp-Zhe_cai_shi-Suo_lin_nang01-qm'],
-     ['laosheng', 'lseh-Tan_Yang_jia-Hong_yang_dong-qm'], ['laosheng', 'lseh-Wei_guo_jia-Hong_yang_dong02-qm'],
-     ['laosheng', 'lseh-Wo_ben_shi-Qiong_lin_yan-qm'], ['laosheng', 'lseh-Yi_lun_ming-Wen_zhao_guan-qm'],
-     ['laosheng', 'lseh-Zi_na_ri-Hong_yang_dong-qm'], ['laosheng', 'lsxp-Guo_liao_yi-Wen_zhao_guan02-qm'],
-     ['laosheng', 'lsxp-Huai_nan_wang-Huai_he_ying02-qm'], ['laosheng', 'lsxp-Jiang_shen_er-San_jia_dian02-qm'],
-     ['laosheng', 'lsxp-Qian_bai_wan-Si_lang_tang_mu01-qm'], ['laosheng', 'lsxp-Quan_qian_sui-Gan_lu_si-qm'],
-     ['laosheng', 'lsxp-Shi_ye_shuo-Ding_jun_shan-qm'], ['laosheng', 'lsxp-Wo_ben_shi-Kong_cheng_ji-qm'],
-     ['laosheng', 'lsxp-Wo_zheng_zai-Kong_cheng_ji04-qm'], ['laosheng', 'lsxp-Xi_ri_you-Zhu_lian_zhai-qm']]
+    trainNacta = [['danAll', 'dafeh-Bi_yun_tian-Xi_xiang_ji01-qm'],
+                  ['danAll', 'danbz-Bei_jiu_chan-Chun_gui_men01-qm'],
+                ['danAll', 'danbz-Kan_dai_wang-Ba_wang_bie_ji01-qm'],
+                  ['danAll', 'daspd-Hai_dao_bing-Gui_fei_zui_jiu02-qm'],
+                    ['danAll', 'daxp-Chun_qiu_ting-Suo_lin_nang01-qm'],
+                  ['danAll', 'daxp-Jiao_Zhang_sheng-Hong_niang01-qm'],
+                    ['danAll', 'daxp-Jiao_Zhang_sheng-Hong_niang04-qm'],
+                  ['danAll', 'daxp-Meng_ting_de-Mu_Gui_ying_gua_shuai02-qm'],
+                ['danAll', 'daxp-Meng_ting_de-Mu_Gui_ying_gua_shuai04-qm'],
+                  ['danAll', 'daxp-Zhe_cai_shi-Suo_lin_nang01-qm'],
+                    ['laosheng', 'lseh-Tan_Yang_jia-Hong_yang_dong-qm'],
+                  ['laosheng', 'lseh-Wei_guo_jia-Hong_yang_dong02-qm'],
+                    ['laosheng', 'lseh-Wo_ben_shi-Qiong_lin_yan-qm'],
+                  ['laosheng', 'lseh-Yi_lun_ming-Wen_zhao_guan-qm'],
+                    ['laosheng', 'lseh-Zi_na_ri-Hong_yang_dong-qm'],
+                  ['laosheng', 'lsxp-Guo_liao_yi-Wen_zhao_guan02-qm'],
+                    ['laosheng', 'lsxp-Huai_nan_wang-Huai_he_ying02-qm'],
+                  ['laosheng', 'lsxp-Jiang_shen_er-San_jia_dian02-qm'],
+                    ['laosheng', 'lsxp-Qian_bai_wan-Si_lang_tang_mu01-qm'],
+                  ['laosheng', 'lsxp-Quan_qian_sui-Gan_lu_si-qm'],
+                    ['laosheng', 'lsxp-Shi_ye_shuo-Ding_jun_shan-qm'],
+                  ['laosheng', 'lsxp-Wo_ben_shi-Kong_cheng_ji-qm'],
+                    ['laosheng', 'lsxp-Wo_zheng_zai-Kong_cheng_ji04-qm'],
+                  ['laosheng', 'lsxp-Xi_ri_you-Zhu_lian_zhai-qm']]
+
     trainNacta2017 = [['20170408SongRuoXuan', 'daeh-Yang_yu_huan-Tai_zhen_wai-nacta'],
      ['20170408SongRuoXuan', 'danbz-Kan_dai_wang-Ba_wang_bie-nacta'],
      ['20170408SongRuoXuan', 'daspd-Hai_dao_bing-Gui_fei_zui-nacta'],
@@ -520,11 +533,8 @@ def getTestTrainRecordingsArtistAlbumFilter():
 
 
 def getTestTrainRecordingsJoint():
-    # train test recording for syllable and phoneme joint estimation
-    # primary train and test set are not included
-    trainNacta2017 = [['20170327LiaoJiaNi', 'lseh-Niang_zi_bu-Sou_gu_jiu-nacta'],  # yes
-                      ['20170327LiaoJiaNi', 'lsxp-Yi_ma_li-Wu_jia_po-nacta'],
-                      ['20170418TianHao', 'lseh-Tan_yang_jia-Hong_yang_dong-nacta']]  # yes
+    # trainNacta2017, trainNacta for syllable and phoneme joint estimation and HSMM alignment acoustic model
+    trainNacta2017 = [['20170418TianHao', 'lseh-Tan_yang_jia-Hong_yang_dong-nacta']]  # yes # pro
 
     trainNacta = [['danAll', 'dafeh-Bi_yun_tian-Xi_xiang_ji01-qm'],
                   ['danAll', 'danbz-Bei_jiu_chan-Chun_gui_men01-qm'],
@@ -534,26 +544,21 @@ def getTestTrainRecordingsJoint():
                   ['danAll', 'daxp-Jiao_Zhang_sheng-Hong_niang01-qm'],
                   ['danAll', 'daxp-Meng_ting_de-Mu_Gui_ying_gua_shuai04-qm'],
                   ['danAll', 'daxp-Zhe_cai_shi-Suo_lin_nang01-qm'],
-                  ['laosheng', 'lseh-Tan_Yang_jia-Hong_yang_dong-qm'],
-                  ['laosheng', 'lseh-Wo_ben_shi-Qiong_lin_yan-qm'],
-                  ['laosheng', 'lseh-Yi_lun_ming-Wen_zhao_guan-qm'],
-                  ['laosheng', 'lseh-Zi_na_ri-Hong_yang_dong-qm'],
+                  ['laosheng', 'lseh-Tan_Yang_jia-Hong_yang_dong-qm'], # amateur
+                  ['laosheng', 'lseh-Wo_ben_shi-Qiong_lin_yan-qm'], # amateur
+                  ['laosheng', 'lseh-Yi_lun_ming-Wen_zhao_guan-qm'], # amateur
+                  ['laosheng', 'lseh-Zi_na_ri-Hong_yang_dong-qm'], # amateur
                   ['laosheng', 'lsxp-Guo_liao_yi-Wen_zhao_guan02-qm'],
                   ['laosheng', 'lsxp-Huai_nan_wang-Huai_he_ying02-qm'],
                   ['laosheng', 'lsxp-Jiang_shen_er-San_jia_dian02-qm'],
-                  ['laosheng', 'lsxp-Qian_bai_wan-Si_lang_tang_mu01-qm'],
-                  ['laosheng', 'lsxp-Quan_qian_sui-Gan_lu_si-qm'],
-                  ['laosheng', 'lsxp-Shi_ye_shuo-Ding_jun_shan-qm'],
-                  ['laosheng', 'lsxp-Wo_ben_shi-Kong_cheng_ji-qm'],
-                  ['laosheng', 'lsxp-Xi_ri_you-Zhu_lian_zhai-qm'],
-                  ['danAll', 'dagbz-Feng_xiao_xiao-Yang_men_nv_jiang-lon'],  # no
-                  ['danAll', 'daspd-Du_shou_kong-Wang_jiang_ting-upf'],  # yes
-                  ['danAll', 'daxp-Guan_Shi_yin-Tian_nv_san_hua-lon'],  # yes
-                  ['laosheng', 'lsxp-Guo_liao_yi-Wen_zhao_guan01-upf']]
+                  ['laosheng', 'lsxp-Qian_bai_wan-Si_lang_tang_mu01-qm'], # amateur
+                  ['laosheng', 'lsxp-Quan_qian_sui-Gan_lu_si-qm'],  # amateur
+                  ['laosheng', 'lsxp-Shi_ye_shuo-Ding_jun_shan-qm'], # amateur
+                  ['laosheng', 'lsxp-Wo_ben_shi-Kong_cheng_ji-qm'], # amateur
+                  ['laosheng', 'lsxp-Xi_ri_you-Zhu_lian_zhai-qm'], # amateur
+                    ]
 
-    testPrimarySchool = [['20171211SongRuoXuan/daxp_Qing_zao_qi_lai-Mai_shui-dxjky', 'student01']]
-
-    return testPrimarySchool, trainNacta2017, trainNacta
+    return trainNacta2017, trainNacta
 
 
 def getTestRecordingsScoreDurCorrectionArtistAlbumFilter():

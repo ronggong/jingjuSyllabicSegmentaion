@@ -9,7 +9,7 @@ import os
 import h5py
 import numpy as np
 from src.utilFunctions import featureReshape
-from onsetFunctionCalc import late_fusion_calc
+from experiment_process_jingju_no_rnn import late_fusion_calc
 from keras.models import load_model
 from sklearn.metrics import average_precision_score
 from sklearn.metrics import cohen_kappa_score, confusion_matrix
@@ -68,7 +68,7 @@ def loadPredictionResults(label='ismir'):
 
 if __name__ == '__main__':
     # ismir madmom test
-    from src.filePath import *
+    from src.file_path_jingju import *
     filename_test_feature = join(feature_data_path, 'feature_all_ismir_madmom_test.h5')
     f = h5py.File(filename_test_feature, 'r')
     X_test = f['feature_all']

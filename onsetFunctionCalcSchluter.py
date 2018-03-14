@@ -15,6 +15,10 @@ from datasetCollection.trainingSampleCollectionSchluter import getMFCCBands2DMad
 from datasetCollection.trainingSampleCollection import featureExtraction
 from eval_schluter import eval_schluter
 from src.filePathSchulter import *
+
+# from src.filePathJingju import jingju_cnn_model_path
+# from src.filePath import full_path_mfccBands_2D_scaler_onset
+
 from src.labWriter import onsetLabWriter
 from src.parameters import *
 from src.schluterParser import annotationCvParser
@@ -149,7 +153,8 @@ def onsetFunction(audio_path,
             mfcc_reshaped = np.expand_dims(mfcc_reshaped, axis=1)
 
         obs     = getOnsetFunction(observations=mfcc_reshaped,
-                                   model=model_keras_cnn_0)
+                                   model=model_keras_cnn_0,
+                                   method=no_dense_str)
         obs_i = obs[:,0]
 
         # save onset curve
@@ -314,15 +319,18 @@ def schluterEvalSubroutine(nfolds, filter_shape_0, weighting_str, pp_threshold, 
 
     for ii in range(nfolds):
         if not phrase_eval: # not CRNN
+            #TODO load jingju model and scaler
             model_name_str = 'schulter_' + \
                              filter_shape_0 + \
                              '_madmom_' + \
                              weighting_str + \
                              '_early_stopping_adam_cv' + \
                              relu_str + \
-                             deep_str + \
-                             no_dense_str + '_'
+                             no_dense_str + \
+                             deep_str + '_'
 
+            # TODO only for jingju + schulter datasets trained model
+            # scaler_name_0 = 'scaler_jan_madmom_simpleSampleWeighting_early_stopping_schluter_jingju_dataset_'+str(ii)+'.pickle.gz'
             scaler_name_0 = 'scaler_' + filter_shape_0 + '_madmom_' + weighting_str + '_early_stopping_' + str(
                 ii) + '.pickle.gz'
 
@@ -330,7 +338,9 @@ def schluterEvalSubroutine(nfolds, filter_shape_0, weighting_str, pp_threshold, 
             model_name_str = 'schulter_' + filter_shape_0 + '_madmom_' + weighting_str + '_early_stopping_adam_cv_phrase' + overlap_str + bidi_str
             scaler_name_0 = 'scaler_syllable_mfccBands2D_schluter_madmom_phrase.pkl'
 
+        # TODO load jingju model, to remove
         model_name_0 = model_name_str + str(ii)
+        # model_name_0 = 'keras.cnn_syllableSeg_jan_artist_filter_less_deep0'
 
         print(model_name_0)
 
@@ -348,7 +358,9 @@ def schluterEvalSubroutine(nfolds, filter_shape_0, weighting_str, pp_threshold, 
             stateful = None
         else:
             if not phrase_eval:
+                # TODO load jingju model
                 model_keras_cnn_0 = load_model(join(schluter_cnn_model_path, model_name_0 + '.h5'))
+                # model_keras_cnn_0 = load_model(join(jingju_cnn_model_path, model_name_0 + '.h5'))
             else:
                 from training_scripts.models_CRNN import jan_original
                 # initialize the model
@@ -377,8 +389,10 @@ def schluterEvalSubroutine(nfolds, filter_shape_0, weighting_str, pp_threshold, 
 
         # try:
         if not phrase_eval:
+            # TODO load jingju scaler
             with gzip.open(join(schluter_cnn_model_path, scaler_name_0), 'rb') as f:
                 scaler_0 = cPickle.load(f)
+            # scaler_0 = pickle.load(open(full_path_mfccBands_2D_scaler_onset, 'rb'))
         else:
             scaler_0 = pickle.load(open(join(schluter_cnn_model_path, scaler_name_0), 'rb'))
         # except:
@@ -391,6 +405,10 @@ def schluterEvalSubroutine(nfolds, filter_shape_0, weighting_str, pp_threshold, 
         except:
             print(scaler_name_1, 'not found')
             scaler_1 = ''
+
+        # TODO load jingju model to remove
+        # model_name_str = 'schluter_'+model_name_0+'_'
+        # model_name_0 = 'schluter_'+model_name_0+'_'+str(ii)
 
         for fn in test_filenames:
             # print(fn)
@@ -431,6 +449,7 @@ def schluterEvalSubroutine(nfolds, filter_shape_0, weighting_str, pp_threshold, 
     print('threshold', pp_threshold)
     recall_precision_f1_fold, recall_precision_f1_overall = eval_schluter(model_name_str)
 
+    # TODO jingju model log path
     log_path = join(schluter_results_path,
                     weighting,
                     'schluter' + '_' +
@@ -442,6 +461,7 @@ def schluterEvalSubroutine(nfolds, filter_shape_0, weighting_str, pp_threshold, 
                     deep_str +
                     no_dense_str + '_' +
                     'threshold.txt')
+    # log_path = join(schluter_results_path, weighting, 'schluter_jingju_model_threshold.txt')
     append_write = append_or_write(log_path)
     writeResults2TxtSchluter(log_path, append_write, pp_threshold, recall_precision_f1_overall)
 
@@ -464,14 +484,14 @@ if __name__ == '__main__':
 
     deep = True
 
-    no_dense = False
+    no_dense = True
 
     overlap_str = '_overlap' if overlap else ''
     phrase_str = '_phrase' if phrase_eval else ''
-    bidi_str = '_bidi' if bidi else ''
+    bidi_str = '_bidi_100' if bidi else ''
     relu_str = '_relu' if relu else ''
     deep_str = '_less_deep' if deep else ''
-    no_dense_str = '_no_dense' if no_dense else ''
+    no_dense_str = '_jingju_no_dense' if no_dense else ''
 
     weighting_str = 'simpleSampleWeighting' if weighting == 'simpleWeighting' else 'positiveThreeSampleWeighting'
 
@@ -511,31 +531,23 @@ if __name__ == '__main__':
             best_recall_precision_f1_fold = recall_precision_f1_fold
             best_th = pp_threshold
 
+    # TODO jingju model to remove
     # write recall precision f1 overall results
+    txt_filename_results_schluter = 'schluter'+'_'+filter_shape_0+phrase_str+overlap_str+bidi_str+relu_str+deep_str+no_dense_str+'.txt'
+    # txt_filename_results_schluter = 'schluter_jingju_model.txt'
     writeResults2TxtSchluter(join(schluter_results_path,
                                   weighting,
-                                  'schluter'+'_'+
-                                  filter_shape_0+
-                                  phrase_str+
-                                  overlap_str+
-                                  bidi_str+
-                                  relu_str+
-                                  deep_str+
-                                  no_dense_str+'.txt'),
+                                  txt_filename_results_schluter),
                              'w',
                              best_th,
                              best_recall_precision_f1_overall)
 
+    # TODO jingju model to remove
+    filename_statistical_significance = 'schluter'+'_'+filter_shape_0+phrase_str+overlap_str+bidi_str+relu_str+deep_str+no_dense_str+'.pkl'
+    # filename_statistical_significance = 'schluter_jingju_model.pkl'
     # dump the statistical significance results
     pickle.dump(best_recall_precision_f1_fold,
                 open(join('./statisticalSignificance/data',
                           'schluter',
                           weighting,
-                          'schluter'+'_'+
-                          filter_shape_0+
-                          phrase_str+
-                          overlap_str+
-                          bidi_str+
-                          relu_str+
-                          deep_str+
-                          no_dense_str+'.pkl'), 'w'))
+                          filename_statistical_significance), 'w'))

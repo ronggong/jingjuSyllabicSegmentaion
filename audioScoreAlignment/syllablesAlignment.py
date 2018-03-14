@@ -42,6 +42,7 @@ def adjustSyllableDurByAlignment(durations, syllables_score_aligned, syllables_g
             durations.pop(ii)
     return durations
 
+
 def removeUnvoicedAndGetIdx(pitchtrack):
     """
 
@@ -55,6 +56,7 @@ def removeUnvoicedAndGetIdx(pitchtrack):
             idx_removed2entire[str(len(pitchtrack_unvoiced_removed))] = ii
             pitchtrack_unvoiced_removed.append(pt)
     return np.array(pitchtrack_unvoiced_removed), idx_removed2entire
+
 
 def plotAlignment(pitchtrack_score, pitchtrack_audio, alignement_path, idx_syllable_onset_score, idx_removed2entire, ratio_interp):
     import matplotlib.pyplot as plt

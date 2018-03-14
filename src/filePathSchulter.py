@@ -1,8 +1,8 @@
 from os.path import join, dirname
 
-# schluter_dataset_root_path     = '/Users/gong/Documents/MTG document/dataset/onsets'
+schluter_dataset_root_path     = '/Users/gong/Documents/MTG document/dataset/onsets'
 
-schluter_dataset_root_path = '/homedtic/rgong/cnnSyllableSeg/schluter'
+# schluter_dataset_root_path = '/datasets/MTG/projects/compmusic/jingju_datasets/schluter/'
 
 schluter_audio_path = join(schluter_dataset_root_path, 'audio')
 schluter_cv_path = join(schluter_dataset_root_path, 'splits')

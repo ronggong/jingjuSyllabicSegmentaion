@@ -11,7 +11,7 @@ from keras.models import load_model
 pyximport.install(reload_support=True,
                   setup_args={'include_dirs': np.get_include()})
 
-from src.filePath import *
+from src.file_path_jingju import *
 from src.labWriter import boundaryLabWriter
 from src.labParser import lab2WordList
 from src.parameters import *

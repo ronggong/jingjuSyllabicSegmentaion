@@ -18,5 +18,5 @@
 export PATH=/homedtic/rgong/anaconda2/bin:$PATH
 source activate /homedtic/rgong/keras_env
 
-python /homedtic/rgong/cnnSyllableSeg/jingjuSyllabicSegmentation/training_scripts/newHpcDLScriptsSchluterCRNNOverlap/keras_cnn_syllableSeg_jan_madmom_original.py 0 8
+python /homedtic/rgong/cnnSyllableSeg/jingjuSyllabicSegmentation/training_scripts/newHpcDLScriptsSchluterCRNNOverlap/keras_cnn_syllableSeg_jan_madmom_original.py 5 8
 

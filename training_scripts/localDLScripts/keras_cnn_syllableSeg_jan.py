@@ -3,7 +3,7 @@
 # from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
 
 import os
-from src.filePath import *
+from src.file_path_jingju import *
 from training_scripts.data_preparation import load_data
 from training_scripts.models import jan, model_train
 

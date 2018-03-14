@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys, os
 import numpy as np
-from filePath import *
+from file_path_jingju import *
 
 sys.path.append(os.path.realpath('./src/'))
 

@@ -2,7 +2,7 @@
 check the score sanity
 """
 
-from src.filePath import *
+from src.file_path_jingju import *
 from src.trainTestSeparation import getTestTrainRecordingsArtist
 from src.textgridParser import textGrid2WordList, syllableTextgridExtraction
 from src.scoreParser import csvScorePinyinParser

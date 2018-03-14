@@ -15,7 +15,7 @@ import random
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src')))
 
-from filePathJingju import *
+from file_path_jingju_rnn import *
 
 def syllableSeg_jan_madmom_original_basecode(ii, dataset_str='ismir'):
 

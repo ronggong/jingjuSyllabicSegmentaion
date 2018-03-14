@@ -1,7 +1,7 @@
 from os import walk, listdir, mkdir
 from praatio import tgio
 from os.path import isfile, join, exists
-from src.filePath import *
+from src.file_path_jingju import *
 from src.labParser import lab2WordList
 
 def textgridSyllableSegmentation(wav_path,

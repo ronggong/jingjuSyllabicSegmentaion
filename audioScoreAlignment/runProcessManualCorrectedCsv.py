@@ -19,11 +19,11 @@ from chroma_extraction import run_nnls_extraction, buildChroma, buildChroma_manu
 from getScoreInfo import melodySynthesizeWithRests, melody_minus_mean
 from scipy.spatial.distance import euclidean, cosine
 from src.parameters import sample_number_total
-from src.filePath import nacta2017_textgrid_path, nacta_textgrid_path
-from src.filePath import nacta2017_wav_path, nacta_wav_path
-from src.filePath import nacta2017_score_pinyin_path, nacta_score_pinyin_path
-from src.filePath import nacta2017_score_pinyin_corrected_path, nacta_score_pinyin_corrected_path
-from src.filePath import score2midi_path, midi2wav_path
+from src.file_path_jingju import nacta2017_textgrid_path, nacta_textgrid_path
+from src.file_path_jingju import nacta2017_wav_path, nacta_wav_path
+from src.file_path_jingju import nacta2017_score_pinyin_path, nacta_score_pinyin_path
+from src.file_path_jingju import nacta2017_score_pinyin_corrected_path, nacta_score_pinyin_corrected_path
+from src.file_path_jingju import score2midi_path, midi2wav_path
 from src.textgridParser import syllableTextgridExtraction
 from src.utilFunctions import hz2cents, stringDist, pitchtrackInterp
 from src.scoreParser import csvScorePinyinParser, writeCsvPinyinFromData, removePunctuation

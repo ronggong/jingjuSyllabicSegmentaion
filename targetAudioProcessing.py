@@ -31,7 +31,7 @@ import pickle
 import essentia.standard as ess
 import numpy as np
 
-from src.filePath import *
+from src.file_path_jingju import *
 from src.parameters import *
 from src.utilFunctions import featureReshape
 
