@@ -3,13 +3,13 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
 
-def plot_jingju_non_rnn(nested_syllable_lists,
-                        i_line,
-                        mfcc_line,
-                        hopsize_t,
-                        obs_i,
-                        i_boundary,
-                        duration_score):
+def plot_jingju(nested_syllable_lists,
+                i_line,
+                mfcc_line,
+                hopsize_t,
+                obs_i,
+                i_boundary,
+                duration_score):
     # print(line_list)
     nested_ul = nested_syllable_lists[i_line][1]
     # print(nested_ul)
@@ -25,7 +25,7 @@ def plot_jingju_non_rnn(nested_syllable_lists,
     ax1 = plt.subplot(3, 1, 1)
     y = np.arange(0, 80)
     x = np.arange(0, mfcc_line.shape[0]) * hopsize_t
-    plt.pcolormesh(x, y, np.transpose(mfcc_line[:, 80 * 10:80 * 11]))
+    plt.pcolormesh(x, y, np.transpose(mfcc_line[:, 80 * 7:80 * 8]))
     for i_gs, gs in enumerate(ground_truth_onset):
         plt.axvline(gs, color='r', linewidth=2)
 

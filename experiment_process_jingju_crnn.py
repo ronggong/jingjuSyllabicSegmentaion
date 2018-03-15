@@ -1,30 +1,28 @@
 # -*- coding: utf-8 -*-
-from os import makedirs
-from os.path import isfile
-from os.path import exists
 import pickle
-import numpy as np
-import pyximport
-
-from keras.models import load_model
-from src.file_path_jingju import *
-from src.parameters import *
+from os import makedirs
+from os.path import isfile, exists
+from src.file_path_jingju_rnn import *
 from src.labWriter import boundaryLabWriter
 from src.utilFunctions import featureReshape
-from src.utilFunctions import getOnsetFunction
 from src.utilFunctions import smooth_obs
 from src.trainTestSeparation import getTestRecordingsScoreDurCorrectionArtistAlbumFilter
-from experiment_process_helper import data_parser
-from experiment_process_helper import get_line_properties
-from experiment_process_helper import boundary_decoding
-from experiment_process_helper import get_results_decoding_path
-from experiment_process_helper import get_boundary_list
-from experiment_process_helper import writeResults2Txt
 
-from eval_demo import eval_write_2_txt
 from madmom.features.onsets import OnsetPeakPickingProcessor
 from audio_preprocessing import getMFCCBands2DMadmom
+from training_scripts.models_CRNN import jan_original
+from experiment_process_helper import data_parser
+from experiment_process_helper import get_line_properties
+from experiment_process_helper import get_results_decoding_path
+from experiment_process_helper import boundary_decoding
+from experiment_process_helper import get_boundary_list
+from experiment_process_helper import writeResults2Txt
+from eval_demo import eval_write_2_txt
+
 from plot_code import plot_jingju
+
+import numpy as np
+import pyximport
 
 pyximport.install(reload_support=True,
                   setup_args={'include_dirs': np.get_include()})
@@ -44,21 +42,24 @@ def batch_process_onset_detection(wav_path,
                                   lab=False,
                                   threshold=0.54,
                                   obs_cal=True,
-                                  decoding_method='viterbi'):
+                                  decoding_method='viterbi',
+                                  stateful=True):
     """
-    :param wav_path: string, path where we have the audio files
-    :param textgrid_path:  string, path where we have the text grid ground truth
-    :param score_path: string, path where we have the scores
-    :param scaler: scaler object sklearn
-    :param test_recordings: list of strings, test recording filenames
-    :param model_keras_cnn_0: keras .h5, CNN onset detection model
-    :param cnnModel_name: string, CNN model name
-    :param eval_results_path: string, path where we save the evaluation results
-    :param architecture: string, the model architecture
-    :param lab: bool, used for Riyaz dataset
-    :param threshold: float, used for peak picking
-    :param obs_cal: bool, if to calculate the ODF or not
+    experiment process, evaluate a whole jingju dataset using CRNN model
+    :param wav_path: string, where we store the wav
+    :param textgrid_path: string, where we store the textgrid
+    :param score_path: string, where we store the score
+    :param scaler: sklearn object, StandardScaler
+    :param test_recordings: list of strings, testing recording filename
+    :param model_keras_cnn_0: keras .h5, model weights
+    :param cnnModel_name: string, model name
+    :param eval_results_path: string, where we store the evaluation results
+    :param architecture: string, model architecture name
+    :param lab: string, for Riyaz dataset, not used in the paper
+    :param threshold: float, threshold for peak picking onset selection
+    :param obs_cal: string, tocal or toload, for saving running time
     :param decoding_method: string, viterbi or peakPicking
+    :param stateful: bool, whether to use the stateful RNN
     :return:
     """
 
@@ -67,13 +68,12 @@ def batch_process_onset_detection(wav_path,
                                   bool_corrected_score_duration=varin['corrected_score_duration'],
                                   eval_results_path=eval_results_path)
 
-    # loop through all recordings
     for artist_path, rn in test_recordings:
 
         score_file = join(score_path, artist_path, rn+'.csv')
 
         if not isfile(score_file):
-            print('Score not found: ' + score_file)
+            print 'Score not found: ' + score_file
             continue
 
         nested_syllable_lists, wav_file, line_list, syllables, syllable_durations, bpm, pinyins = \
@@ -88,23 +88,19 @@ def batch_process_onset_detection(wav_path,
             # load audio
             mfcc = getMFCCBands2DMadmom(wav_file, fs, hopsize_t, channel=1)
             mfcc_scaled = scaler.transform(mfcc)
-            mfcc_reshaped = featureReshape(mfcc_scaled, nlen=7)
 
         i_line = -1
         for i_obs, line in enumerate(line_list):
-            # line without lyrics will be ignored
             if not lab and len(line[2]) == 0:
                 continue
 
             i_line += 1
 
-            # line without duration will be ignored
             try:
                 print(syllable_durations[i_line])
             except IndexError:
                 continue
 
-            # line non-fixed tempo will be ignored
             if float(bpm[i_line]) == 0:
                 continue
 
@@ -112,23 +108,44 @@ def batch_process_onset_detection(wav_path,
                                                                                  line=line,
                                                                                  hopsize_t=hopsize_t)
 
-            # initialize ODF path and filename
             obs_path = join('./obs', cnnModel_name, artist_path)
             obs_filename = rn + '_' + str(i_line + 1) + '.pkl'
 
             if obs_cal == 'tocal':
                 mfcc_line = mfcc[frame_start:frame_end]
-                mfcc_reshaped_line = mfcc_reshaped[frame_start:frame_end]
-                mfcc_reshaped_line = np.expand_dims(mfcc_reshaped_line, axis=1)
+                mfcc_scaled_line = mfcc_scaled[frame_start:frame_end]
 
-                if 'joint' not in filename_keras_cnn_0:
-                    obs = getOnsetFunction(observations=mfcc_reshaped_line,
-                                           model=model_keras_cnn_0,
-                                           method=architecture)
-                    obs_i = obs[:, 0]
-                else:
-                    # joint model
-                    obs_i, _ = model_keras_cnn_0.predict(mfcc_reshaped_line, batch_size=128, verbose=2)
+                # length of the padded sequence
+                len_2_pad = int(len_seq * np.ceil(len(mfcc_scaled_line) / float(len_seq)))
+                len_padded = len_2_pad - len(mfcc_scaled_line)
+
+                # pad feature, label and sample weights
+                mfcc_line_pad = np.zeros((len_2_pad, mfcc_scaled_line.shape[1]), dtype='float32')
+                mfcc_line_pad[:mfcc_scaled_line.shape[0], :] = mfcc_scaled_line
+                mfcc_line_pad = featureReshape(mfcc_line_pad, nlen=7)
+
+                iter_time = len(mfcc_line_pad) / len_seq
+                obs_i = np.array([])
+                for ii in range(len(mfcc_line_pad) / len_seq):
+
+                    # evaluate for each segment
+                    mfcc_line_tensor = mfcc_line_pad[ii * len_seq:(ii + 1) * len_seq]
+                    mfcc_line_tensor = np.expand_dims(mfcc_line_tensor, axis=0)
+                    mfcc_line_tensor = np.expand_dims(mfcc_line_tensor, axis=2)
+
+                    y_pred = model_keras_cnn_0.predict_on_batch(mfcc_line_tensor)
+
+                    # remove the padded samples
+                    if ii == iter_time - 1 and len_padded > 0:
+                        y_pred = y_pred[:, :len_seq - len_padded, :]
+
+                    if stateful and ii == iter_time - 1:
+                        model_keras_cnn_0.reset_states()
+
+                    # reduce the label dimension
+                    y_pred = y_pred.reshape((y_pred.shape[1],))
+
+                    obs_i = np.append(obs_i, y_pred)
 
                 # save onset curve
                 print('save onset curve ... ...')
@@ -142,14 +159,11 @@ def batch_process_onset_detection(wav_path,
             obs_i = smooth_obs(obs_i)
 
             # organize score
-            print('Calculating: ', rn, ' phrase ', str(i_obs))
+            print('Calculating: ', rn, ' phrase', str(i_obs))
             print('ODF Methods: ', architecture)
 
-            # process the score duration
             duration_score = syllable_durations[i_line]
-            # only save the duration if it exists
             duration_score = np.array([float(ds) for ds in duration_score if len(ds)])
-            # normalize the duration
             duration_score *= (time_line/np.sum(duration_score))
 
             i_boundary, label = boundary_decoding(decoding_method=decoding_method,
@@ -161,11 +175,8 @@ def batch_process_onset_detection(wav_path,
                                                   viterbiDecoding=viterbiDecoding,
                                                   OnsetPeakPickingProcessor=OnsetPeakPickingProcessor)
 
-            # create detected syllable result filename
-            filename_syll_lab = join(eval_results_decoding_path, artist_path,
-                                     rn + '_' + str(i_line + 1) + '.syll.lab')
-            time_boundary_start = np.array(i_boundary[:-1]) * hopsize_t
-            time_boundary_end = np.array(i_boundary[1:]) * hopsize_t
+            time_boundary_start = np.array(i_boundary[:-1])*hopsize_t
+            time_boundary_end = np.array(i_boundary[1:])*hopsize_t
 
             boundary_list = get_boundary_list(lab=lab,
                                               decoding_method=decoding_method,
@@ -175,24 +186,27 @@ def batch_process_onset_detection(wav_path,
                                               syllables=syllables,
                                               i_line=i_line)
 
+            filename_syll_lab = join(eval_results_decoding_path,
+                                     artist_path, rn + '_' + str(i_line + 1) + '.syll.lab')
+
             boundaryLabWriter(boundaryList=boundary_list,
                               outputFilename=filename_syll_lab,
                               label=label)
 
             if varin['plot'] and obs_cal == 'tocal':
-                plot_jingju(nested_syllable_lists=nested_syllable_lists,
-                            i_line=i_line,
-                            mfcc_line=mfcc_line,
-                            hopsize_t=hopsize_t,
-                            obs_i=obs_i,
-                            i_boundary=i_boundary,
-                            duration_score=duration_score)
+                plot_jingju(nested_syllable_lists,
+                            i_line,
+                            mfcc_line,
+                            hopsize_t,
+                            obs_i,
+                            i_boundary,
+                            duration_score)
 
     return eval_results_decoding_path
 
 
 def viterbi_subroutine(test_nacta_2017, test_nacta, eval_label, obs_cal):
-    """5 run times routine for the viterbi decoding onset detection"""
+    """routine for viterbi decoding"""
 
     list_recall_onset_25, list_precision_onset_25, list_F1_onset_25 = [], [], []
     list_recall_onset_5, list_precision_onset_5, list_F1_onset_5 = [], [], []
@@ -202,15 +216,25 @@ def viterbi_subroutine(test_nacta_2017, test_nacta, eval_label, obs_cal):
 
         if obs_cal == 'tocal':
 
-            model_keras_cnn_0 = load_model(full_path_keras_cnn_0 + str(ii) + '.h5')
-            print(model_keras_cnn_0.summary())
-            # TODO use schluter for jingju
-            # scaler = cPickle.load(gzip.open(full_path_mfccBands_2D_scaler_onset+str(ii)+'.pickle.gz'))
+            stateful = False if varin['overlap'] else True
+            input_shape = (1, len_seq, 1, 80, 15)
 
-            print(full_path_keras_cnn_0)
+            # initialize the model
+            model_keras_cnn_0 = jan_original(filter_density=1,
+                                             dropout=0.5,
+                                             input_shape=input_shape,
+                                             batchNorm=False,
+                                             dense_activation='sigmoid',
+                                             channel=1,
+                                             stateful=stateful,
+                                             training=False,
+                                             bidi=varin['bidi'])
+
+            # load the model weights
+            model_keras_cnn_0.load_weights(full_path_keras_cnn_0 + str(ii) + '.h5')
 
             if varin['dataset'] != 'ismir':
-                # nacta2017
+                # evaluate nacta 2017 data set
                 batch_process_onset_detection(wav_path=nacta2017_wav_path,
                                               textgrid_path=nacta2017_textgrid_path,
                                               score_path=nacta2017_score_unified_path,
@@ -219,11 +243,11 @@ def viterbi_subroutine(test_nacta_2017, test_nacta, eval_label, obs_cal):
                                               cnnModel_name=cnnModel_name + str(ii),
                                               eval_results_path=eval_results_path + str(ii),
                                               scaler=scaler,
-                                              architecture=varin['architecture'],
                                               obs_cal=obs_cal,
-                                              decoding_method='viterbi')
+                                              decoding_method='viterbi',
+                                              stateful=stateful)
 
-            # nacta
+            # evaluate nacta dataset
             eval_results_decoding_path = batch_process_onset_detection(wav_path=nacta_wav_path,
                                                                        textgrid_path=nacta_textgrid_path,
                                                                        score_path=nacta_score_unified_path,
@@ -232,9 +256,9 @@ def viterbi_subroutine(test_nacta_2017, test_nacta, eval_label, obs_cal):
                                                                        cnnModel_name=cnnModel_name + str(ii),
                                                                        eval_results_path=eval_results_path + str(ii),
                                                                        scaler=scaler,
-                                                                       architecture=varin['architecture'],
                                                                        obs_cal=obs_cal,
-                                                                       decoding_method='viterbi')
+                                                                       decoding_method='viterbi',
+                                                                       stateful=stateful)
         else:
             eval_results_decoding_path = eval_results_path + str(ii)
 
@@ -273,8 +297,7 @@ def viterbi_subroutine(test_nacta_2017, test_nacta, eval_label, obs_cal):
 
 
 def peak_picking_subroutine(test_nacta_2017, test_nacta, th, obs_cal):
-    """Peak picking routine,
-    five folds evaluation"""
+    """routine for peak picking decoding"""
     from src.utilFunctions import append_or_write
     import csv
 
@@ -289,16 +312,26 @@ def peak_picking_subroutine(test_nacta_2017, test_nacta, th, obs_cal):
 
     for ii in range(5):
 
+        stateful = False if varin['overlap'] else True
         if obs_cal == 'tocal':
-            model_keras_cnn_0 = load_model(full_path_keras_cnn_0 + str(ii) + '.h5')
-            # TODO use shcluter for jingju
-            # scaler = cPickle.load(gzip.open(full_path_mfccBands_2D_scaler_onset+str(ii)+'.pickle.gz'))
+            input_shape = (1, len_seq, 1, 80, 15)
+            # initialize the model
+            model_keras_cnn_0 = jan_original(filter_density=1,
+                                             dropout=0.5,
+                                             input_shape=input_shape,
+                                             batchNorm=False,
+                                             dense_activation='sigmoid',
+                                             channel=1,
+                                             stateful=stateful,
+                                             training=False,
+                                             bidi=varin['bidi'])
+
+            model_keras_cnn_0.load_weights(full_path_keras_cnn_0 + str(ii) + '.h5')
         else:
             model_keras_cnn_0 = None
-            scaler = None
 
         if varin['dataset'] != 'ismir':
-            # nacta2017
+            # evaluate nacta 2017 dataset
             batch_process_onset_detection(wav_path=nacta2017_wav_path,
                                           textgrid_path=nacta2017_textgrid_path,
                                           score_path=nacta2017_score_pinyin_path,
@@ -307,11 +340,12 @@ def peak_picking_subroutine(test_nacta_2017, test_nacta, th, obs_cal):
                                           cnnModel_name=cnnModel_name + str(ii),
                                           eval_results_path=eval_results_path + str(ii),
                                           scaler=scaler,
-                                          architecture=varin['architecture'],
                                           threshold=th,
                                           obs_cal=obs_cal,
-                                          decoding_method='peakPicking')
+                                          decoding_method='peakPicking',
+                                          stateful=stateful)
 
+        # evaluate nacta dataset
         eval_results_decoding_path = batch_process_onset_detection(wav_path=nacta_wav_path,
                                                                    textgrid_path=nacta_textgrid_path,
                                                                    score_path=nacta_score_pinyin_path,
@@ -320,17 +354,17 @@ def peak_picking_subroutine(test_nacta_2017, test_nacta, th, obs_cal):
                                                                    cnnModel_name=cnnModel_name + str(ii),
                                                                    eval_results_path=eval_results_path + str(ii),
                                                                    scaler=scaler,
-                                                                   architecture=varin['architecture'],
                                                                    threshold=th,
                                                                    obs_cal=obs_cal,
-                                                                   decoding_method='peakPicking')
+                                                                   decoding_method='peakPicking',
+                                                                   stateful=stateful)
 
         append_write = append_or_write(eval_result_file_name)
+
         with open(eval_result_file_name, append_write) as testfile:
             csv_writer = csv.writer(testfile)
             csv_writer.writerow([th])
 
-        # eval_results_decoding_path = cnnModel_name + str(ii) + '_peakPickingMadmom'
         precision_onset, recall_onset, F1_onset, \
         precision, recall, F1, \
             = eval_write_2_txt(eval_result_file_name,
@@ -366,7 +400,7 @@ def peak_picking_subroutine(test_nacta_2017, test_nacta, th, obs_cal):
 
 
 def viterbi_label_eval(test_nacta_2017, test_nacta, eval_label, obs_cal):
-    """evaluate viterbi onset detection"""
+    """evaluate viterbi decoding results"""
 
     list_precision_onset_25, list_recall_onset_25, list_F1_onset_25, list_precision_25, list_recall_25, list_F1_25, \
     list_precision_onset_5, list_recall_onset_5, list_F1_onset_5, list_precision_5, list_recall_5, list_F1_5 = \
@@ -401,25 +435,26 @@ def viterbi_label_eval(test_nacta_2017, test_nacta, eval_label, obs_cal):
 
 
 def peak_picking_eval(test_nacta_2017, test_nacta, obs_cal):
-    """evaluate the peak picking results,
-    search for the best threshold"""
+    """evaluate the peak picking results"""
 
-    # Step1: coarse scan the best threshold, step 0.1
+    # coarse search
     best_F1_onset_25, best_th = 0, 0
-
     for th in range(1, 9):
         th *= 0.1
 
-        _, _, list_F1_onset_25, _, _, _, _, _, _, _, _, _ = peak_picking_subroutine(test_nacta_2017=test_nacta_2017,
-                                                                                    test_nacta=test_nacta,
-                                                                                    th=th,
-                                                                                    obs_cal=obs_cal)
+        try:
+            _, _, list_F1_onset_25, _, _, _, _, _, _, _, _, _ = peak_picking_subroutine(test_nacta_2017=test_nacta_2017,
+                                                                                        test_nacta=test_nacta,
+                                                                                        th=th,
+                                                                                        obs_cal=obs_cal)
 
-        if np.mean(list_F1_onset_25) > best_F1_onset_25:
-            best_th = th
-            best_F1_onset_25 = np.mean(list_F1_onset_25)
+            if np.mean(list_F1_onset_25) > best_F1_onset_25:
+                best_th = th
+                best_F1_onset_25 = np.mean(list_F1_onset_25)
+        except:
+            continue
 
-    # Step 2: finer scan the best threshold
+    # finer scan the best threshold
     for th in range(int((best_th - 0.1) * 100), int((best_th + 0.1) * 100)):
         th *= 0.01
 
@@ -432,7 +467,7 @@ def peak_picking_eval(test_nacta_2017, test_nacta, obs_cal):
             best_th = th
             best_F1_onset_25 = np.mean(list_F1_onset_25)
 
-    # Step 3: get the statistics of the best th
+    # get the statistics of the best threshold
     list_precision_onset_25, list_recall_onset_25, list_F1_onset_25, list_precision_25, list_recall_25, list_F1_25, \
     list_precision_onset_5, list_recall_onset_5, list_F1_onset_5, list_precision_5, list_recall_5, list_F1_5 = \
         peak_picking_subroutine(test_nacta_2017=test_nacta_2017,
@@ -442,45 +477,40 @@ def peak_picking_eval(test_nacta_2017, test_nacta, obs_cal):
 
     print('best_th', best_th)
 
-    # statistical significance data
     pickle.dump(list_F1_onset_25,
                 open(join('./statisticalSignificance/data/jingju',
                           varin['sample_weighting'],
                           cnnModel_name + '_peakPickingMadmom.pkl'), 'w'))
 
-    # save the results
-    writeResults2Txt(join(jingju_results_path,
-                          varin['sample_weighting'],
-                          cnnModel_name + '_peakPickingMadmom' + '.txt'),
-                     str(best_th),
-                     'peakPicking',
-                     list_precision_onset_25,
-                     list_recall_onset_25,
-                     list_F1_onset_25,
-                     list_precision_25,
-                     list_recall_25,
-                     list_F1_25,
-                     list_precision_onset_5,
-                     list_recall_onset_5,
-                     list_F1_onset_5,
-                     list_precision_5,
-                     list_recall_5,
-                     list_F1_5)
+    writeResults2Txt(
+        join(jingju_results_path,
+             varin['sample_weighting'],
+             cnnModel_name + '_peakPickingMadmom' + '.txt'),
+        str(best_th),
+        'peakPicking',
+        list_precision_onset_25,
+        list_recall_onset_25,
+        list_F1_onset_25,
+        list_precision_25,
+        list_recall_25,
+        list_F1_25,
+        list_precision_onset_5,
+        list_recall_onset_5,
+        list_F1_onset_5,
+        list_precision_5,
+        list_recall_5,
+        list_F1_5)
 
 
 if __name__ == '__main__':
-
-    # load the test recordings
     test_nacta_2017, test_nacta = getTestRecordingsScoreDurCorrectionArtistAlbumFilter()
 
-    # TODO schluter use for jingju
+    full_path_mfccBands_2D_scaler_onset = scaler_artist_filter_phrase_model_path
+
     scaler = pickle.load(open(full_path_mfccBands_2D_scaler_onset, 'rb'))
 
-    # calculate the ODF only in the first round
-    # then we can load them for saving time
     obs_cal = 'tocal'
 
-    # evaluate label
     viterbi_label_eval(test_nacta_2017=test_nacta_2017,
                        test_nacta=test_nacta,
                        eval_label=True,
@@ -488,7 +518,6 @@ if __name__ == '__main__':
 
     obs_cal = 'toload'
 
-    # do not evaluate label
     viterbi_label_eval(test_nacta_2017=test_nacta_2017,
                        test_nacta=test_nacta,
                        eval_label=False,

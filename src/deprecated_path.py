@@ -142,3 +142,6 @@ else:
         # TODO use schluter to evaluate jingju
         filename_scaler_onset = 'scaler_syllable_mfccBands2D_old+new_artist_filter_madmom.pkl'
         # filename_scaler_onset = 'scaler_jan_madmom_simpleSampleWeighting_early_stopping_schluter_jingju_dataset_'
+
+# CRNN non-overlapping path
+cnnModel_name = varin['dataset']+'_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase'

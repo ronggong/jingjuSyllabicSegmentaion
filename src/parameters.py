@@ -6,8 +6,10 @@ hopsize_t = 0.010
 framesize = int(round(framesize_t*fs))
 hopsize = int(round(hopsize_t*fs))
 
-# MFCC params
 highFrequencyBound = fs/2 if fs/2 < 11000 else 11000
+
+# CRNN batch size
+batch_size = 64
 
 varin = {}
 
@@ -28,8 +30,8 @@ varin['dataset'] = 'artist_filter'
 
 varin['sample_weighting'] = 'simpleWeighting'
 
-varin['overlap'] = False
+varin['overlap'] = True
 
-varin['bidi'] = False
+varin['bidi'] = True
 
-varin['architecture'] = 'jordi_temporal'
+varin['architecture'] = 'jan_bidi_100'
