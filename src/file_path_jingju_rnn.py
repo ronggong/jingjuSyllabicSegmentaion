@@ -1,6 +1,6 @@
 from file_path_jingju_shared import *
 from os.path import join
-from parameters import *
+from parameters_jingju import *
 
 
 jingju_dataset_root_path = '/Users/gong/Documents/MTG document/dataset/syllableSeg/'

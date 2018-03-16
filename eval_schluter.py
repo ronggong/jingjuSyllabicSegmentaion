@@ -1,4 +1,4 @@
-from src.filePathSchulter import *
+from src.file_path_schulter import *
 from src.utilFunctions import getRecordings
 from src.schluterParser import annotationCvParser
 from src.evaluation2 import onsetEval, metrics

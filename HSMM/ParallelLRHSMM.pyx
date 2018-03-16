@@ -34,7 +34,7 @@ cimport cython
 
 from LRHMM import _LRHMM
 from src.phonemeMap import *
-from src.parameters import *
+from src.parameters_jingju import *
 
 # import os,sys
 # import json

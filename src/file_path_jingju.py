@@ -1,6 +1,6 @@
 from file_path_jingju_shared import *
 from os.path import join
-from parameters import varin
+from parameters_jingju import varin
 
 # where we have the dumped features
 feature_data_path = '/Users/gong/Documents/MTG document/dataset/syllableSeg/'
@@ -34,7 +34,7 @@ elif varin['architecture'] == 'jordi_temporal':
         'keras.cnn_syllableSeg_jordi_temporal_mfccBands_2D_all_artist_filter_madmom_early_stopping_jan_params'
     cnnModel_name = 'jordi_temporal_artist_filter_madmom_early_stopping_jan_params'
 else:
-    raise ValueError('You should choose the right architecture.')
+    raise ValueError('The architecture %s that you select is not a valid one.', varin['architecture'])
 
 
 if 'joint' in filename_keras_cnn_0:

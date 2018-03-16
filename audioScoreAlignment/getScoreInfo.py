@@ -197,7 +197,7 @@ def melody_minus_mean(melody, silence_pitch):
 if __name__ == '__main__':
 
     # score information *.csv
-    from src.parameters import sample_number_total
+    from src.parameters_jingju import sample_number_total
     import uuid
 
     score_info_filepath = path.join(score_path, score_info_filename)

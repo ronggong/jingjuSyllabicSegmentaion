@@ -18,7 +18,7 @@ from stream2midi import midi2wav
 from chroma_extraction import run_nnls_extraction, buildChroma, buildChroma_manualCorrectedCsv
 from getScoreInfo import melodySynthesizeWithRests, melody_minus_mean
 from scipy.spatial.distance import euclidean, cosine
-from src.parameters import sample_number_total
+from src.parameters_jingju import sample_number_total
 from src.file_path_jingju import nacta2017_textgrid_path, nacta_textgrid_path
 from src.file_path_jingju import nacta2017_wav_path, nacta_wav_path
 from src.file_path_jingju import nacta2017_score_pinyin_path, nacta_score_pinyin_path

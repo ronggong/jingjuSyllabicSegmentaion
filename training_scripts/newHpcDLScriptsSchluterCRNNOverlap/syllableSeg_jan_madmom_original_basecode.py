@@ -17,7 +17,7 @@ from keras import backend as K
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src')))
 
-from filePathSchulter import *
+from file_path_schulter import *
 
 def loss_cal(fns, data_path, scaler, model):
     """

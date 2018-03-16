@@ -58,3 +58,33 @@ def plot_jingju(nested_syllable_lists,
 
     plt.xlabel('Time (s)')
     plt.show()
+
+
+def plot_schluter(mfcc,
+                  obs_i,
+                  hopsize_t,
+                  groundtruth_onset,
+                  detected_onsets):
+
+    plt.figure(figsize=(16, 6))
+
+    ax1 = plt.subplot(2, 1, 1)
+    y = np.arange(0, 80)
+    x = np.arange(0, mfcc.shape[0]) * hopsize_t
+    plt.pcolormesh(x, y, np.transpose(mfcc[:, 80 * 10:80 * 11]))
+    for i_gs, gs in enumerate(groundtruth_onset):
+        plt.axvline(gs, color='r', linewidth=2)
+
+    ax1.set_ylabel('Mel bands', fontsize=12)
+    ax1.get_xaxis().set_visible(False)
+    ax1.axis('tight')
+
+    ax2 = plt.subplot(212, sharex=ax1)
+    plt.plot(np.arange(0, len(obs_i)) * hopsize_t, obs_i)
+    for i_do, do in enumerate(detected_onsets):
+        plt.axvline(do, color='r', linewidth=2)
+
+    ax2.set_ylabel('ODF', fontsize=12)
+    ax2.axis('tight')
+    plt.xlabel('time (s)')
+    plt.show()

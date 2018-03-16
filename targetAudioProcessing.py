@@ -32,7 +32,7 @@ import essentia.standard as ess
 import numpy as np
 
 from src.file_path_jingju import *
-from src.parameters import *
+from src.parameters_jingju import *
 from src.utilFunctions import featureReshape
 
 

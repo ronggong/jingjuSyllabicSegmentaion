@@ -1,8 +1,13 @@
-from os.path import join, dirname
+from os.path import join
+from os.path import dirname
+from parameters_schluter import varin
 
-schluter_dataset_root_path     = '/Users/gong/Documents/MTG document/dataset/onsets'
+weighting = varin['sample_weighting']
+
+# schluter_dataset_root_path = '/Users/gong/Documents/MTG document/dataset/onsets'
 
 # schluter_dataset_root_path = '/datasets/MTG/projects/compmusic/jingju_datasets/schluter/'
+schluter_dataset_root_path = '/media/gong/ec990efa-9ee0-4693-984b-29372dcea0d1/Data/RongGong/onsets'
 
 schluter_audio_path = join(schluter_dataset_root_path, 'audio')
 schluter_cv_path = join(schluter_dataset_root_path, 'splits')
@@ -17,9 +22,7 @@ schluter_feature_data_path_madmom_positiveThreeSampleWeighting = join(schluter_d
 
 schluter_feature_data_path_madmom_simpleSampleWeighting_phrase = join(schluter_dataset_root_path, 'feature_madmom_simpleSampleWeighting_phrase')
 
-root_path       = join(dirname(__file__),'..')
-
-weighting = 'simpleWeighting'
+root_path = join(dirname(__file__), '..')
 
 schluter_cnn_model_path = join(root_path, 'cnnModels', 'schluter', weighting)
 

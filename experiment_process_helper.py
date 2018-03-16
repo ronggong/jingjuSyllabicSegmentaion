@@ -5,6 +5,7 @@ from src.scoreParser import csvDurationScoreParser
 from src.scoreParser import csvScorePinyinParser
 from src.textgridParser import textGrid2WordList
 from src.textgridParser import wordListsParseByLines
+from src.labWriter import onsetLabWriter
 
 
 def data_parser(artist_path,
@@ -136,21 +137,21 @@ def get_boundary_list(lab,
     return boundary_list
 
 
-def writeResults2Txt(filename,
-                     eval_label_str,
-                     decoding_method,
-                     list_precision_onset_25,
-                     list_recall_onset_25,
-                     list_F1_onset_25,
-                     list_precision_25,
-                     list_recall_25,
-                     list_F1_25,
-                     list_precision_onset_5,
-                     list_recall_onset_5,
-                     list_F1_onset_5,
-                     list_precision_5,
-                     list_recall_5,
-                     list_F1_5):
+def write_results_2_txt_jingju(filename,
+                               eval_label_str,
+                               decoding_method,
+                               list_precision_onset_25,
+                               list_recall_onset_25,
+                               list_F1_onset_25,
+                               list_precision_25,
+                               list_recall_25,
+                               list_F1_25,
+                               list_precision_onset_5,
+                               list_recall_onset_5,
+                               list_F1_onset_5,
+                               list_precision_5,
+                               list_recall_5,
+                               list_F1_5):
     """
     :param filename:
     :param eval_label_str: eval label or not
@@ -201,3 +202,72 @@ def writeResults2Txt(filename,
         f.write(str(np.mean(list_recall_5)) + ' ' + str(np.std(list_recall_5)))
         f.write('\n')
         f.write(str(np.mean(list_F1_5)) + ' ' + str(np.std(list_F1_5)))
+
+
+def write_results_2_txt_schluter(filename,
+                                 append_write,
+                                 best_th,
+                                 recall_precision_f1_overall):
+
+    """
+    write the schluter evaluation results to text
+    :param filename:
+    :param append_write:
+    :param best_th:
+    :param recall_precision_f1_overall:
+    :return:
+    """
+
+    with open(filename, append_write) as f:
+        recall = recall_precision_f1_overall[0]
+        precision = recall_precision_f1_overall[1]
+        f1 = recall_precision_f1_overall[2]
+
+        f.write(str(best_th))
+        f.write('\n')
+        f.write(str(recall)+' '+str(precision)+' '+str(f1))
+        f.write('\n')
+
+
+def wav_annotation_loader_parser(audio_path,
+                                 annotation_path,
+                                 filename,
+                                 annotationCvParser):
+    # load annotation
+    annotation_filename = join(annotation_path, filename + '.onsets')
+
+    # load audio
+    audio_filename = join(audio_path, filename + '.flac')
+
+    # parse annotation
+    groundtruth_onset = annotationCvParser(annotation_filename)
+    groundtruth_onset = [float(gto) for gto in groundtruth_onset]
+
+    return audio_filename, groundtruth_onset
+
+
+def peak_picking_detected_onset_saver_schluter(pp_threshold,
+                                               obs_i,
+                                               model_name_0,
+                                               model_name_1,
+                                               filename,
+                                               hopsize_t,
+                                               OnsetPeakPickingProcessor,
+                                               eval_results_path):
+
+    # madmom peak picking
+    arg_pp = {'threshold': pp_threshold,
+              'smooth': 0.05,
+              'fps': 1. / hopsize_t,
+              'pre_max': hopsize_t,
+              'post_max': hopsize_t,
+              'combine': 0}
+    peak_picking = OnsetPeakPickingProcessor(**arg_pp)
+    detected_onsets = peak_picking.process(obs_i)
+
+    # save detected onsets
+    filename_syll_lab = join(eval_results_path, model_name_0 + model_name_1, filename + '.syll.lab')
+
+    onsetLabWriter(detected_onsets, filename_syll_lab)
+
+    return detected_onsets

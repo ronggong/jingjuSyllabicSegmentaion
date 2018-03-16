@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 import essentia.standard as ess
 import h5py
 
-from parameters import *
+from parameters_jingju import *
 from phonemeMap import *
 from textgridParser import textGrid2WordList, wordListsParseByLines, syllableTextgridExtraction
 from scoreParser import csvDurationScoreParser

@@ -14,7 +14,7 @@ pyximport.install(reload_support=True,
 from src.file_path_jingju import *
 from src.labWriter import boundaryLabWriter
 from src.labParser import lab2WordList
-from src.parameters import *
+from src.parameters_jingju import *
 from src.scoreParser import csvDurationScoreParser
 from src.pitchCalculation import pitchCalculation
 from src.utilFunctions import featureReshape

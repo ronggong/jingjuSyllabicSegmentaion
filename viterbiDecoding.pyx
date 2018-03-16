@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.stats import norm
-from src.parameters import hopsize_t
+from src.parameters_jingju import hopsize_t
 cimport cython
 # from numpy.math cimport INFINITY
 

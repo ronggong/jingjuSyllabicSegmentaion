@@ -8,8 +8,8 @@ from trainingSampleCollection import getMFCCBands2D, featureLabelOnset
 from trainingSampleCollection import getMFCCBands2DMadmom
 from trainingSampleCollection import simpleSampleWeighting, complicateSampleWeighting, positiveThreeSampleWeighting
 from trainingSampleCollection import featureOnsetPhraseLabelSampleWeights
-from parameters import *
-from filePathSchulter import *
+from parameters_jingju import *
+from file_path_schulter import *
 import numpy as np
 import h5py
 import cPickle, gzip

@@ -11,7 +11,7 @@ pyximport.install(reload_support=True,
 
 from src.file_path_jingju import *
 from src.labParser import lab2WordList
-from src.parameters import *
+from src.parameters_jingju import *
 from src.scoreParser import csvDurationScoreParser, csvScorePinyinParser
 from src.textgridParser import textGrid2WordList, wordListsParseByLines
 from src.trainTestSeparation import getTestTrainRecordingsNactaISMIR

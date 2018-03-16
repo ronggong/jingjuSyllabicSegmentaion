@@ -16,7 +16,7 @@ from experiment_process_helper import get_line_properties
 from experiment_process_helper import get_results_decoding_path
 from experiment_process_helper import boundary_decoding
 from experiment_process_helper import get_boundary_list
-from experiment_process_helper import writeResults2Txt
+from experiment_process_helper import write_results_2_txt_jingju
 from eval_demo import eval_write_2_txt
 
 from plot_code import plot_jingju
@@ -415,23 +415,23 @@ def viterbi_label_eval(test_nacta_2017, test_nacta, eval_label, obs_cal):
                 open(join('./statisticalSignificance/data/jingju', varin['sample_weighting'],
                           cnnModel_name + '_' + 'viterbi' + '_' + postfix_statistic_sig + '.pkl'), 'w'))
 
-    writeResults2Txt(join(jingju_results_path,
-                          varin['sample_weighting'],
-                          cnnModel_name + '_viterbi' + '_' + postfix_statistic_sig + '.txt'),
-                     postfix_statistic_sig,
+    write_results_2_txt_jingju(join(jingju_results_path,
+                                    varin['sample_weighting'],
+                                    cnnModel_name + '_viterbi' + '_' + postfix_statistic_sig + '.txt'),
+                               postfix_statistic_sig,
                      'viterbi',
-                     list_precision_onset_25,
-                     list_recall_onset_25,
-                     list_F1_onset_25,
-                     list_precision_25,
-                     list_recall_25,
-                     list_F1_25,
-                     list_precision_onset_5,
-                     list_recall_onset_5,
-                     list_F1_onset_5,
-                     list_precision_5,
-                     list_recall_5,
-                     list_F1_5)
+                               list_precision_onset_25,
+                               list_recall_onset_25,
+                               list_F1_onset_25,
+                               list_precision_25,
+                               list_recall_25,
+                               list_F1_25,
+                               list_precision_onset_5,
+                               list_recall_onset_5,
+                               list_F1_onset_5,
+                               list_precision_5,
+                               list_recall_5,
+                               list_F1_5)
 
 
 def peak_picking_eval(test_nacta_2017, test_nacta, obs_cal):
@@ -482,7 +482,7 @@ def peak_picking_eval(test_nacta_2017, test_nacta, obs_cal):
                           varin['sample_weighting'],
                           cnnModel_name + '_peakPickingMadmom.pkl'), 'w'))
 
-    writeResults2Txt(
+    write_results_2_txt_jingju(
         join(jingju_results_path,
              varin['sample_weighting'],
              cnnModel_name + '_peakPickingMadmom' + '.txt'),

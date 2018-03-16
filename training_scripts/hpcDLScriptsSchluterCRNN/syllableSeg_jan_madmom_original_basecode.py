@@ -15,7 +15,7 @@ import random
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src')))
 
-from filePathSchulter import *
+from file_path_schulter import *
 
 def syllableSeg_jan_madmom_original_basecode(ii):
 

@@ -9,7 +9,7 @@ from models import jordi_model, model_train
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src')))
 
-from filePathSchulter import *
+from file_path_schulter import *
 
 nlen = 21
 input_dim = (80, nlen)

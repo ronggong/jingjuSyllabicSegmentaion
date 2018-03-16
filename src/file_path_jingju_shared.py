@@ -1,6 +1,6 @@
 from os.path import join
 from os.path import dirname
-from parameters import varin
+from parameters_jingju import varin
 
 #  audio and annotation root path
 root_path = join(dirname(__file__), '..')

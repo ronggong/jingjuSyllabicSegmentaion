@@ -37,7 +37,7 @@ import matplotlib.pyplot as plt
 
 from keras.models import load_model
 
-from src.parameters import *
+from src.parameters_jingju import *
 from src.phonemeMap import dic_pho_label_inv, dic_pho_label
 
 
