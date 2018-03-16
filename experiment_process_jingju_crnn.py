@@ -4,7 +4,6 @@ from os import makedirs
 from os.path import isfile, exists
 from src.file_path_jingju_rnn import *
 from src.labWriter import boundaryLabWriter
-from src.utilFunctions import featureReshape
 from src.utilFunctions import smooth_obs
 from src.trainTestSeparation import getTestRecordingsScoreDurCorrectionArtistAlbumFilter
 
@@ -17,6 +16,7 @@ from experiment_process_helper import get_results_decoding_path
 from experiment_process_helper import boundary_decoding
 from experiment_process_helper import get_boundary_list
 from experiment_process_helper import write_results_2_txt_jingju
+from experiment_process_helper import odf_calculation_crnn
 from eval_demo import eval_write_2_txt
 
 from plot_code import plot_jingju
@@ -112,40 +112,14 @@ def batch_process_onset_detection(wav_path,
             obs_filename = rn + '_' + str(i_line + 1) + '.pkl'
 
             if obs_cal == 'tocal':
-                mfcc_line = mfcc[frame_start:frame_end]
-                mfcc_scaled_line = mfcc_scaled[frame_start:frame_end]
 
-                # length of the padded sequence
-                len_2_pad = int(len_seq * np.ceil(len(mfcc_scaled_line) / float(len_seq)))
-                len_padded = len_2_pad - len(mfcc_scaled_line)
-
-                # pad feature, label and sample weights
-                mfcc_line_pad = np.zeros((len_2_pad, mfcc_scaled_line.shape[1]), dtype='float32')
-                mfcc_line_pad[:mfcc_scaled_line.shape[0], :] = mfcc_scaled_line
-                mfcc_line_pad = featureReshape(mfcc_line_pad, nlen=7)
-
-                iter_time = len(mfcc_line_pad) / len_seq
-                obs_i = np.array([])
-                for ii in range(len(mfcc_line_pad) / len_seq):
-
-                    # evaluate for each segment
-                    mfcc_line_tensor = mfcc_line_pad[ii * len_seq:(ii + 1) * len_seq]
-                    mfcc_line_tensor = np.expand_dims(mfcc_line_tensor, axis=0)
-                    mfcc_line_tensor = np.expand_dims(mfcc_line_tensor, axis=2)
-
-                    y_pred = model_keras_cnn_0.predict_on_batch(mfcc_line_tensor)
-
-                    # remove the padded samples
-                    if ii == iter_time - 1 and len_padded > 0:
-                        y_pred = y_pred[:, :len_seq - len_padded, :]
-
-                    if stateful and ii == iter_time - 1:
-                        model_keras_cnn_0.reset_states()
-
-                    # reduce the label dimension
-                    y_pred = y_pred.reshape((y_pred.shape[1],))
-
-                    obs_i = np.append(obs_i, y_pred)
+                obs_i, mfcc_line = odf_calculation_crnn(mfcc=mfcc,
+                                                        mfcc_scaled=mfcc_scaled,
+                                                        model_keras_cnn_0=model_keras_cnn_0,
+                                                        frame_start=frame_start,
+                                                        frame_end=frame_end,
+                                                        len_seq=len_seq,
+                                                        stateful=stateful)
 
                 # save onset curve
                 print('save onset curve ... ...')

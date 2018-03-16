@@ -9,7 +9,7 @@ import labParser
 import scoreParser
 # import evaluation
 import evaluation2
-from file_path_jingju import *
+from file_path_jingju_no_rnn import *
 from parameters_jingju import varin
 from src.trainTestSeparation import getTestTrainRecordingsMaleFemale, \
     getTestTrainrecordingsRiyaz, \

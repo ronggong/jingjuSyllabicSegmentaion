@@ -9,7 +9,7 @@ from keras.models import load_model
 pyximport.install(reload_support=True,
                   setup_args={'include_dirs': np.get_include()})
 
-from src.file_path_jingju import *
+from src.file_path_jingju_no_rnn import *
 from src.labParser import lab2WordList
 from src.parameters_jingju import *
 from src.scoreParser import csvDurationScoreParser, csvScorePinyinParser

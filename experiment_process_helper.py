@@ -6,6 +6,10 @@ from src.scoreParser import csvScorePinyinParser
 from src.textgridParser import textGrid2WordList
 from src.textgridParser import wordListsParseByLines
 from src.labWriter import onsetLabWriter
+from src.utilFunctions import featureReshape
+from src.utilFunctions import getOnsetFunction
+
+from audio_preprocessing import getMFCCBands2DMadmom
 
 
 def data_parser(artist_path,
@@ -271,3 +275,175 @@ def peak_picking_detected_onset_saver_schluter(pp_threshold,
     onsetLabWriter(detected_onsets, filename_syll_lab)
 
     return detected_onsets
+
+
+def odf_calculation_no_crnn(mfcc,
+                            mfcc_reshaped,
+                            filename_keras_cnn_0,
+                            model_keras_cnn_0,
+                            architecture,
+                            frame_start,
+                            frame_end):
+    """
+    compute non CRNN onset detection function
+    :param mfcc:
+    :param mfcc_reshaped:
+    :param filename_keras_cnn_0:
+    :param model_keras_cnn_0:
+    :param architecture:
+    :param frame_start:
+    :param frame_end:
+    :return:
+    """
+    mfcc_line = mfcc[frame_start:frame_end]
+    mfcc_reshaped_line = mfcc_reshaped[frame_start:frame_end]
+    mfcc_reshaped_line = np.expand_dims(mfcc_reshaped_line, axis=1)
+
+    if 'joint' not in filename_keras_cnn_0:
+        obs = getOnsetFunction(observations=mfcc_reshaped_line,
+                               model=model_keras_cnn_0,
+                               method=architecture)
+        obs_i = obs[:, 0]
+    else:
+        # joint model
+        obs_i, _ = model_keras_cnn_0.predict(mfcc_reshaped_line, batch_size=128, verbose=2)
+
+    return obs_i, mfcc_line
+
+
+def odf_calculation_crnn(mfcc,
+                         mfcc_scaled,
+                         model_keras_cnn_0,
+                         frame_start,
+                         frame_end,
+                         len_seq,
+                         stateful):
+    """
+    compute CRNN onset detection function
+    :param mfcc: log-mel feature
+    :param mfcc_scaled: scaled log-mel feature
+    :param model_keras_cnn_0: .h5, keras model
+    :param frame_start: int, line starting frame
+    :param frame_end: int, line ending frame
+    :param len_seq: int, sequence length of the rnn input
+    :param stateful: bool, stateful rnn model or not
+    :return:
+    """
+    mfcc_line = mfcc[frame_start:frame_end]
+    mfcc_scaled_line = mfcc_scaled[frame_start:frame_end]
+
+    # length of the padded sequence
+    len_2_pad = int(len_seq * np.ceil(len(mfcc_scaled_line) / float(len_seq)))
+    len_padded = len_2_pad - len(mfcc_scaled_line)
+
+    # pad feature, label and sample weights
+    mfcc_line_pad = np.zeros((len_2_pad, mfcc_scaled_line.shape[1]), dtype='float32')
+    mfcc_line_pad[:mfcc_scaled_line.shape[0], :] = mfcc_scaled_line
+    mfcc_line_pad = featureReshape(mfcc_line_pad, nlen=7)
+
+    # predict times
+    iter_time = len(mfcc_line_pad) / len_seq
+
+    # ODF array
+    obs_i = np.array([])
+
+    for ii in range(len(mfcc_line_pad) / len_seq):
+
+        # evaluate for each segment
+        mfcc_line_tensor = mfcc_line_pad[ii * len_seq:(ii + 1) * len_seq]
+        mfcc_line_tensor = np.expand_dims(mfcc_line_tensor, axis=0)
+        mfcc_line_tensor = np.expand_dims(mfcc_line_tensor, axis=2)
+
+        y_pred = model_keras_cnn_0.predict_on_batch(mfcc_line_tensor)
+
+        # remove the padded samples
+        if ii == iter_time - 1 and len_padded > 0:
+            y_pred = y_pred[:, :len_seq - len_padded, :]
+
+        if stateful and ii == iter_time - 1:
+            model_keras_cnn_0.reset_states()
+
+        # reduce the label dimension
+        y_pred = y_pred.reshape((y_pred.shape[1],))
+
+        obs_i = np.append(obs_i, y_pred)
+
+    return obs_i, mfcc_line
+
+
+def odf_calculation_schluter(audio_filename,
+                             scaler_0,
+                             model_keras_cnn_0,
+                             fs,
+                             hopsize_t,
+                             channel,
+                             no_dense_str):
+
+    if channel == 1:
+        # 1 channel input
+        mfcc = getMFCCBands2DMadmom(audio_filename, fs=fs, hopsize_t=hopsize_t, channel=1)
+        mfcc_scaled = scaler_0.transform(mfcc)
+        mfcc_reshaped = featureReshape(mfcc_scaled, nlen=7)
+        mfcc_reshaped = np.expand_dims(mfcc_reshaped, axis=1)
+    else:
+        # 3 channels input
+        mfcc = getMFCCBands2DMadmom(audio_filename, fs=fs, hopsize_t=hopsize_t, channel=channel)
+        mfcc_reshaped_conc = []
+        for ii in range(channel):
+            mfcc_scaled = scaler_0[ii].transform(mfcc[:, :, ii])
+            mfcc_reshaped = featureReshape(mfcc_scaled, nlen=7)
+            mfcc_reshaped_conc.append(mfcc_reshaped)
+        mfcc_reshaped = np.stack(mfcc_reshaped_conc, axis=3)
+
+    obs = getOnsetFunction(observations=mfcc_reshaped,
+                           model=model_keras_cnn_0,
+                           method=no_dense_str)
+    obs_i = obs[:, 0]
+
+    return obs_i, mfcc
+
+
+def odf_calculation_schluter_phrase(audio_filename,
+                                    scaler_0,
+                                    model_keras_cnn_0,
+                                    fs,
+                                    hopsize_t,
+                                    len_seq,
+                                    stateful):
+
+    mfcc = getMFCCBands2DMadmom(audio_filename, fs=fs, hopsize_t=hopsize_t, channel=1)
+    mfcc_scaled = scaler_0.transform(mfcc)
+
+    # length of the padded sequence
+    len_2_pad = int(len_seq * np.ceil(len(mfcc_scaled) / float(len_seq)))
+    len_padded = len_2_pad - len(mfcc_scaled)
+
+    # pad feature, label and sample weights
+    mfcc_line_pad = np.zeros((len_2_pad, mfcc_scaled.shape[1]), dtype='float32')
+    mfcc_line_pad[:mfcc_scaled.shape[0], :] = mfcc_scaled
+    mfcc_line_pad = featureReshape(mfcc_line_pad, nlen=7)
+
+    iter_time = len(mfcc_line_pad) / len_seq
+    obs_i = np.array([])
+    for ii in range(len(mfcc_line_pad) / len_seq):
+
+        # evaluate for each segment
+        mfcc_line_tensor = mfcc_line_pad[ii * len_seq:(ii + 1) * len_seq]
+        mfcc_line_tensor = np.expand_dims(mfcc_line_tensor, axis=0)
+        mfcc_line_tensor = np.expand_dims(mfcc_line_tensor, axis=2)
+
+        y_pred = model_keras_cnn_0.predict_on_batch(mfcc_line_tensor)
+
+        # remove the padded samples
+        if ii == iter_time - 1 and len_padded > 0:
+            y_pred = y_pred[:, :len_seq - len_padded, :]
+
+        if stateful and ii == iter_time - 1:
+            model_keras_cnn_0.reset_states()
+
+        # reduce the label dimension
+        y_pred = y_pred.reshape((y_pred.shape[1],))
+
+        obs_i = np.append(obs_i, y_pred)
+
+    return obs_i, mfcc

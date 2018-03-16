@@ -2,13 +2,6 @@ from file_path_jingju_shared import *
 from os.path import join
 from parameters_jingju import varin
 
-# where we have the dumped features
-feature_data_path = '/Users/gong/Documents/MTG document/dataset/syllableSeg/'
-
-cnnModels_path  = join(root_path, 'cnnModels', 'jingju')
-# TODO use schluter to evaluate jingju
-# cnnModels_path = join(root_path, 'cnnModels', 'schluter')
-
 if varin['architecture'] == 'jan_no_dense':
     filename_keras_cnn_0 = 'keras.cnn_syllableSeg_jan_artist_filter_madmom_early_stopping_no_dense'
     cnnModel_name = 'jan_artist_filter_madmom_early_stopping_no_dense'
@@ -34,8 +27,14 @@ elif varin['architecture'] == 'jordi_temporal':
         'keras.cnn_syllableSeg_jordi_temporal_mfccBands_2D_all_artist_filter_madmom_early_stopping_jan_params'
     cnnModel_name = 'jordi_temporal_artist_filter_madmom_early_stopping_jan_params'
 else:
-    raise ValueError('The architecture %s that you select is not a valid one.', varin['architecture'])
+    raise ValueError('The architecture %s that you select is not a valid one.' % varin['architecture'])
 
+# where we have the dumped features
+feature_data_path = '/Users/gong/Documents/MTG document/dataset/syllableSeg/'
+
+cnnModels_path  = join(root_path, 'cnnModels', 'jingju')
+# TODO use schluter to evaluate jingju
+# cnnModels_path = join(root_path, 'cnnModels', 'schluter')
 
 if 'joint' in filename_keras_cnn_0:
     filename_scaler_onset = 'scaler_joint_subset.pkl'

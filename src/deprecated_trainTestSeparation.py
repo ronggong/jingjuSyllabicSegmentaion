@@ -1,7 +1,7 @@
 import os
 from itertools import combinations
 from operator import itemgetter
-from file_path_jingju import *
+from file_path_jingju_no_rnn import *
 import numpy as np
 import textgridParser
 import scoreParser

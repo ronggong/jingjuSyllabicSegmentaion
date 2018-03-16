@@ -68,7 +68,7 @@ def loadPredictionResults(label='ismir'):
 
 if __name__ == '__main__':
     # ismir madmom test
-    from src.file_path_jingju import *
+    from src.file_path_jingju_no_rnn import *
     filename_test_feature = join(feature_data_path, 'feature_all_ismir_madmom_test.h5')
     f = h5py.File(filename_test_feature, 'r')
     X_test = f['feature_all']

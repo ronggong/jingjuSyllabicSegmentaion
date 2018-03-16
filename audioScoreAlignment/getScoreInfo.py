@@ -2,7 +2,7 @@
 
 from jingjuScores import getMelodicLine
 import music21
-from src.file_path_jingju import *
+from src.file_path_jingju_no_rnn import *
 from src.utilFunctions import hz2cents,pitchtrackInterp
 from stream2midi import stream2midi
 from math import isnan

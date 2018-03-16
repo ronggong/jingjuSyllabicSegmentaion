@@ -21,7 +21,7 @@ from trainTestSeparation import getTestTrainRecordingsMaleFemale, \
                             getTestTrainRecordingsArtistAlbumFilter
 from Fdeltas import Fdeltas
 from Fprev_sub import Fprev_sub
-from file_path_jingju import *
+from file_path_jingju_no_rnn import *
 from labParser import lab2WordList
 from utilFunctions import featureReshape
 

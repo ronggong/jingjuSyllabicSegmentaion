@@ -7,11 +7,10 @@ import numpy as np
 import pyximport
 
 from keras.models import load_model
-from src.file_path_jingju import *
+from src.file_path_jingju_no_rnn import *
 from src.parameters_jingju import *
 from src.labWriter import boundaryLabWriter
 from src.utilFunctions import featureReshape
-from src.utilFunctions import getOnsetFunction
 from src.utilFunctions import smooth_obs
 from src.trainTestSeparation import getTestRecordingsScoreDurCorrectionArtistAlbumFilter
 from experiment_process_helper import data_parser
@@ -20,6 +19,7 @@ from experiment_process_helper import boundary_decoding
 from experiment_process_helper import get_results_decoding_path
 from experiment_process_helper import get_boundary_list
 from experiment_process_helper import write_results_2_txt_jingju
+from experiment_process_helper import odf_calculation_no_crnn
 
 from eval_demo import eval_write_2_txt
 from madmom.features.onsets import OnsetPeakPickingProcessor
@@ -117,18 +117,14 @@ def batch_process_onset_detection(wav_path,
             obs_filename = rn + '_' + str(i_line + 1) + '.pkl'
 
             if obs_cal == 'tocal':
-                mfcc_line = mfcc[frame_start:frame_end]
-                mfcc_reshaped_line = mfcc_reshaped[frame_start:frame_end]
-                mfcc_reshaped_line = np.expand_dims(mfcc_reshaped_line, axis=1)
 
-                if 'joint' not in filename_keras_cnn_0:
-                    obs = getOnsetFunction(observations=mfcc_reshaped_line,
-                                           model=model_keras_cnn_0,
-                                           method=architecture)
-                    obs_i = obs[:, 0]
-                else:
-                    # joint model
-                    obs_i, _ = model_keras_cnn_0.predict(mfcc_reshaped_line, batch_size=128, verbose=2)
+                obs_i, mfcc_line = odf_calculation_no_crnn(mfcc=mfcc,
+                                                           mfcc_reshaped=mfcc_reshaped,
+                                                           filename_keras_cnn_0=filename_keras_cnn_0,
+                                                           model_keras_cnn_0=model_keras_cnn_0,
+                                                           architecture=architecture,
+                                                           frame_start=frame_start,
+                                                           frame_end=frame_end)
 
                 # save onset curve
                 print('save onset curve ... ...')

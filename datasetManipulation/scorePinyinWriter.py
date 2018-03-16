@@ -1,4 +1,4 @@
-from src.file_path_jingju import *
+from src.file_path_jingju_no_rnn import *
 from src.scoreParser import writeCsvPinyin
 from src.trainTestSeparation import getTestTrainRecordingsArtist
 import os
