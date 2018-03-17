@@ -204,7 +204,7 @@ def viterbi_subroutine(test_nacta_2017, test_nacta, eval_label, obs_cal):
                 scaler = cPickle.load(gzip.open(full_path_mfccBands_2D_scaler_onset+str(ii)+'.pickle.gz'))
 
             model_keras_cnn_0 = load_model(full_path_keras_cnn_0 + str(ii) + '.h5')
-            print(model_keras_cnn_0.summary())
+            # print(model_keras_cnn_0.summary())
             print('Model name:', full_path_keras_cnn_0)
 
             if varin['dataset'] != 'ismir':

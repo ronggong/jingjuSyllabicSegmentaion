@@ -50,6 +50,7 @@ def getRecordings(wav_path):
 
     return recordings
 
+
 def getOnsetFunction(observations, model, method):
     """
     Load CNN model to calculate ODF
@@ -59,14 +60,11 @@ def getOnsetFunction(observations, model, method):
 
     if 'jordi' in method:
         observations = [observations, observations, observations, observations, observations, observations]
+    elif 'feature_extraction' in method:
+        observations = [observations, observations]
 
     obs = model.predict(observations, batch_size=128, verbose=2)
 
-    #     observations = [observations, observations, observations, observations, observations, observations,
-    #                     observations, observations, observations, observations, observations, observations]
-    # if 'feature_extraction' in method:
-    # obs = model.predict([observations, observations], batch_size=128, verbose=2)
-    # else:
     return obs
 
 def trackOnsetPosByPath(path, idx_syllable_start_state):

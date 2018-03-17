@@ -12,4 +12,4 @@ varin['plot'] = False
 
 varin['sample_weighting'] = 'simpleWeighting'
 
-varin['architecture'] = 'jan_bidi_400'
+varin['architecture'] = 'transfer_pretrained'

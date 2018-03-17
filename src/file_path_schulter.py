@@ -26,6 +26,11 @@ elif varin['architecture'] == 'jan_bidi_200':
     len_seq = 200
 elif varin['architecture'] == 'jan_bidi_400':
     len_seq = 400
+elif varin['architecture'] == 'transfer_pretrained' or \
+                varin['architecture'] == 'transfer_2_layers_feature' or \
+                varin['architecture'] == 'transfer_deep_feature':
+    filter_shape_0, phrase_eval, overlap, bidi, relu, deep, less_deep, no_dense = \
+        'jan', False, False, False, False, False, True, True
 else:
     raise ValueError('There is no such architecture %s.' % varin['architecture'])
 
@@ -37,8 +42,7 @@ overlap_str = '_overlap' if overlap else ''
 phrase_str = '_phrase' if phrase_eval else ''
 bidi_str = '_bidi_100' if bidi else ''
 relu_str = '_relu' if relu else ''
-deep_str = '_less_deep' if deep else ''
-no_dense_str = '_no_dense' if no_dense else ''
+
 if deep:
     deep_str = '_deep'
 elif less_deep:
@@ -46,9 +50,20 @@ elif less_deep:
 else:
     deep_str = ''
 
+if no_dense:
+    if varin['architecture'] == 'transfer_pretrained':
+        no_dense_str = '_pretrained_jingju_no_dense'
+    elif varin['architecture'] == 'transfer_2_layers_feature':
+        no_dense_str = '_feature_extraction_jingju_no_dense'
+    elif varin['architecture'] == 'transfer_deep_feature':
+        no_dense_str = '_deep_feature_extraction_jingju_no_dense'
+    else:
+        no_dense_str = '_no_dense'
+else:
+    no_dense_str = ''
+
 root_path = join(dirname(__file__), '..')
 
-# no_dense_str = '_jingju_no_dense' if no_dense else ''
 
 weighting_str = 'simpleSampleWeighting' if varin['sample_weighting'] == 'simpleWeighting' else 'positiveThreeSampleWeighting'
 
@@ -84,3 +99,8 @@ scaler_schluter_phrase_model_path = join(schluter_dataset_root_path,
 eval_results_path = join(root_path, 'eval', 'results')
 
 schluter_results_path = join(root_path, 'eval', 'schluter', 'results')
+
+jingju_cnn_model_path = join(root_path, 'cnnModels', 'jingju', varin['sample_weighting'])
+
+full_path_mfccBands_2D_scaler_onset = \
+    join(jingju_cnn_model_path, 'scaler_syllable_mfccBands2D_old+new_artist_filter_madmom.pkl')
