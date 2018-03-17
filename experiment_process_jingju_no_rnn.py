@@ -2,7 +2,9 @@
 from os import makedirs
 from os.path import isfile
 from os.path import exists
+import gzip
 import pickle
+import cPickle
 import numpy as np
 import pyximport
 
@@ -198,12 +200,12 @@ def viterbi_subroutine(test_nacta_2017, test_nacta, eval_label, obs_cal):
 
         if obs_cal == 'tocal':
 
+            if 'schluter' in varin['architecture']:
+                scaler = cPickle.load(gzip.open(full_path_mfccBands_2D_scaler_onset+str(ii)+'.pickle.gz'))
+
             model_keras_cnn_0 = load_model(full_path_keras_cnn_0 + str(ii) + '.h5')
             print(model_keras_cnn_0.summary())
-            # TODO use schluter for jingju
-            # scaler = cPickle.load(gzip.open(full_path_mfccBands_2D_scaler_onset+str(ii)+'.pickle.gz'))
-
-            print(full_path_keras_cnn_0)
+            print('Model name:', full_path_keras_cnn_0)
 
             if varin['dataset'] != 'ismir':
                 # nacta2017
@@ -286,9 +288,10 @@ def peak_picking_subroutine(test_nacta_2017, test_nacta, th, obs_cal):
     for ii in range(5):
 
         if obs_cal == 'tocal':
+            if 'schluter' in varin['architecture']:
+                scaler = cPickle.load(gzip.open(full_path_mfccBands_2D_scaler_onset+str(ii)+'.pickle.gz'))
+
             model_keras_cnn_0 = load_model(full_path_keras_cnn_0 + str(ii) + '.h5')
-            # TODO use shcluter for jingju
-            # scaler = cPickle.load(gzip.open(full_path_mfccBands_2D_scaler_onset+str(ii)+'.pickle.gz'))
         else:
             model_keras_cnn_0 = None
             scaler = None
@@ -326,7 +329,6 @@ def peak_picking_subroutine(test_nacta_2017, test_nacta, th, obs_cal):
             csv_writer = csv.writer(testfile)
             csv_writer.writerow([th])
 
-        # eval_results_decoding_path = cnnModel_name + str(ii) + '_peakPickingMadmom'
         precision_onset, recall_onset, F1_onset, \
         precision, recall, F1, \
             = eval_write_2_txt(eval_result_file_name,
@@ -469,8 +471,8 @@ if __name__ == '__main__':
     # load the test recordings
     test_nacta_2017, test_nacta = getTestRecordingsScoreDurCorrectionArtistAlbumFilter()
 
-    # TODO schluter use for jingju
-    scaler = pickle.load(open(full_path_mfccBands_2D_scaler_onset, 'rb'))
+    if 'schluter' not in varin['architecture']:
+        scaler = pickle.load(open(full_path_mfccBands_2D_scaler_onset, 'rb'))
 
     # calculate the ODF only in the first round
     # then we can load them for saving time
