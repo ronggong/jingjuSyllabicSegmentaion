@@ -37,7 +37,6 @@ else:
     raise ValueError('The architecture %s that you select is not a valid one.' % varin['architecture'])
 
 # where we have the dumped features
-feature_data_path = '/Users/gong/Documents/MTG document/dataset/syllableSeg/'
 
 if 'schluter' in varin['architecture']:
     cnnModels_path = join(root_path, 'cnnModels', 'schluter')

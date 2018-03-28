@@ -1,3 +1,4 @@
+from file_path_shared import feature_data_path
 from file_path_jingju_shared import *
 from os.path import join
 from parameters_jingju import *
@@ -14,17 +15,9 @@ elif varin['architecture'] == 'jan_bidi_400':
 else:
     raise ValueError('There is no such architecture %s for CRNN.' % varin['architecture'])
 
-jingju_dataset_root_path = '/Users/gong/Documents/MTG document/dataset/syllableSeg/'
+ismir_feature_data_path = join(feature_data_path, 'ismir')
 
-# jingju_dataset_root_path = '/homedtic/rgong/cnnSyllableSeg/syllableSeg'
-
-ismir_feature_data_path = join(jingju_dataset_root_path, 'ismir')
-
-artist_filter_feature_data_path = join(jingju_dataset_root_path, 'artist_filter')
-
-jingju_cnn_model_path = join(root_path, 'cnnModels', 'jingju', varin['sample_weighting'])
-
-jingju_scaler_path = join(root_path, 'cnnModels', 'jingju', 'scalers')
+artist_filter_feature_data_path = join(feature_data_path, 'artist_filter')
 
 scaler_ismir_phrase_model_path = join(jingju_scaler_path,
                                       'scaler_syllable_mfccBands2D_old+new_ismir_madmom_phrase.pkl')
@@ -37,3 +30,7 @@ eval_results_path = join(root_path, 'eval', 'results', cnnModel_name)
 jingju_results_path = join(root_path, 'eval', 'jingju', 'results')
 
 full_path_keras_cnn_0 = join(jingju_cnn_model_path, cnnModel_name)
+
+# jingju_dataset_root_path = '/Users/gong/Documents/MTG document/dataset/syllableSeg/'
+
+# jingju_dataset_root_path = '/homedtic/rgong/cnnSyllableSeg/syllableSeg'

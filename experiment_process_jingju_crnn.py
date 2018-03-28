@@ -2,27 +2,26 @@
 import pickle
 from os import makedirs
 from os.path import isfile, exists
-from src.file_path_jingju_rnn import *
-from src.labWriter import boundaryLabWriter
-from src.utilFunctions import smooth_obs
-from src.trainTestSeparation import getTestRecordingsScoreDurCorrectionArtistAlbumFilter
-
-from madmom.features.onsets import OnsetPeakPickingProcessor
-from audio_preprocessing import getMFCCBands2DMadmom
-from training_scripts.models_CRNN import jan_original
-from experiment_process_helper import data_parser
-from experiment_process_helper import get_line_properties
-from experiment_process_helper import get_results_decoding_path
-from experiment_process_helper import boundary_decoding
-from experiment_process_helper import get_boundary_list
-from experiment_process_helper import write_results_2_txt_jingju
-from experiment_process_helper import odf_calculation_crnn
-from eval_demo import eval_write_2_txt
-
-from plot_code import plot_jingju
 
 import numpy as np
 import pyximport
+from madmom.features.onsets import OnsetPeakPickingProcessor
+
+from audio_preprocessing import getMFCCBands2DMadmom
+from eval_demo import eval_write_2_txt
+from experiment_process_helper import boundary_decoding
+from experiment_process_helper import data_parser
+from experiment_process_helper import get_boundary_list
+from experiment_process_helper import get_line_properties
+from experiment_process_helper import get_results_decoding_path
+from experiment_process_helper import odf_calculation_crnn
+from experiment_process_helper import write_results_2_txt_jingju
+from plot_code import plot_jingju
+from src.file_path_jingju_rnn import *
+from src.labWriter import boundaryLabWriter
+from src.trainTestSeparation import getTestRecordingsScoreDurCorrectionArtistAlbumFilter
+from src.utilFunctions import smooth_obs
+from training_scripts.models_CRNN import jan_original
 
 pyximport.install(reload_support=True,
                   setup_args={'include_dirs': np.get_include()})

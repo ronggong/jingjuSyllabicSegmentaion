@@ -22,7 +22,6 @@ nacta2017_segPhrase_path = join(nacta2017_dataset_root_path, 'segPhrase')
 nacta2017_groundtruthlab_path = join(nacta2017_dataset_root_path, 'groundtruth_lab')
 nacta2017_eval_details_path = join(nacta2017_dataset_root_path, 'eval_details')
 
-
 nacta_wav_path = join(nacta_dataset_root_path, 'wav')
 nacta_textgrid_path = join(nacta_dataset_root_path, 'textgrid')
 nacta_score_path = join(nacta_dataset_root_path, 'scoreDianSilence')
@@ -40,3 +39,7 @@ if varin['corrected_score_duration']:
 else:
     nacta2017_score_unified_path = nacta2017_score_pinyin_path
     nacta_score_unified_path = nacta_score_pinyin_path
+
+jingju_cnn_model_path = join(root_path, 'cnnModels', 'jingju', varin['sample_weighting'])
+
+jingju_scaler_path = join(root_path, 'cnnModels', 'jingju', 'scalers')

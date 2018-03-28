@@ -176,10 +176,11 @@ def getTestTrainRecordingsNactaISMIR():
 
 if __name__ == '__main__':
 
-    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtistAlbumFilter()
+    _, _, trainNacta2017, trainNacta = getTestTrainRecordingsArtistAlbumFilter()
+    testNacta2017, testNacta = getTestRecordingsScoreDurCorrectionArtistAlbumFilter()
 
-    print(testNacta2017)
-    print(testNacta)
-    print(trainNacta2017)
-    print(trainNacta)
-
+    print(len(trainNacta2017))
+    print(len(trainNacta))
+    print(len(testNacta2017))
+    print(len(testNacta))
+    print(len(trainNacta2017) + len(trainNacta) + len(testNacta2017) + len(testNacta))

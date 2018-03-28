@@ -1,6 +1,7 @@
 from os.path import join
 from os.path import dirname
 from parameters_schluter import varin
+from file_path_shared import feature_data_path
 
 if varin['architecture'] == 'jan_no_dense':
     filter_shape_0, phrase_eval, overlap, bidi, relu, deep, less_deep, no_dense = \
@@ -64,8 +65,8 @@ else:
 
 root_path = join(dirname(__file__), '..')
 
-
-weighting_str = 'simpleSampleWeighting' if varin['sample_weighting'] == 'simpleWeighting' else 'positiveThreeSampleWeighting'
+weighting_str = \
+    'simpleSampleWeighting' if varin['sample_weighting'] == 'simpleWeighting' else 'positiveThreeSampleWeighting'
 
 # schluter_dataset_root_path = '/Users/gong/Documents/MTG document/dataset/onsets'
 
@@ -79,22 +80,21 @@ schluter_cv_path = join(schluter_dataset_root_path, 'splits')
 
 schluter_annotations_path = join(schluter_dataset_root_path, 'annotations')
 
-schluter_feature_data_path = join(schluter_dataset_root_path, 'feature')
 
-schluter_feature_data_path_madmom = join(schluter_dataset_root_path, 'feature_madmom')
+schluter_feature_data_path_madmom_simpleSampleWeighting = join(feature_data_path, 'bock_simpleSampleWeighting')
 
-schluter_feature_data_path_madmom_simpleSampleWeighting = join(schluter_dataset_root_path, 'feature_madmom_simpleSampleWeighting')
+schluter_feature_data_path_madmom_simpleSampleWeighting_3channel = join(feature_data_path, 'bock_simpleSampleWeighting_3channel')
 
-schluter_feature_data_path_madmom_simpleSampleWeighting_3channel = join(schluter_dataset_root_path, 'feature_madmom_simpleSampleWeighting_3channel')
+schluter_feature_data_path_madmom_complicateSampleWeighting = join(feature_data_path, 'bock_complicateSampleWeighting')
 
-schluter_feature_data_path_madmom_positiveThreeSampleWeighting = join(schluter_dataset_root_path, 'feature_madmom_postiveThreeSampleWeighting')
+schluter_feature_data_path_madmom_positiveThreeSampleWeighting = join(feature_data_path, 'bock_postiveThreeSampleWeighting')
 
-schluter_feature_data_path_madmom_simpleSampleWeighting_phrase = join(schluter_dataset_root_path, 'feature_madmom_simpleSampleWeighting_phrase')
+schluter_feature_data_path_madmom_simpleSampleWeighting_phrase = join(feature_data_path, 'bock_simpleSampleWeighting_phrase')
 
 schluter_cnn_model_path = join(root_path, 'cnnModels', 'schluter', varin['sample_weighting'])
 
-scaler_schluter_phrase_model_path = join(schluter_dataset_root_path,
-                                             'scaler_syllable_mfccBands2D_schluter_madmom_phrase.pkl')
+scaler_schluter_phrase_model_path = join(schluter_cnn_model_path,
+                                         'scaler_syllable_mfccBands2D_schluter_madmom_phrase.pkl')
 
 eval_results_path = join(root_path, 'eval', 'results')
 

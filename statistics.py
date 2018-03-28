@@ -10,6 +10,7 @@ import textgridParser
 from src.phonemeMap import nonvoicedconsonants
 # from src.trainTestSeparation import getTestTrainRecordingsNacta2017Artist
 from src.trainTestSeparation import getTestTrainRecordingsArtistAlbumFilter
+from src.trainTestSeparation import getTestRecordingsScoreDurCorrectionArtistAlbumFilter
 
 def wordDuration(nestedWordLists):
     '''
@@ -45,11 +46,11 @@ def lineWordCount(textgrid_file):
     numLines, numDians = 0,0
     dianDurationList = []
 
-    entireLine      = textgridParser.textGrid2WordList(textgrid_file, whichTier='line')
+    entireLine = textgridParser.textGrid2WordList(textgrid_file, whichTier='line')
     # entireDianList  = textgridParser.textGrid2WordList(textgrid_file, whichTier='dianSilence')
     # entireWordList  = textgridParser.textGrid2WordList(textgrid_file, whichTier='pinyin')
     # entireDianList  = textgridParser.textGrid2WordList(textgrid_file, whichTier='dian')
-    entireDianList  = textgridParser.textGrid2WordList(textgrid_file, whichTier='dianSilence')
+    entireDianList = textgridParser.textGrid2WordList(textgrid_file, whichTier='dianSilence')
     # entirePhoList   = textgridParser.textGrid2WordList(textgrid_file, whichTier='details')
 
 
@@ -60,7 +61,7 @@ def lineWordCount(textgrid_file):
         for ii, wordList in enumerate(nestedWordLists):
             nestedWordLists_filtered.append(wordList)
             numDians += len(wordList[1])
-        dianDurationList                    = wordDuration(nestedWordLists_filtered)
+        dianDurationList = wordDuration(nestedWordLists_filtered)
 
 
     return numLines, numDians, dianDurationList
@@ -79,7 +80,7 @@ def sylPhnStatistics():
 
     laosheng_artists = ['20170327LiaoJiaNi', '20170418TianHao', '20170519LongTianMing', '20170519XuJingWei']
 
-    dan_artists = ['20170408SongRuoXuan', '20170418TianHao', '20170424SunYuZhu', '20170425SunYuZhu', '20170506LiuHaiLin', ]
+    dan_artists = ['20170408SongRuoXuan', '20170418TianHao', '20170424SunYuZhu', '20170425SunYuZhu', '20170506LiuHaiLin']
 
 
     # for artist_path in dan_artists:
@@ -148,30 +149,35 @@ def sylPhnStatistics():
                                                                                  np.min(ddlTotal),np.max(ddlTotal))
 
 
-def sylLength():
+def sylLength(trainNacta2017, trainNacta):
     """
     Return dian silence duration list
     :return:
     """
-    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtistAlbumFilter()
-
     overallTrainFns = trainNacta2017 + trainNacta
 
     overallTrainDianSilenceLengthList = []
+    overallLineNumber = 0
     for artist, fn in overallTrainFns:
         if '2017' in artist:
             textgrid_fn = join(nacta2017_textgrid_path, artist, fn + '.TextGrid')
         else:
             textgrid_fn = join(nacta_textgrid_path, artist, fn + '.TextGrid')
 
-        _, _, dianSilenceLength = lineWordCount(textgrid_fn)
+        num_lines, _, dianSilenceLength = lineWordCount(textgrid_fn)
+        overallLineNumber += num_lines
         overallTrainDianSilenceLengthList += dianSilenceLength
 
-    return overallTrainDianSilenceLengthList
+    return overallLineNumber, overallTrainDianSilenceLengthList
 
 
 if __name__ == '__main__':
-    overallTrainDianSilenceLengthList = sylLength()
+    testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordingsArtistAlbumFilter()
+    # testNacta2017, testNacta = getTestRecordingsScoreDurCorrectionArtistAlbumFilter()
+
+    overallLineNumber, overallTrainDianSilenceLengthList = sylLength(trainNacta2017, trainNacta)
+
+    print(overallLineNumber, len(overallTrainDianSilenceLengthList))
 
     # import matplotlib.pyplot as plt
     #
@@ -181,6 +187,6 @@ if __name__ == '__main__':
     #
     # plt.show()
 
-    print('66.5 percentile', np.percentile(overallTrainDianSilenceLengthList, 66.5))
-    print('85 percentile', np.percentile(overallTrainDianSilenceLengthList, 85))
-    print('93.5 percentile', np.percentile(overallTrainDianSilenceLengthList, 93.5))
+    # print('66.5 percentile', np.percentile(overallTrainDianSilenceLengthList, 66.5))
+    # print('85 percentile', np.percentile(overallTrainDianSilenceLengthList, 85))
+    # print('93.5 percentile', np.percentile(overallTrainDianSilenceLengthList, 93.5))

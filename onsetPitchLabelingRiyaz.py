@@ -18,8 +18,8 @@ from src.parameters_jingju import *
 from src.scoreParser import csvDurationScoreParser
 from src.pitchCalculation import pitchCalculation
 from src.utilFunctions import featureReshape
-from datasetCollection.trainingSampleCollection import getMFCCBands2D
-from datasetCollection.trainingSampleCollection import getTestTrainrecordingsRiyaz
+from datasetCollection.training_sample_collection_jingju import getMFCCBands2D
+from datasetCollection.training_sample_collection_jingju import getTestTrainrecordingsRiyaz
 
 from peakPicking import peakPicking
 import viterbiDecoding

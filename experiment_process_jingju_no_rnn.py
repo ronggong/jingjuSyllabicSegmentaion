@@ -1,32 +1,32 @@
 # -*- coding: utf-8 -*-
-from os import makedirs
-from os.path import isfile
-from os.path import exists
+import cPickle
 import gzip
 import pickle
-import cPickle
+from os import makedirs
+from os.path import exists
+from os.path import isfile
+
 import numpy as np
 import pyximport
-
 from keras.models import load_model
+from madmom.features.onsets import OnsetPeakPickingProcessor
+
+from audio_preprocessing import getMFCCBands2DMadmom
+from eval_demo import eval_write_2_txt
+from experiment_process_helper import boundary_decoding
+from experiment_process_helper import data_parser
+from experiment_process_helper import get_boundary_list
+from experiment_process_helper import get_line_properties
+from experiment_process_helper import get_results_decoding_path
+from experiment_process_helper import odf_calculation_no_crnn
+from experiment_process_helper import write_results_2_txt_jingju
+from plot_code import plot_jingju
 from src.file_path_jingju_no_rnn import *
-from src.parameters_jingju import *
 from src.labWriter import boundaryLabWriter
+from src.parameters_jingju import *
+from src.trainTestSeparation import getTestRecordingsScoreDurCorrectionArtistAlbumFilter
 from src.utilFunctions import featureReshape
 from src.utilFunctions import smooth_obs
-from src.trainTestSeparation import getTestRecordingsScoreDurCorrectionArtistAlbumFilter
-from experiment_process_helper import data_parser
-from experiment_process_helper import get_line_properties
-from experiment_process_helper import boundary_decoding
-from experiment_process_helper import get_results_decoding_path
-from experiment_process_helper import get_boundary_list
-from experiment_process_helper import write_results_2_txt_jingju
-from experiment_process_helper import odf_calculation_no_crnn
-
-from eval_demo import eval_write_2_txt
-from madmom.features.onsets import OnsetPeakPickingProcessor
-from audio_preprocessing import getMFCCBands2DMadmom
-from plot_code import plot_jingju
 
 pyximport.install(reload_support=True,
                   setup_args={'include_dirs': np.get_include()})

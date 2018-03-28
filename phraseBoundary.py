@@ -1,7 +1,7 @@
 import os
 
 import labWriter
-from datasetCollection.trainingSampleCollection import getTestTrainrecordingsRiyaz
+from datasetCollection.training_sample_collection_jingju import getTestTrainrecordingsRiyaz
 from src.file_path_jingju_no_rnn import *
 
 # testNacta2017, testNacta, trainNacta2017, trainNacta = getTestTrainRecordings()
