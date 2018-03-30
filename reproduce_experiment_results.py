@@ -1,4 +1,5 @@
 from experiment_process_jingju_no_rnn import run_process_jingju_no_rnn
+from experiment_process_jingju_crnn import run_process_jingju_crnn
 import argparse
 
 if __name__ == '__main__':
@@ -22,5 +23,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.dataset == 'jingju':
-        run_process_jingju_no_rnn(architecture=args.architecture)
+        if args.architecture in ['baseline', 'relu_dense', 'no_dense', 'temporal', '9_layers_cnn', '5_layers_cnn',
+                                 'pretrained', 'retrained', 'feature_extractor_a', 'feature_extractor_b']:
+            run_process_jingju_no_rnn(architecture=args.architecture)
+        else:
+            run_process_jingju_crnn(architecture=args.architecture)
 

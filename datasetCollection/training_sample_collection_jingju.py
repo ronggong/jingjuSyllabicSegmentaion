@@ -21,7 +21,6 @@ from sample_collection_helper import feature_onset_phrase_label_sample_weights
 sys.path.append(os.path.join(os.path.dirname(__file__), "../src/"))
 
 from parameters_jingju import *
-from file_path_shared import feature_data_path
 from file_path_jingju_shared import *
 
 from textgridParser import textGrid2WordList

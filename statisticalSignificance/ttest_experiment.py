@@ -45,9 +45,9 @@ f1_artist_filter_relu_pp = pickle.load(open(os.path.join('./data/jingju/simpleWe
 f1_artist_filter_temporal_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jordi_temporal_artist_filter_madmom_early_stopping_more_params_peakPickingMadmom.pkl'), 'r'))
 f1_artist_filter_deep_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', '9_layers_cnn_peakPickingMadmom.pkl'), 'r'))
 f1_artist_filter_less_deep_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', '5_layers_cnn_peakPickingMadmom.pkl'), 'r'))
-f1_artist_filter_bidi_400_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'artist_filter_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase_overlap_bidi_peakPickingMadmom.pkl'), 'r'))
-f1_artist_filter_bidi_200_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'artist_filter_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase_overlap_bidi_200_peakPickingMadmom.pkl'), 'r'))
-f1_artist_filter_bidi_100_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'artist_filter_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase_overlap_bidi_100_peakPickingMadmom.pkl'), 'r'))
+f1_artist_filter_bidi_400_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'bidi_lstms_400_peakPickingMadmom.pkl'), 'r'))
+f1_artist_filter_bidi_200_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'bidi_lstms_200_peakPickingMadmom.pkl'), 'r'))
+f1_artist_filter_bidi_100_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'bidi_lstms_100_peakPickingMadmom.pkl'), 'r'))
 
 # # artist_filter viterbi no label
 f1_artist_filter_jan_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'baseline_viterbi_nolabel.pkl'), 'r'))
@@ -57,9 +57,9 @@ f1_artist_filter_relu_nl = pickle.load(open(os.path.join('./data/jingju/simpleWe
 f1_artist_filter_temporal_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jordi_temporal_artist_filter_madmom_early_stopping_more_params_viterbi_nolabel.pkl'), 'r'))
 f1_artist_filter_deep_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', '9_layers_cnn_viterbi_nolabel.pkl'), 'r'))
 f1_artist_filter_less_deep_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', '5_layers_cnn_viterbi_nolabel.pkl'), 'r'))
-f1_artist_filter_bidi_400_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'artist_filter_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase_overlap_bidi_viterbi_nolabel.pkl'), 'r'))
-f1_artist_filter_bidi_200_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'artist_filter_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase_overlap_bidi_200_viterbi_nolabel.pkl'), 'r'))
-f1_artist_filter_bidi_100_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'artist_filter_jan_madmom_simpleSampleWeighting_early_stopping_adam_cv_phrase_overlap_bidi_100_viterbi_nolabel.pkl'), 'r'))
+f1_artist_filter_bidi_400_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'bidi_lstms_400_viterbi_nolabel.pkl'), 'r'))
+f1_artist_filter_bidi_200_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'bidi_lstms_200_viterbi_nolabel.pkl'), 'r'))
+f1_artist_filter_bidi_100_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'bidi_lstms_100_viterbi_nolabel.pkl'), 'r'))
 
 
 

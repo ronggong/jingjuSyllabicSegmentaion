@@ -36,8 +36,9 @@ def batch_process_onset_detection(wav_path,
                                   test_recordings,
                                   model_keras_cnn_0,
                                   cnnModel_name,
-                                  eval_results_path,
-                                  architecture=varin['architecture'],
+                                  detection_results_path,
+                                  architecture,
+                                  len_seq,
                                   lab=False,
                                   threshold=0.54,
                                   obs_cal=True,
@@ -52,8 +53,9 @@ def batch_process_onset_detection(wav_path,
     :param test_recordings: list of strings, testing recording filename
     :param model_keras_cnn_0: keras .h5, model weights
     :param cnnModel_name: string, model name
-    :param eval_results_path: string, where we store the evaluation results
+    :param detection_results_path: string, where we store the evaluation results
     :param architecture: string, model architecture name
+    :param len_seq: input sequence frame length
     :param lab: string, for Riyaz dataset, not used in the paper
     :param threshold: float, threshold for peak picking onset selection
     :param obs_cal: string, tocal or toload, for saving running time
@@ -65,7 +67,7 @@ def batch_process_onset_detection(wav_path,
     eval_results_decoding_path = \
         get_results_decoding_path(decoding_method=decoding_method,
                                   bool_corrected_score_duration=varin['corrected_score_duration'],
-                                  eval_results_path=eval_results_path)
+                                  eval_results_path=detection_results_path)
 
     for artist_path, rn in test_recordings:
 
@@ -178,7 +180,16 @@ def batch_process_onset_detection(wav_path,
     return eval_results_decoding_path
 
 
-def viterbi_subroutine(test_nacta_2017, test_nacta, eval_label, obs_cal):
+def viterbi_subroutine(test_nacta_2017,
+                       test_nacta,
+                       eval_label,
+                       obs_cal,
+                       len_seq,
+                       model_name,
+                       architecture,
+                       scaler,
+                       full_path_model,
+                       detection_results_path):
     """routine for viterbi decoding"""
 
     list_recall_onset_25, list_precision_onset_25, list_F1_onset_25 = [], [], []
@@ -204,7 +215,7 @@ def viterbi_subroutine(test_nacta_2017, test_nacta, eval_label, obs_cal):
                                              bidi=varin['bidi'])
 
             # load the model weights
-            model_keras_cnn_0.load_weights(full_path_keras_cnn_0 + str(ii) + '.h5')
+            model_keras_cnn_0.load_weights(full_path_model + str(ii) + '.h5')
 
             if varin['dataset'] != 'ismir':
                 # evaluate nacta 2017 data set
@@ -213,27 +224,31 @@ def viterbi_subroutine(test_nacta_2017, test_nacta, eval_label, obs_cal):
                                               score_path=nacta2017_score_unified_path,
                                               test_recordings=test_nacta_2017,
                                               model_keras_cnn_0=model_keras_cnn_0,
-                                              cnnModel_name=cnnModel_name + str(ii),
-                                              eval_results_path=eval_results_path + str(ii),
+                                              len_seq=len_seq,
+                                              cnnModel_name=model_name + str(ii),
+                                              detection_results_path=detection_results_path + str(ii),
                                               scaler=scaler,
                                               obs_cal=obs_cal,
                                               decoding_method='viterbi',
+                                              architecture=architecture,
                                               stateful=stateful)
 
             # evaluate nacta dataset
-            eval_results_decoding_path = batch_process_onset_detection(wav_path=nacta_wav_path,
-                                                                       textgrid_path=nacta_textgrid_path,
-                                                                       score_path=nacta_score_unified_path,
-                                                                       test_recordings=test_nacta,
-                                                                       model_keras_cnn_0=model_keras_cnn_0,
-                                                                       cnnModel_name=cnnModel_name + str(ii),
-                                                                       eval_results_path=eval_results_path + str(ii),
-                                                                       scaler=scaler,
-                                                                       obs_cal=obs_cal,
-                                                                       decoding_method='viterbi',
-                                                                       stateful=stateful)
+            eval_results_decoding_path = \
+                batch_process_onset_detection(wav_path=nacta_wav_path,
+                                              textgrid_path=nacta_textgrid_path,
+                                              score_path=nacta_score_unified_path,
+                                              test_recordings=test_nacta,
+                                              model_keras_cnn_0=model_keras_cnn_0,
+                                              cnnModel_name=model_name + str(ii),
+                                              detection_results_path=detection_results_path + str(ii),
+                                              scaler=scaler,
+                                              obs_cal=obs_cal,
+                                              decoding_method='viterbi',
+                                              architecture=architecture,
+                                              stateful=stateful)
         else:
-            eval_results_decoding_path = eval_results_path + str(ii)
+            eval_results_decoding_path = detection_results_path + str(ii)
 
         precision_onset, recall_onset, F1_onset, \
         precision, recall, F1, \
@@ -269,14 +284,24 @@ def viterbi_subroutine(test_nacta_2017, test_nacta, eval_label, obs_cal):
            list_F1_5
 
 
-def peak_picking_subroutine(test_nacta_2017, test_nacta, th, obs_cal):
+def peak_picking_subroutine(test_nacta_2017,
+                            test_nacta,
+                            th,
+                            obs_cal,
+                            scaler,
+                            len_seq,
+                            model_name,
+                            full_path_model,
+                            architecture,
+                            detection_results_path,
+                            jingju_eval_results_path):
     """routine for peak picking decoding"""
     from src.utilFunctions import append_or_write
     import csv
 
-    eval_result_file_name = join(jingju_results_path,
+    eval_result_file_name = join(jingju_eval_results_path,
                                  varin['sample_weighting'],
-                                 cnnModel_name + '_peakPicking_threshold_results.txt')
+                                 model_name + '_peakPicking_threshold_results.txt')
 
     list_recall_onset_25, list_precision_onset_25, list_F1_onset_25 = [], [], []
     list_recall_onset_5, list_precision_onset_5, list_F1_onset_5 = [], [], []
@@ -299,7 +324,7 @@ def peak_picking_subroutine(test_nacta_2017, test_nacta, th, obs_cal):
                                              training=False,
                                              bidi=varin['bidi'])
 
-            model_keras_cnn_0.load_weights(full_path_keras_cnn_0 + str(ii) + '.h5')
+            model_keras_cnn_0.load_weights(full_path_model + str(ii) + '.h5')
         else:
             model_keras_cnn_0 = None
 
@@ -310,27 +335,32 @@ def peak_picking_subroutine(test_nacta_2017, test_nacta, th, obs_cal):
                                           score_path=nacta2017_score_pinyin_path,
                                           test_recordings=test_nacta_2017,
                                           model_keras_cnn_0=model_keras_cnn_0,
-                                          cnnModel_name=cnnModel_name + str(ii),
-                                          eval_results_path=eval_results_path + str(ii),
+                                          cnnModel_name=model_name + str(ii),
+                                          detection_results_path=detection_results_path + str(ii),
                                           scaler=scaler,
                                           threshold=th,
                                           obs_cal=obs_cal,
                                           decoding_method='peakPicking',
+                                          architecture=architecture,
+                                          len_seq=len_seq,
                                           stateful=stateful)
 
         # evaluate nacta dataset
-        eval_results_decoding_path = batch_process_onset_detection(wav_path=nacta_wav_path,
-                                                                   textgrid_path=nacta_textgrid_path,
-                                                                   score_path=nacta_score_pinyin_path,
-                                                                   test_recordings=test_nacta,
-                                                                   model_keras_cnn_0=model_keras_cnn_0,
-                                                                   cnnModel_name=cnnModel_name + str(ii),
-                                                                   eval_results_path=eval_results_path + str(ii),
-                                                                   scaler=scaler,
-                                                                   threshold=th,
-                                                                   obs_cal=obs_cal,
-                                                                   decoding_method='peakPicking',
-                                                                   stateful=stateful)
+        eval_results_decoding_path = \
+            batch_process_onset_detection(wav_path=nacta_wav_path,
+                                          textgrid_path=nacta_textgrid_path,
+                                          score_path=nacta_score_pinyin_path,
+                                          test_recordings=test_nacta,
+                                          model_keras_cnn_0=model_keras_cnn_0,
+                                          cnnModel_name=model_name + str(ii),
+                                          detection_results_path=detection_results_path + str(ii),
+                                          scaler=scaler,
+                                          threshold=th,
+                                          obs_cal=obs_cal,
+                                          decoding_method='peakPicking',
+                                          stateful=stateful,
+                                          architecture=architecture,
+                                          len_seq=len_seq)
 
         append_write = append_or_write(eval_result_file_name)
 
@@ -372,7 +402,17 @@ def peak_picking_subroutine(test_nacta_2017, test_nacta, th, obs_cal):
            list_F1_5
 
 
-def viterbi_label_eval(test_nacta_2017, test_nacta, eval_label, obs_cal):
+def viterbi_label_eval(test_nacta_2017,
+                       test_nacta,
+                       eval_label,
+                       obs_cal,
+                       len_seq,
+                       model_name,
+                       scaler,
+                       full_path_model,
+                       architecture,
+                       detection_results_path,
+                       jingju_eval_results_path):
     """evaluate viterbi decoding results"""
 
     list_precision_onset_25, list_recall_onset_25, list_F1_onset_25, list_precision_25, list_recall_25, list_F1_25, \
@@ -380,19 +420,26 @@ def viterbi_label_eval(test_nacta_2017, test_nacta, eval_label, obs_cal):
         viterbi_subroutine(test_nacta_2017=test_nacta_2017,
                            test_nacta=test_nacta,
                            eval_label=eval_label,
-                           obs_cal=obs_cal)
+                           obs_cal=obs_cal,
+                           len_seq=len_seq,
+                           model_name=model_name,
+                           architecture=architecture,
+                           scaler=scaler,
+                           full_path_model=full_path_model,
+                           detection_results_path=detection_results_path)
 
     postfix_statistic_sig = 'label' if eval_label else 'nolabel'
 
     pickle.dump(list_F1_onset_25,
-                open(join('./statisticalSignificance/data/jingju', varin['sample_weighting'],
-                          cnnModel_name + '_' + 'viterbi' + '_' + postfix_statistic_sig + '.pkl'), 'w'))
+                open(join('./statisticalSignificance/data/jingju',
+                          varin['sample_weighting'],
+                          model_name + '_' + 'viterbi' + '_' + postfix_statistic_sig + '.pkl'), 'w'))
 
-    write_results_2_txt_jingju(join(jingju_results_path,
+    write_results_2_txt_jingju(join(jingju_eval_results_path,
                                     varin['sample_weighting'],
-                                    cnnModel_name + '_viterbi' + '_' + postfix_statistic_sig + '.txt'),
+                                    model_name + '_viterbi' + '_' + postfix_statistic_sig + '.txt'),
                                postfix_statistic_sig,
-                     'viterbi',
+                               'viterbi',
                                list_precision_onset_25,
                                list_recall_onset_25,
                                list_F1_onset_25,
@@ -407,7 +454,16 @@ def viterbi_label_eval(test_nacta_2017, test_nacta, eval_label, obs_cal):
                                list_F1_5)
 
 
-def peak_picking_eval(test_nacta_2017, test_nacta, obs_cal):
+def peak_picking_eval(test_nacta_2017,
+                      test_nacta,
+                      obs_cal,
+                      len_seq,
+                      model_name,
+                      scaler,
+                      full_path_model,
+                      architecture,
+                      detection_results_path,
+                      jingju_eval_results_path):
     """evaluate the peak picking results"""
 
     # coarse search
@@ -416,10 +472,18 @@ def peak_picking_eval(test_nacta_2017, test_nacta, obs_cal):
         th *= 0.1
 
         try:
-            _, _, list_F1_onset_25, _, _, _, _, _, _, _, _, _ = peak_picking_subroutine(test_nacta_2017=test_nacta_2017,
-                                                                                        test_nacta=test_nacta,
-                                                                                        th=th,
-                                                                                        obs_cal=obs_cal)
+            _, _, list_F1_onset_25, _, _, _, _, _, _, _, _, _ = \
+                peak_picking_subroutine(test_nacta_2017=test_nacta_2017,
+                                        test_nacta=test_nacta,
+                                        th=th,
+                                        obs_cal=obs_cal,
+                                        scaler=scaler,
+                                        len_seq=len_seq,
+                                        model_name=model_name,
+                                        full_path_model=full_path_model,
+                                        architecture=architecture,
+                                        detection_results_path=detection_results_path,
+                                        jingju_eval_results_path=jingju_eval_results_path)
 
             if np.mean(list_F1_onset_25) > best_F1_onset_25:
                 best_th = th
@@ -431,10 +495,18 @@ def peak_picking_eval(test_nacta_2017, test_nacta, obs_cal):
     for th in range(int((best_th - 0.1) * 100), int((best_th + 0.1) * 100)):
         th *= 0.01
 
-        _, _, list_F1_onset_25, _, _, _, _, _, _, _, _, _ = peak_picking_subroutine(test_nacta_2017=test_nacta_2017,
-                                                                                    test_nacta=test_nacta,
-                                                                                    th=th,
-                                                                                    obs_cal=obs_cal)
+        _, _, list_F1_onset_25, _, _, _, _, _, _, _, _, _ = \
+            peak_picking_subroutine(test_nacta_2017=test_nacta_2017,
+                                    test_nacta=test_nacta,
+                                    th=th,
+                                    obs_cal=obs_cal,
+                                    scaler=scaler,
+                                    len_seq=len_seq,
+                                    model_name=model_name,
+                                    full_path_model=full_path_model,
+                                    architecture=architecture,
+                                    detection_results_path=detection_results_path,
+                                    jingju_eval_results_path=jingju_eval_results_path)
 
         if np.mean(list_F1_onset_25) > best_F1_onset_25:
             best_th = th
@@ -446,19 +518,25 @@ def peak_picking_eval(test_nacta_2017, test_nacta, obs_cal):
         peak_picking_subroutine(test_nacta_2017=test_nacta_2017,
                                 test_nacta=test_nacta,
                                 th=best_th,
-                                obs_cal=obs_cal)
+                                obs_cal=obs_cal,
+                                scaler=scaler,
+                                len_seq=len_seq,
+                                model_name=model_name,
+                                full_path_model=full_path_model,
+                                architecture=architecture,
+                                detection_results_path=detection_results_path,
+                                jingju_eval_results_path=jingju_eval_results_path)
 
     print('best_th', best_th)
 
     pickle.dump(list_F1_onset_25,
                 open(join('./statisticalSignificance/data/jingju',
                           varin['sample_weighting'],
-                          cnnModel_name + '_peakPickingMadmom.pkl'), 'w'))
+                          model_name + '_peakPickingMadmom.pkl'), 'w'))
 
     write_results_2_txt_jingju(
-        join(jingju_results_path,
-             varin['sample_weighting'],
-             cnnModel_name + '_peakPickingMadmom' + '.txt'),
+        join(jingju_eval_results_path, varin['sample_weighting'],
+             model_name + '_peakPickingMadmom' + '.txt'),
         str(best_th),
         'peakPicking',
         list_precision_onset_25,
@@ -475,28 +553,68 @@ def peak_picking_eval(test_nacta_2017, test_nacta, obs_cal):
         list_F1_5)
 
 
-if __name__ == '__main__':
+def run_process_jingju_crnn(architecture):
+
+    if architecture == 'bidi_lstms_100':
+        cnnModel_name = 'bidi_lstms_100'
+        len_seq = 100  # sub-sequence length
+    elif architecture == 'bidi_lstms_200':
+        cnnModel_name = 'bidi_lstms_200'
+        len_seq = 200
+    elif architecture == 'bidi_lstms_400':
+        cnnModel_name = 'bidi_lstms_400'
+        len_seq = 400
+    else:
+        raise ValueError('There is no such architecture %s for CRNN.' % architecture)
+
+    scaler_artist_filter_phrase_model_path = join(jingju_scaler_path, 'scaler_jingju_crnn_phrase.pkl')
+
+    detection_results_path = join(root_path, 'eval', 'results', cnnModel_name)
+
+    jingju_eval_results_path = join(root_path, 'eval', 'jingju', 'results')
+
+    full_path_model = join(jingju_cnn_model_path, cnnModel_name)
+
     test_nacta_2017, test_nacta = getTestRecordingsScoreDurCorrectionArtistAlbumFilter()
 
-    full_path_mfccBands_2D_scaler_onset = scaler_artist_filter_phrase_model_path
-
-    scaler = pickle.load(open(full_path_mfccBands_2D_scaler_onset, 'rb'))
+    scaler = pickle.load(open(scaler_artist_filter_phrase_model_path, 'rb'))
 
     obs_cal = 'tocal'
 
     viterbi_label_eval(test_nacta_2017=test_nacta_2017,
                        test_nacta=test_nacta,
                        eval_label=True,
-                       obs_cal=obs_cal)
+                       obs_cal=obs_cal,
+                       scaler=scaler,
+                       len_seq=len_seq,
+                       model_name=cnnModel_name,
+                       full_path_model=full_path_model,
+                       architecture=architecture,
+                       detection_results_path=detection_results_path,
+                       jingju_eval_results_path=jingju_eval_results_path)
 
     obs_cal = 'toload'
 
     viterbi_label_eval(test_nacta_2017=test_nacta_2017,
                        test_nacta=test_nacta,
                        eval_label=False,
-                       obs_cal=obs_cal)
+                       obs_cal=obs_cal,
+                       scaler=scaler,
+                       len_seq=len_seq,
+                       model_name=cnnModel_name,
+                       full_path_model=full_path_model,
+                       architecture=architecture,
+                       detection_results_path=detection_results_path,
+                       jingju_eval_results_path=jingju_eval_results_path)
 
     # peak picking evaluation
     peak_picking_eval(test_nacta_2017=test_nacta_2017,
                       test_nacta=test_nacta,
-                      obs_cal=obs_cal)
+                      obs_cal=obs_cal,
+                      scaler=scaler,
+                      len_seq=len_seq,
+                      model_name=cnnModel_name,
+                      full_path_model=full_path_model,
+                      architecture=architecture,
+                      detection_results_path=detection_results_path,
+                      jingju_eval_results_path=jingju_eval_results_path)

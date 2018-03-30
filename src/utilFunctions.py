@@ -60,7 +60,7 @@ def getOnsetFunction(observations, model, method):
 
     if 'jordi' in method:
         observations = [observations, observations, observations, observations, observations, observations]
-    elif 'feature_extraction' in method:
+    elif 'feature_extractor' in method:
         observations = [observations, observations]
 
     obs = model.predict(observations, batch_size=128, verbose=2)

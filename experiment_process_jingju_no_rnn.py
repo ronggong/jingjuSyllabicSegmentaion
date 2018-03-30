@@ -418,11 +418,11 @@ def viterbi_label_eval(test_nacta_2017,
     postfix_statistic_sig = 'label' if eval_label else 'nolabel'
 
     pickle.dump(list_F1_onset_25,
-                open(join('./statisticalSignificance/data/jingju', varin['sample_weighting'],
+                open(join('./statisticalSignificance/data/jingju',
+                          varin['sample_weighting'],
                           cnnModel_name + '_' + 'viterbi' + '_' + postfix_statistic_sig + '.pkl'), 'w'))
 
-    write_results_2_txt_jingju(join(jingju_eval_results_path,
-                                    varin['sample_weighting'],
+    write_results_2_txt_jingju(join(jingju_eval_results_path, varin['sample_weighting'],
                                     cnnModel_name + '_viterbi' + '_' + postfix_statistic_sig + '.txt'),
                                postfix_statistic_sig,
                                'viterbi',
@@ -517,8 +517,7 @@ def peak_picking_eval(test_nacta_2017,
                           cnnModel_name + '_peakPickingMadmom.pkl'), 'w'))
 
     # save the results
-    write_results_2_txt_jingju(join(jingju_eval_results_path,
-                                    varin['sample_weighting'],
+    write_results_2_txt_jingju(join(jingju_eval_results_path, varin['sample_weighting'],
                                     cnnModel_name + '_peakPickingMadmom' + '.txt'),
                                str(best_th),
                                'peakPicking',

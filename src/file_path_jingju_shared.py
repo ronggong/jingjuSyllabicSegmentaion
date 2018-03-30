@@ -1,6 +1,7 @@
 from os.path import join
 from os.path import dirname
 from parameters_jingju import varin
+from file_path_shared import feature_data_path
 
 #  audio and annotation root path
 root_path = join(dirname(__file__), '..')
@@ -45,3 +46,5 @@ jingju_cnn_model_path = join(root_path, 'cnnModels', 'jingju', varin['sample_wei
 jingju_scaler_path = join(root_path, 'cnnModels', 'jingju', 'scalers')
 
 cnnModels_path = join(root_path, 'cnnModels', 'jingju')
+
+artist_filter_feature_data_path = join(feature_data_path, 'artist_filter')

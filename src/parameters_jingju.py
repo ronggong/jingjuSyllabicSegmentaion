@@ -30,8 +30,8 @@ varin['dataset'] = 'artist_filter'
 
 varin['sample_weighting'] = 'simpleWeighting'
 
-varin['overlap'] = False
+varin['overlap'] = True
 
-varin['bidi'] = False
+varin['bidi'] = True
 
 # varin['architecture'] = 'jan_less_deep'
