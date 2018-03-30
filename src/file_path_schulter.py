@@ -103,4 +103,4 @@ schluter_results_path = join(root_path, 'eval', 'schluter', 'results')
 jingju_cnn_model_path = join(root_path, 'cnnModels', 'jingju', varin['sample_weighting'])
 
 full_path_mfccBands_2D_scaler_onset = \
-    join(jingju_cnn_model_path, 'scaler_syllable_mfccBands2D_old+new_artist_filter_madmom.pkl')
+    join(jingju_cnn_model_path, 'scaler_jan_no_rnn.pkl')

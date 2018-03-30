@@ -129,7 +129,7 @@ def onsetFunctionAllRecordings(wav_path,
     :return:
     """
 
-    scaler = pickle.load(open(full_path_mfccBands_2D_scaler_onset, 'rb'))
+    scaler = pickle.load(open(full_path_scaler_no_rnn, 'rb'))
 
 
     for artist_path, rn in test_recordings:

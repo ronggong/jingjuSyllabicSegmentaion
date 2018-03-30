@@ -24,18 +24,18 @@ f1_schluter_feature_extraction_pp = [rpf[2] for rpf in recall_precison_schluter_
 f1_schluter_deep_feature_extraction_pp = [rpf[2] for rpf in recall_precison_schluter_deep_feature_extraction_pp]
 
 # # artist_filter peak picking
-f1_artist_filter_less_deep_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jan_artist_filter_less_deep_peakPickingMadmom.pkl'), 'r'))
-f1_artist_filter_pretrained_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jan_artist_filter_less_deep_schluter_peakPickingMadmom.pkl'), 'r'))
-f1_artist_filter_weight_init_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jan_artist_filter_less_deep_pretrained_schluter_peakPickingMadmom.pkl'), 'r'))
-f1_artist_filter_feature_extraction_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jan_artist_filter_less_deep_feature_extraction_schluter_peakPickingMadmom.pkl'), 'r'))
-f1_artist_filter_deep_feature_extraction_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jan_artist_filter_less_deep_deep_feature_extraction_schluter_peakPickingMadmom.pkl'), 'r'))
+f1_artist_filter_less_deep_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', '5_layers_cnn_peakPickingMadmom.pkl'), 'r'))
+f1_artist_filter_pretrained_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'pretrained_peakPickingMadmom.pkl'), 'r'))
+f1_artist_filter_weight_init_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'retrained_peakPickingMadmom.pkl'), 'r'))
+f1_artist_filter_feature_extraction_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'feature_extractor_a_peakPickingMadmom.pkl'), 'r'))
+f1_artist_filter_deep_feature_extraction_pp = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'feature_extractor_b_peakPickingMadmom.pkl'), 'r'))
 
 # # artist_filter viterbi no label
-f1_artist_filter_less_deep_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jan_artist_filter_less_deep_viterbi_nolabel.pkl'), 'r'))
-f1_artist_filter_pretrained_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jan_artist_filter_less_deep_schluter_viterbi_nolabel.pkl'), 'r'))
-f1_artist_filter_weight_init_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jan_artist_filter_less_deep_pretrained_schluter_viterbi_nolabel.pkl'), 'r'))
-f1_artist_filter_feature_extraction_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jan_artist_filter_less_deep_feature_extraction_schluter_viterbi_nolabel.pkl'), 'r'))
-f1_artist_filter_deep_feature_extraction_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'jan_artist_filter_less_deep_deep_feature_extraction_schluter_viterbi_nolabel.pkl'), 'r'))
+f1_artist_filter_less_deep_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', '5_layers_cnn_viterbi_nolabel.pkl'), 'r'))
+f1_artist_filter_pretrained_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'pretrained_viterbi_nolabel.pkl'), 'r'))
+f1_artist_filter_weight_init_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'retrained_viterbi_nolabel.pkl'), 'r'))
+f1_artist_filter_feature_extraction_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'feature_extractor_a_viterbi_nolabel.pkl'), 'r'))
+f1_artist_filter_deep_feature_extraction_nl = pickle.load(open(os.path.join('./data/jingju/simpleWeighting', 'feature_extractor_b_viterbi_nolabel.pkl'), 'r'))
 
 
 def pValueAll(f1_jan,

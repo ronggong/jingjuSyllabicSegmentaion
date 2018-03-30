@@ -43,3 +43,5 @@ else:
 jingju_cnn_model_path = join(root_path, 'cnnModels', 'jingju', varin['sample_weighting'])
 
 jingju_scaler_path = join(root_path, 'cnnModels', 'jingju', 'scalers')
+
+cnnModels_path = join(root_path, 'cnnModels', 'jingju')

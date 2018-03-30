@@ -34,4 +34,4 @@ varin['overlap'] = False
 
 varin['bidi'] = False
 
-varin['architecture'] = 'jan_less_deep'
+# varin['architecture'] = 'jan_less_deep'

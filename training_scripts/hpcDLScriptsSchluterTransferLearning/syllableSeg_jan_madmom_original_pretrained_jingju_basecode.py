@@ -26,8 +26,8 @@ def syllableSeg_jan_madmom_original_basecode(part, ii, deep=False, dense=False):
                                                                                                       scaling=True)
 
     # load pretrained jingju model
-    pretrained_model_jingju = '/homedtic/rgong/cnnSyllableSeg/out/keras.cnn_syllableSeg_jan_artist_filter_less_deep2.h5'
-    # pretrained_model_jingju = '../../cnnModels/jingju/simpleWeighting/keras.cnn_syllableSeg_jan_artist_filter_less_deep2.h5'
+    pretrained_model_jingju = '/homedtic/rgong/cnnSyllableSeg/out/5_layers_cnn2.h5'
+    # pretrained_model_jingju = '../../cnnModels/jingju/simpleWeighting/5_layers_cnn2.h5'
 
     filename_train_validation_set = join(schluter_feature_data_path_madmom_simpleSampleWeighting, 'temp', 'feature_all_jan_pretrained_jingju_temp_'+str(ii)+'.h5')
     filename_labels_train_validation_set = join(schluter_feature_data_path_madmom_simpleSampleWeighting, 'temp', 'labels_train_set_all_jan_pretrained_jingju_temp_'+str(ii)+'.pickle.gz')
