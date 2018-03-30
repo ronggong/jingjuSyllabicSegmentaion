@@ -3,7 +3,7 @@ import sys, os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
 from schluterParser import annotationCvParser
-from file_path_schulter import *
+from file_path_bock import *
 from parameters_jingju import *
 from utilFunctions import getRecordings
 from utilFunctions import featureReshape

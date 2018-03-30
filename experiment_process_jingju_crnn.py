@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import pickle
 from os import makedirs
-from os.path import isfile, exists
+from os.path import isfile
+from os.path import exists
 
 import numpy as np
 import pyximport
@@ -17,7 +18,8 @@ from experiment_process_helper import get_results_decoding_path
 from experiment_process_helper import odf_calculation_crnn
 from experiment_process_helper import write_results_2_txt_jingju
 from plot_code import plot_jingju
-from src.file_path_jingju_rnn import *
+from src.parameters_jingju import *
+from src.file_path_jingju_shared import *
 from src.labWriter import boundaryLabWriter
 from src.trainTestSeparation import getTestRecordingsScoreDurCorrectionArtistAlbumFilter
 from src.utilFunctions import smooth_obs

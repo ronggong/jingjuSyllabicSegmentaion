@@ -10,7 +10,7 @@ from models import finetune_model_validation
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src')))
 
-from file_path_schulter import *
+from file_path_bock import *
 
 def syllableSeg_jan_madmom_original_basecode(part, ii, deep=False, dense=False):
 

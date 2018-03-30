@@ -9,7 +9,7 @@ from models import jan, model_train
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src')))
 
-from file_path_schulter import *
+from file_path_bock import *
 
 nlen = 15
 input_dim = (80, nlen)

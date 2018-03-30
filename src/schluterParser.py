@@ -15,7 +15,7 @@ def annotationCvParser(annotation_filename):
 
 
 if __name__ == '__main__':
-    from file_path_schulter import *
+    from file_path_bock import *
 
     test_annotation_filename = join(schluter_annotations_path, 'ah_development_guitar_2684_TexasMusicForge_Dandelion_pt1.onsets')
     list_onset_time = annotationCvParser(test_annotation_filename)

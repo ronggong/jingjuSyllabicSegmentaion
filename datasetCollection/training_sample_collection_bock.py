@@ -18,7 +18,7 @@ from sample_collection_helper import simple_sample_weighting
 sys.path.append(os.path.join(os.path.dirname(__file__), "../src/"))
 
 from parameters_schluter import *
-from file_path_schulter import *
+from file_path_bock import *
 
 from schluterParser import annotationCvParser
 from utilFunctions import getRecordings

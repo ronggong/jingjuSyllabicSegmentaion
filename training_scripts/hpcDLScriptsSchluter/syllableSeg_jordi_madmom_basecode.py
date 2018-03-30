@@ -8,7 +8,7 @@ from models import train_model_validation
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src')))
 
-from file_path_schulter import *
+from file_path_bock import *
 
 def syllableSeg_jordi_madmom_basecode(part, ii, model_name='jordi_timbral_schluter'):
     test_cv_filename = join(schluter_cv_path, '8-fold_cv_random_'+str(ii)+'.fold')
