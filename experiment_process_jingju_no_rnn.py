@@ -13,7 +13,7 @@ import pyximport
 from keras.models import load_model
 from madmom.features.onsets import OnsetPeakPickingProcessor
 
-from eval_demo import eval_write_2_txt
+from eval_jingju import eval_write_2_txt
 from experiment_process_helper import boundary_decoding
 from experiment_process_helper import data_parser
 from experiment_process_helper import get_boundary_list

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import pickle
+import os
+import sys
 from os import makedirs
 from os.path import isfile
 from os.path import exists
@@ -8,8 +10,7 @@ import numpy as np
 import pyximport
 from madmom.features.onsets import OnsetPeakPickingProcessor
 
-from audio_preprocessing import getMFCCBands2DMadmom
-from eval_demo import eval_write_2_txt
+from eval_jingju import eval_write_2_txt
 from experiment_process_helper import boundary_decoding
 from experiment_process_helper import data_parser
 from experiment_process_helper import get_boundary_list
@@ -18,12 +19,17 @@ from experiment_process_helper import get_results_decoding_path
 from experiment_process_helper import odf_calculation_crnn
 from experiment_process_helper import write_results_2_txt_jingju
 from plot_code import plot_jingju
-from src.parameters_jingju import *
-from src.file_path_jingju_shared import *
-from src.labWriter import boundaryLabWriter
-from src.trainTestSeparation import getTestRecordingsScoreDurCorrectionArtistAlbumFilter
-from src.utilFunctions import smooth_obs
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "../src/"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../training_scripts/"))
+
+from parameters_jingju import *
+from file_path_jingju_shared import *
+from labWriter import boundaryLabWriter
+from trainTestSeparation import getTestRecordingsScoreDurCorrectionArtistAlbumFilter
+from utilFunctions import smooth_obs
 from training_scripts.models_CRNN import jan_original
+from audio_preprocessing import getMFCCBands2DMadmom
 
 pyximport.install(reload_support=True,
                   setup_args={'include_dirs': np.get_include()})

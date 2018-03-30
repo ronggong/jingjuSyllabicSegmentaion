@@ -9,7 +9,7 @@ import numpy as np
 from keras.models import load_model
 from madmom.features.onsets import OnsetPeakPickingProcessor
 
-from eval_schluter import eval_schluter
+from eval_bock import eval_schluter
 from src.file_path_bock import *
 from src.parameters_schluter import *
 
