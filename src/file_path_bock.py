@@ -70,37 +70,40 @@ weighting_str = \
 
 # schluter_dataset_root_path = '/Users/gong/Documents/MTG document/dataset/onsets'
 
-# schluter_dataset_root_path = '/datasets/MTG/projects/compmusic/jingju_datasets/schluter/'
+# schluter_dataset_root_path = '/datasets/MTG/projects/compmusic/jingju_datasets/bock/'
 
-schluter_dataset_root_path = '/media/gong/ec990efa-9ee0-4693-984b-29372dcea0d1/Data/RongGong/onsets'
+bock_dataset_root_path = '/media/gong/ec990efa-9ee0-4693-984b-29372dcea0d1/Data/RongGong/onsets'
 
-schluter_audio_path = join(schluter_dataset_root_path, 'audio')
+bock_audio_path = join(bock_dataset_root_path, 'audio')
 
-schluter_cv_path = join(schluter_dataset_root_path, 'splits')
+bock_cv_path = join(bock_dataset_root_path, 'splits')
 
-schluter_annotations_path = join(schluter_dataset_root_path, 'annotations')
+bock_annotations_path = join(bock_dataset_root_path, 'annotations')
 
+bock_feature_data_path_madmom_simpleSampleWeighting = \
+    join(feature_data_path, 'bock_simpleSampleWeighting')
 
-schluter_feature_data_path_madmom_simpleSampleWeighting = join(feature_data_path, 'bock_simpleSampleWeighting')
+bock_feature_data_path_madmom_simpleSampleWeighting_3channel = \
+    join(feature_data_path, 'bock_simpleSampleWeighting_3channel')
 
-schluter_feature_data_path_madmom_simpleSampleWeighting_3channel = join(feature_data_path, 'bock_simpleSampleWeighting_3channel')
+bock_feature_data_path_madmom_complicateSampleWeighting = \
+    join(feature_data_path, 'bock_complicateSampleWeighting')
 
-schluter_feature_data_path_madmom_complicateSampleWeighting = join(feature_data_path, 'bock_complicateSampleWeighting')
+bock_feature_data_path_madmom_positiveThreeSampleWeighting = \
+    join(feature_data_path, 'bock_postiveThreeSampleWeighting')
 
-schluter_feature_data_path_madmom_positiveThreeSampleWeighting = join(feature_data_path, 'bock_postiveThreeSampleWeighting')
+bock_feature_data_path_madmom_simpleSampleWeighting_phrase = \
+    join(feature_data_path, 'bock_simpleSampleWeighting_phrase')
 
-schluter_feature_data_path_madmom_simpleSampleWeighting_phrase = join(feature_data_path, 'bock_simpleSampleWeighting_phrase')
+bock_cnn_model_path = join(root_path, 'pretrained_models', 'bock', varin['sample_weighting'])
 
-schluter_cnn_model_path = join(root_path, 'cnnModels', 'schluter', varin['sample_weighting'])
+scaler_bock_phrase_model_path = join(bock_cnn_model_path, 'scaler_bock_phrase.pkl')
 
-scaler_schluter_phrase_model_path = join(schluter_cnn_model_path,
-                                         'scaler_syllable_mfccBands2D_schluter_madmom_phrase.pkl')
+detection_results_path = join(root_path, 'eval', 'results')
 
-eval_results_path = join(root_path, 'eval', 'results')
+bock_results_path = join(root_path, 'eval', 'bock', 'results')
 
-schluter_results_path = join(root_path, 'eval', 'schluter', 'results')
+# jingju model
+jingju_cnn_model_path = join(root_path, 'pretrained_models', 'jingju', varin['sample_weighting'])
 
-jingju_cnn_model_path = join(root_path, 'cnnModels', 'jingju', varin['sample_weighting'])
-
-full_path_mfccBands_2D_scaler_onset = \
-    join(jingju_cnn_model_path, 'scaler_jan_no_rnn.pkl')
+full_path_jingju_scaler = join(jingju_cnn_model_path, 'scaler_jan_no_rnn.pkl')

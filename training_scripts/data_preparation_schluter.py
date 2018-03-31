@@ -121,7 +121,7 @@ def concatenateFeatureLabelSampleweightsJingju(feature_schluter,
                                                nlen=7,
                                                scaling=True):
     """
-    Concatenate schluter and jingju dataset
+    Concatenate bock and jingju dataset
     :param feature_schluter:
     :param label_schluter:
     :param sample_weights_schluter:
@@ -140,7 +140,7 @@ def concatenateFeatureLabelSampleweightsJingju(feature_schluter,
     with gzip.open(filename_jingju_sample_weights, 'rb') as f:
         sample_weights_jingju = cPickle.load(f)
 
-    # concatenate with schluter dataset
+    # concatenate with bock dataset
     feature_all = np.vstack((feature_schluter, feature_jingju['feature_all']))
     label_all = np.concatenate((label_schluter, label_jingju))
     sample_weights_all = np.concatenate((sample_weights_schluter, sample_weights_jingju))
@@ -183,12 +183,12 @@ def saveFeatureLabelSampleweights(feature_all, label_all, sample_weights, scaler
 
 if __name__ == '__main__':
     for ii in range(1,8):
-        test_cv_filename = join(schluter_cv_path, '8-fold_cv_random_'+str(ii)+'.fold')
-        train_fns = getTrainingFilenames(schluter_annotations_path, test_cv_filename)
+        test_cv_filename = join(bock_cv_path, '8-fold_cv_random_' + str(ii) + '.fold')
+        train_fns = getTrainingFilenames(bock_annotations_path, test_cv_filename)
         print(len(train_fns))
         feature_all, label_all, sample_weights_all, scaler = \
             concatenateFeatureLabelSampleweights(train_fns,
-                                                 schluter_feature_data_path_madmom_simpleSampleWeighting,
+                                                 bock_feature_data_path_madmom_simpleSampleWeighting,
                                                  n_pattern=15,
                                                  nlen=7,
                                                  scaling=True)

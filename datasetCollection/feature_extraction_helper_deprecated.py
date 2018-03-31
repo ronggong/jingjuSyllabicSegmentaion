@@ -346,7 +346,7 @@ def dumpFeatureBatchOnsetRiyaz():
 
     print(mfcc_p.shape, mfcc_n.shape, sample_weights_p.shape, sample_weights_n.shape)
 
-    pickle.dump(scaler, open('../cnnModels/scaler_syllable_mfccBands2D_riyaz'+str(varin['nlen'])+'.pkl', 'wb'))
+    pickle.dump(scaler, open('../pretrained_models/scaler_syllable_mfccBands2D_riyaz'+str(varin['nlen'])+'.pkl', 'wb'))
 
     feature_all = featureReshape(feature_all, nlen=varin['nlen'])
 

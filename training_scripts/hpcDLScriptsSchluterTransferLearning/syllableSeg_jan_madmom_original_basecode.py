@@ -18,13 +18,13 @@ def syllableSeg_jan_madmom_original_basecode(part, ii, deep=False, dense=False):
     deep_str = 'less_deep_' if deep else ''
     dense_str = 'no_dense_' if not dense else ''
 
-    test_cv_filename = join(schluter_cv_path, '8-fold_cv_random_'+str(ii)+'.fold')
-    train_fns = getTrainingFilenames(schluter_annotations_path, test_cv_filename)
+    test_cv_filename = join(bock_cv_path, '8-fold_cv_random_' + str(ii) + '.fold')
+    train_fns = getTrainingFilenames(bock_annotations_path, test_cv_filename)
     feature_schluter, label_schluter, sample_weights_schluter, _ = concatenateFeatureLabelSampleweights(train_fns,
-                                                                                                      schluter_feature_data_path_madmom_simpleSampleWeighting,
-                                                                                                      n_pattern=15,
-                                                                                                      nlen=7,
-                                                                                                      scaling=None)
+                                                                                                        bock_feature_data_path_madmom_simpleSampleWeighting,
+                                                                                                        n_pattern=15,
+                                                                                                        nlen=7,
+                                                                                                        scaling=None)
 
     # artist training dataset
     # filename_feature_jingju = os.path.join('/scratch/rgongcnnSyllableSeg_part'+str(part)+'_jan/syllableSeg' ,'feature_all_artist_filter_madmom.h5')
@@ -35,7 +35,7 @@ def syllableSeg_jan_madmom_original_basecode(part, ii, deep=False, dense=False):
     filename_labels_jingju = '../../trainingData/labels_train_set_all_syllableSeg_mfccBands2D_old+new_artist_filter_madmom.pickle.gz'
     filename_sample_weights_jingju = '../../trainingData/sample_weights_syllableSeg_mfccBands2D_old+new_artist_filter_madmom.pickle.gz'
 
-    # combine jingju and schluter dataset
+    # combine jingju and bock dataset
     feature_all, label_all, sample_weights_all, scaler = \
         concatenateFeatureLabelSampleweightsJingju(feature_schluter=feature_schluter,
                                                    label_schluter=label_schluter,
@@ -45,10 +45,10 @@ def syllableSeg_jan_madmom_original_basecode(part, ii, deep=False, dense=False):
                                                    filename_jingju_sample_weights=filename_sample_weights_jingju,
                                                    scaling=True)
 
-    filename_train_validation_set = join(schluter_feature_data_path_madmom_simpleSampleWeighting, 'temp', 'feature_all_jan_temp_'+str(ii)+'.h5')
-    filename_labels_train_validation_set = join(schluter_feature_data_path_madmom_simpleSampleWeighting, 'temp', 'labels_train_set_all_jan_temp_'+str(ii)+'.pickle.gz')
-    filename_sample_weights = join(schluter_feature_data_path_madmom_simpleSampleWeighting, 'temp', 'sample_weights_all_jan_temp_'+str(ii)+'.pickle.gz')
-    filename_scaler = join(schluter_feature_data_path_madmom_simpleSampleWeighting, 'temp', 'scaler_jan_madmom_simpleSampleWeighting_early_stopping_schluter_jingju_dataset_'+str(ii)+'.pickle.gz')
+    filename_train_validation_set = join(bock_feature_data_path_madmom_simpleSampleWeighting, 'temp', 'feature_all_jan_temp_' + str(ii) + '.h5')
+    filename_labels_train_validation_set = join(bock_feature_data_path_madmom_simpleSampleWeighting, 'temp', 'labels_train_set_all_jan_temp_' + str(ii) + '.pickle.gz')
+    filename_sample_weights = join(bock_feature_data_path_madmom_simpleSampleWeighting, 'temp', 'sample_weights_all_jan_temp_' + str(ii) + '.pickle.gz')
+    filename_scaler = join(bock_feature_data_path_madmom_simpleSampleWeighting, 'temp', 'scaler_jan_madmom_simpleSampleWeighting_early_stopping_schluter_jingju_dataset_' + str(ii) + '.pickle.gz')
 
     saveFeatureLabelSampleweights(feature_all, label_all, sample_weights_all, scaler,
                                   filename_train_validation_set, filename_labels_train_validation_set,

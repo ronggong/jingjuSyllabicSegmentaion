@@ -122,8 +122,8 @@ if __name__ == '__main__':
 
     # train the final model
 
-    file_path_model = '../cnnModels/keras.cnn_syllableSeg_jordi_timbral_class_weight_with_conv_dense_filter_mfccBands_2D_old+new.h5'
-    file_path_model = '../cnnModels/log/keras.cnn_syllableSeg_jordi_timbral_class_weight_with_conv_dense_filter_mfccBands_2D_old+new.csv'
+    file_path_model = '../pretrained_models/keras.cnn_syllableSeg_jordi_timbral_class_weight_with_conv_dense_filter_mfccBands_2D_old+new.h5'
+    file_path_model = '../pretrained_models/log/keras.cnn_syllableSeg_jordi_timbral_class_weight_with_conv_dense_filter_mfccBands_2D_old+new.csv'
 
     train_model(filter_density_1=1, filter_density_2=1,
                 pool_n_row=5, pool_n_col=3,

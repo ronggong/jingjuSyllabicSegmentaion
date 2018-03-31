@@ -1,13 +1,16 @@
-from src.file_path_bock import *
 from src.utilFunctions import getRecordings
 from src.schluterParser import annotationCvParser
-from src.evaluation2 import onsetEval, metrics
+from src.evaluation2 import metrics
 from mir_eval.onset import f_measure
+from os.path import join
 import numpy as np
 
-def eval_schluter(cnn_model_name):
+
+def eval_bock(architecture,
+              detection_results_path,
+              bock_annotations_path):
     """
-    evaluate schluter model for each fold
+    evaluate bock model for each fold
     :param model_type:
     :return: recall, precision and f1 for each fold
     """
@@ -20,8 +23,8 @@ def eval_schluter(cnn_model_name):
     jj = 0
 
     for ii in range(8):
-        model_name = cnn_model_name + str(ii)
-        detected_onset_path = getRecordings(join(eval_results_path, model_name))
+        model_name = architecture + str(ii)
+        detected_onset_path = getRecordings(join(detection_results_path, model_name))
         # groundtruth_onset_filenames = getRecordings(schluter_annotations_path)
 
         sumNumDetectedOnsets_fold = 0
@@ -30,8 +33,8 @@ def eval_schluter(cnn_model_name):
         for dop in detected_onset_path:
             fn = dop.replace('.syll', '')
             # fn = dop.replace('.onsets', '')
-            detected_fn = join(eval_results_path, model_name, dop + '.lab')
-            groundtruth_fn = join(schluter_annotations_path, fn + '.onsets')
+            detected_fn = join(detection_results_path, model_name, dop + '.lab')
+            groundtruth_fn = join(bock_annotations_path, fn + '.onsets')
 
             detected_onsets = annotationCvParser(detected_fn)
             groundtruth_onsets = annotationCvParser(groundtruth_fn)
@@ -78,4 +81,4 @@ def eval_schluter(cnn_model_name):
 if __name__ == '__main__':
     # model_type = 'timbral'
     for model_type in ['timbral', 'temporal']:
-        eval_schluter(model_type)
+        eval_bock(model_type)

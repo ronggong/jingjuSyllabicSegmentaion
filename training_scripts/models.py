@@ -719,7 +719,7 @@ def model_layer2(input, merged, filter_density_layer2, dropout):
 
 def model_layer2_schluter(input, merged, filter_density_layer2, dropout):
     """
-    original schluter layer
+    original bock layer
     :param input:
     :param merged:
     :param filter_density_layer2:

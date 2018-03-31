@@ -418,8 +418,7 @@ def dump_feature_batch_onset_phrase(split='ismir', feature_type='mfccBands2D', t
         scaler = preprocessing.StandardScaler()
         scaler.fit(mfcc_all)
 
-        filename_scaler = join(jingju_scaler_path,
-                               'scaler_syllable_mfccBands2D_old+new_'+split+'_'+feature_type+'_'+'phrase'+'.pkl')
+        filename_scaler = join(jingju_cnn_model_path, 'scaler_jingju_crnn_phrase.pkl')
 
         pickle.dump(scaler, open(filename_scaler, 'wb'))
 

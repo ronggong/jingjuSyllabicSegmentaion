@@ -13,17 +13,17 @@ Jan (Bidi LSTM 200 length 85 percentile)
 Jan (Bidi LSTM 100 length 66.5 percentile)
 """
 
-# schluter
-recall_precision_f1_jan = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jan.pkl'), 'r'))
+# bock
+recall_precision_f1_jan = pickle.load(open(os.path.join('./data/bock/simpleWeighting', 'baseline.pkl'), 'r'))
 
-recall_precision_f1_no_dense = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jan_no_dense.pkl'), 'r'))
-recall_precision_f1_relu = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jan_relu.pkl'), 'r'))
-recall_precision_f1_temporal = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jordi_temporal_schluter.pkl'), 'r'))
-recall_precision_f1_deep = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jan_deep.pkl'), 'r'))
-recall_precision_f1_less_deep = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jan_less_deep.pkl'), 'r'))
-recall_precision_f1_bidi_400 = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jan_phrase_overlap_bidi.pkl'), 'r'))
-recall_precision_f1_bidi_200 = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jan_phrase_overlap_bidi_200.pkl'), 'r'))
-recall_precision_f1_bidi_100 = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jan_phrase_overlap_bidi_100.pkl'), 'r'))
+recall_precision_f1_no_dense = pickle.load(open(os.path.join('./data/bock/simpleWeighting', 'no_dense.pkl'), 'r'))
+recall_precision_f1_relu = pickle.load(open(os.path.join('./data/bock/simpleWeighting', 'relu_dense.pkl'), 'r'))
+recall_precision_f1_temporal = pickle.load(open(os.path.join('./data/bock/simpleWeighting', 'temporal.pkl'), 'r'))
+recall_precision_f1_deep = pickle.load(open(os.path.join('./data/bock/simpleWeighting', '9_layers_cnn.pkl'), 'r'))
+recall_precision_f1_less_deep = pickle.load(open(os.path.join('./data/bock/simpleWeighting', '5_layers_cnn.pkl'), 'r'))
+recall_precision_f1_bidi_400 = pickle.load(open(os.path.join('./data/bock/simpleWeighting', 'bidi_lstms_400.pkl'), 'r'))
+recall_precision_f1_bidi_200 = pickle.load(open(os.path.join('./data/bock/simpleWeighting', 'bidi_lstms_200.pkl'), 'r'))
+recall_precision_f1_bidi_100 = pickle.load(open(os.path.join('./data/bock/simpleWeighting', 'bidi_lstms_100.pkl'), 'r'))
 
 f1_schluter_jan = [rpf[2] for rpf in recall_precision_f1_jan]
 

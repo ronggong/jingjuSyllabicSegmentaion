@@ -1,5 +1,6 @@
 from experiment_process_jingju_no_rnn import run_process_jingju_no_rnn
 from experiment_process_jingju_crnn import run_process_jingju_crnn
+from experiment_process_bock import run_process_bock
 import argparse
 
 if __name__ == '__main__':
@@ -28,4 +29,7 @@ if __name__ == '__main__':
             run_process_jingju_no_rnn(architecture=args.architecture)
         else:
             run_process_jingju_crnn(architecture=args.architecture)
+
+    else:
+        run_process_bock(architecture=args.architecture)
 

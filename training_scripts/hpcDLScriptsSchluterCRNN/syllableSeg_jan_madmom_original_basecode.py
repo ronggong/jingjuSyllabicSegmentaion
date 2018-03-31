@@ -30,8 +30,8 @@ def syllableSeg_jan_madmom_original_basecode(ii):
     # schluter_feature_data_scratch_path = schluter_feature_data_path_madmom_simpleSampleWeighting_phrase
 
 
-    test_cv_filename = os.path.join(schluter_cv_path, '8-fold_cv_random_'+str(ii)+'.fold')
-    train_validation_fns = getTrainingFilenames(schluter_annotations_path, test_cv_filename)
+    test_cv_filename = os.path.join(bock_cv_path, '8-fold_cv_random_' + str(ii) + '.fold')
+    train_validation_fns = getTrainingFilenames(bock_annotations_path, test_cv_filename)
 
     # split the training set to train and validation sets
     train_fns, validation_fns = None, None
@@ -40,7 +40,7 @@ def syllableSeg_jan_madmom_original_basecode(ii):
         train_fns = [train_validation_fns[ti] for ti in train_idx]
         validation_fns = [train_validation_fns[vi] for vi in validation_idx]
 
-    scaler = pickle.load(open(scaler_schluter_phrase_model_path, 'r'))
+    scaler = pickle.load(open(scaler_bock_phrase_model_path, 'r'))
 
     nb_epochs = 500
     best_val_loss = 1.0 # initialize the val_loss

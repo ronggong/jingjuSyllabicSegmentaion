@@ -97,8 +97,8 @@ if __name__ == '__main__':
     # print best
 
     # train the model
-    file_path_model = '../../cnnModels/keras.cnn_syllableSeg_jordi_temporal_class_weight_with_conv_dense_mfccBands_2D_old+new.h5'
-    file_path_log = '../../cnnModels/log/keras.cnn_syllableSeg_jordi_temporal_class_weight_with_conv_dense_mfccBands_2D_old+new.csv'
+    file_path_model = '../../pretrained_models/keras.cnn_syllableSeg_jordi_temporal_class_weight_with_conv_dense_mfccBands_2D_old+new.h5'
+    file_path_log = '../../pretrained_models/log/keras.cnn_syllableSeg_jordi_temporal_class_weight_with_conv_dense_mfccBands_2D_old+new.csv'
 
 
     train_model(filter_density1=1, filter_density2=1,

@@ -77,6 +77,6 @@ if __name__ == '__main__':
     # print best
 
     # train the final model
-    file_path_model = '../../cnnModels/keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_old+new.h5'
-    file_path_log = '../../cnnModels/log/keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_old+new.csv'
+    file_path_model = '../../pretrained_models/keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_old+new.h5'
+    file_path_log = '../../pretrained_models/log/keras.cnn_syllableSeg_jan_class_weight_mfccBands_2D_all_old+new.csv'
     train_model(filter_density=1, dropout=0.5, input_shape=input_dim, file_path_model=file_path_model, filename_log=file_path_log)

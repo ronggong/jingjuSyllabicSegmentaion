@@ -41,10 +41,8 @@ else:
     nacta2017_score_unified_path = nacta2017_score_pinyin_path
     nacta_score_unified_path = nacta_score_pinyin_path
 
-jingju_cnn_model_path = join(root_path, 'cnnModels', 'jingju', varin['sample_weighting'])
+jingju_cnn_model_path = join(root_path, 'pretrained_models', 'jingju', varin['sample_weighting'])
 
-jingju_scaler_path = join(root_path, 'cnnModels', 'jingju', 'scalers')
-
-cnnModels_path = join(root_path, 'cnnModels', 'jingju')
+cnnModels_path = join(root_path, 'pretrained_models', 'jingju')
 
 artist_filter_feature_data_path = join(feature_data_path, 'artist_filter')

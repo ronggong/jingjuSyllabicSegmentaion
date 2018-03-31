@@ -11,17 +11,17 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../s
 from file_path_bock import *
 
 def syllableSeg_jordi_madmom_basecode(part, ii, model_name='jordi_timbral_schluter'):
-    test_cv_filename = join(schluter_cv_path, '8-fold_cv_random_'+str(ii)+'.fold')
-    train_fns = getTrainingFilenames(schluter_annotations_path, test_cv_filename)
+    test_cv_filename = join(bock_cv_path, '8-fold_cv_random_' + str(ii) + '.fold')
+    train_fns = getTrainingFilenames(bock_annotations_path, test_cv_filename)
     feature_all, label_all, sample_weights_all, scaler = concatenateFeatureLabelSampleweights(train_fns,
-                                                                                              schluter_feature_data_path_madmom_simpleSampleWeighting,
+                                                                                              bock_feature_data_path_madmom_simpleSampleWeighting,
                                                                                               n_pattern=15,
                                                                                               nlen=7,
                                                                                               scaling=True)
-    filename_train_validation_set = join(schluter_feature_data_path_madmom_simpleSampleWeighting, 'temp', 'feature_all_'+model_name+'_temp_'+str(ii)+'.h5')
-    filename_labels_train_validation_set = join(schluter_feature_data_path_madmom_simpleSampleWeighting, 'temp', 'labels_train_set_all_'+model_name+'_temp_'+str(ii)+'.pickle.gz')
-    filename_sample_weights = join(schluter_feature_data_path_madmom_simpleSampleWeighting, 'temp', 'sample_weights_all_'+model_name+'_temp_'+str(ii)+'.pickle.gz')
-    filename_scaler = join(schluter_feature_data_path_madmom_simpleSampleWeighting, 'temp', 'scaler_'+model_name+'_madmom_simpleSampleWeighting_early_stopping_'+str(ii)+'.pickle.gz')
+    filename_train_validation_set = join(bock_feature_data_path_madmom_simpleSampleWeighting, 'temp', 'feature_all_' + model_name + '_temp_' + str(ii) + '.h5')
+    filename_labels_train_validation_set = join(bock_feature_data_path_madmom_simpleSampleWeighting, 'temp', 'labels_train_set_all_' + model_name + '_temp_' + str(ii) + '.pickle.gz')
+    filename_sample_weights = join(bock_feature_data_path_madmom_simpleSampleWeighting, 'temp', 'sample_weights_all_' + model_name + '_temp_' + str(ii) + '.pickle.gz')
+    filename_scaler = join(bock_feature_data_path_madmom_simpleSampleWeighting, 'temp', 'scaler_' + model_name + '_madmom_simpleSampleWeighting_early_stopping_' + str(ii) + '.pickle.gz')
 
     saveFeatureLabelSampleweights(feature_all, label_all, sample_weights_all, scaler,
                                   filename_train_validation_set, filename_labels_train_validation_set,

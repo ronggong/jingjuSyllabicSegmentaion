@@ -21,7 +21,7 @@ def featureProcessing(feature, scaler, nlen):
     return feature_reshaped
 
 def getObs(filename_model, scaler, feature, model_flag='jan', expand_dim=True, nlen=10):
-    model = load_model(os.path.join('./cnnModels/',filename_model))
+    model = load_model(os.path.join('./pretrained_models/',filename_model))
     feature_processed = featureProcessing(feature, scaler, nlen)
     if expand_dim:
         feature_processed = np.expand_dims(feature_processed, axis=1)
@@ -33,7 +33,7 @@ def getObs(filename_model, scaler, feature, model_flag='jan', expand_dim=True, n
     return obs_0
 
 def getObsOld(filename_model, scaler, feature, model_flag='jan', nlen=10):
-    model = load_model(os.path.join('./cnnModels/',filename_model))
+    model = load_model(os.path.join('./pretrained_models/',filename_model))
     observations = featureProcessing(feature, scaler, nlen)
     if model_flag=='jordi':
         observations = [observations, observations, observations, observations, observations, observations]
@@ -77,7 +77,7 @@ if __name__ == '__main__':
     with gzip.open(filename_test_label, 'rb') as f:
         Y_test = cPickle.load(f)
 
-    filename_scaler_oldnew_ismir_madmom_set = './cnnModels/scaler_syllable_mfccBands2D_old+new_ismir_madmom.pkl'
+    filename_scaler_oldnew_ismir_madmom_set = './pretrained_models/scaler_syllable_mfccBands2D_old+new_ismir_madmom.pkl'
     scaler_oldnew_ismir_madmom_set = pickle.load(open(filename_scaler_oldnew_ismir_madmom_set, 'rb'))
 
     missing_onset_jan = []

@@ -11,11 +11,11 @@ Jan deep feature extraction
 """
 
 # # artist_filter peak picking
-recall_precison_schluter_less_deep_pp = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jan_less_deep.pkl'), 'r'))
-recall_precison_schluter_pretrained_pp = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jan_less_deep_pretrained_jingju_no_dense.pkl'), 'r'))
-recall_precison_schluter_weight_init_pp = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jan_less_deep_jingju_no_dense.pkl'), 'r'))
-recall_precison_schluter_feature_extraction_pp = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jan_less_deep_feature_extraction_jingju_no_dense.pkl'), 'r'))
-recall_precison_schluter_deep_feature_extraction_pp = pickle.load(open(os.path.join('./data/schluter/simpleWeighting', 'schluter_jan_less_deep_deep_feature_extraction_jingju_no_dense.pkl'), 'r'))
+recall_precison_schluter_less_deep_pp = pickle.load(open(os.path.join('./data/bock/simpleWeighting', '5_layers_cnn.pkl'), 'r'))
+recall_precison_schluter_pretrained_pp = pickle.load(open(os.path.join('./data/bock/simpleWeighting', 'pretrained.pkl'), 'r'))
+recall_precison_schluter_weight_init_pp = pickle.load(open(os.path.join('./data/bock/simpleWeighting', 'retrained.pkl'), 'r'))
+recall_precison_schluter_feature_extraction_pp = pickle.load(open(os.path.join('./data/bock/simpleWeighting', 'feature_extractor_a.pkl'), 'r'))
+recall_precison_schluter_deep_feature_extraction_pp = pickle.load(open(os.path.join('./data/bock/simpleWeighting', 'feature_extractor_b.pkl'), 'r'))
 
 f1_schluter_less_deep_pp = [rpf[2] for rpf in recall_precison_schluter_less_deep_pp]
 f1_schluter_pretrained_pp = [rpf[2] for rpf in recall_precison_schluter_pretrained_pp]

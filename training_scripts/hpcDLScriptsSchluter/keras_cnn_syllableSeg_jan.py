@@ -49,8 +49,8 @@ def train_model(filename_train_validation_set,
 if __name__ == '__main__':
 
     for ii in range(8):
-        test_cv_filename = join(schluter_cv_path, '8-fold_cv_random_'+str(ii)+'.fold')
-        train_fns = getTrainingFilenames(schluter_annotations_path, test_cv_filename)
+        test_cv_filename = join(bock_cv_path, '8-fold_cv_random_' + str(ii) + '.fold')
+        train_fns = getTrainingFilenames(bock_annotations_path, test_cv_filename)
         feature_all, label_all, sample_weights_all, scaler = concatenateFeatureLabelSampleweights(train_fns, schluter_feature_data_path)
 
         filename_train_validation_set = join(schluter_feature_data_path, 'temp', 'feature_all_jan_temp.h5')
